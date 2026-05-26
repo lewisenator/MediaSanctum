@@ -1,6 +1,11 @@
-const Logo = () => {
+export type LogoProps = {
+  size: number;
+};
+const Logo = ({
+  size = 7,
+}: LogoProps) => {
   return (
-    <svg className="h-7 w-7 shrink-0" viewBox="0 0 130 130" fill="none" aria-hidden="true">
+    <svg className={`h-${size} w-${size} shrink-0`} viewBox="0 0 130 130" fill="none" aria-hidden="true">
       <path d="M48 36 L65 12 L82 36 Z" fill="#6b1f1a"/>
       <line x1="65" y1="12" x2="65" y2="6"
             stroke="currentColor" stroke-width="1.5"/>

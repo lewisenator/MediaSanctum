@@ -5,7 +5,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { QueryClient } from '@tanstack/react-query';
 
 import '../styles.css';
-import LeftHandMenu from '#/components/LeftHandMenu.tsx';
 
 type RouterContext = {
   queryClient: QueryClient;
@@ -24,14 +23,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function RootLayout() {
   return (
-    <div className="min-h-screen flex flex-row">
-      <LeftHandMenu />
-      <main className='flex justify-center p-6'>
-        <div className="w-full max-w-4xl">
-          <Outlet />
-        </div>
-      </main>
-
+    <>
+      <Outlet />
       <TanStackDevtools
         config={{
           position: 'bottom-right',
@@ -47,10 +40,9 @@ function RootLayout() {
           },
         ]}
       />
-    </div>
+    </>
   )
 }
-
 
 function NotFound() {
   return (

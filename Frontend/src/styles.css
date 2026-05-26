@@ -25,7 +25,7 @@
   --color-fmt-audio: var(--c-fmt-audio);
 }
 
-:root {
+@theme {
   --font-display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
   --font-text:    'Source Serif 4', Georgia, 'Times New Roman', serif;
   --font-ui:      'Inter', system-ui, -apple-system, sans-serif;
@@ -90,3 +90,6 @@ body {
   background-color: var(--c-sidebarText);
 }
 
+button {
+  cursor: pointer;
+}
