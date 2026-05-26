@@ -1,0 +1,25 @@
+/* Reader · Common — Solarized Light. Cream paper with the canonical
+   Solarized blue/teal accent palette. */
+:root[data-theme="C-sol-light"] {
+  --c-bg: #fdf6e3;
+  --c-surface: #eee8d5;
+  --c-surfaceAlt: #e5dfca;
+  --c-border: rgba(101, 123, 131, 0.20);
+  --c-borderStrong: rgba(101, 123, 131, 0.32);
+  --c-text: #586e75;
+  --c-textDim: #657b83;
+  --c-textMute: #93a1a1;
+  --c-accent: #268bd2;
+  --c-accentSoft: rgba(38, 139, 210, 0.12);
+  --c-accentText: #268bd2;
+  --c-success: #859900;
+  --c-danger: #dc322f;
+  --c-sidebar: #002b36;
+  --c-sidebarText: #93a1a1;
+  --c-sidebarTextDim: rgba(147, 161, 161, 0.55);
+  --c-sidebarAccent: #2aa198;
+  --c-fmt-ebook:  #859900;
+  --c-fmt-pdf:    #dc322f;
+  --c-fmt-kindle: #b58900;
+  --c-fmt-audio:  #6c71c4;
+}

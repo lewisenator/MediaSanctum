@@ -1,0 +1,25 @@
+/* Reader · Common — High Contrast. Pure black + white with a vibrant
+   yellow accent, optimised for low-vision readability. */
+:root[data-theme="C-contrast"] {
+  --c-bg: #000000;
+  --c-surface: #0a0a0a;
+  --c-surfaceAlt: #1a1a1a;
+  --c-border: rgba(255, 255, 255, 0.22);
+  --c-borderStrong: rgba(255, 255, 255, 0.42);
+  --c-text: #ffffff;
+  --c-textDim: #d8d8d8;
+  --c-textMute: #a8a8a8;
+  --c-accent: #ffd60a;
+  --c-accentSoft: rgba(255, 214, 10, 0.16);
+  --c-accentText: #ffe566;
+  --c-success: #4ade80;
+  --c-danger: #ff5555;
+  --c-sidebar: #000000;
+  --c-sidebarText: #ffffff;
+  --c-sidebarTextDim: rgba(255, 255, 255, 0.65);
+  --c-sidebarAccent: #ffd60a;
+  --c-fmt-ebook:  #4ade80;
+  --c-fmt-pdf:    #ff5555;
+  --c-fmt-kindle: #ffaa00;
+  --c-fmt-audio:  #c084fc;
+}

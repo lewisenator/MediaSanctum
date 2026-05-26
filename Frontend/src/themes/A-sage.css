@@ -1,0 +1,24 @@
+/* Stacks · Light — sage green, fresh + earthy. */
+:root[data-theme="A-sage"] {
+  --c-bg: #eef0e7;
+  --c-surface: #f6f7f0;
+  --c-surfaceAlt: #e0e3d6;
+  --c-border: rgba(30,40,25,0.10);
+  --c-borderStrong: rgba(30,40,25,0.20);
+  --c-text: #1a2218;
+  --c-textDim: #586253;
+  --c-textMute: #8a917f;
+  --c-accent: #5a7a4a;
+  --c-accentSoft: rgba(90,122,74,0.12);
+  --c-accentText: #5a7a4a;
+  --c-success: #5a7a4a;
+  --c-danger: #a8482e;
+  --c-sidebar: #0f1410;
+  --c-sidebarText: #cdd6c0;
+  --c-sidebarTextDim: rgba(205,214,192,0.55);
+  --c-sidebarAccent: #9bc080;
+  --c-fmt-ebook:  #5a7a4a;
+  --c-fmt-pdf:    #a8482e;
+  --c-fmt-kindle: #966428;
+  --c-fmt-audio:  #3c6e6e;
+}

@@ -1,0 +1,24 @@
+/* Reader · Common — sepia cream paper, warm tan accent. */
+:root[data-theme="C-sepia"] {
+  --c-bg: #fbf0d9;
+  --c-surface: #f6e7c0;
+  --c-surfaceAlt: #efdcae;
+  --c-border: rgba(95, 75, 50, 0.18);
+  --c-borderStrong: rgba(95, 75, 50, 0.30);
+  --c-text: #5f4b32;
+  --c-textDim: #856b48;
+  --c-textMute: #a08868;
+  --c-accent: #8a614c;
+  --c-accentSoft: rgba(138, 97, 76, 0.12);
+  --c-accentText: #8a614c;
+  --c-success: #5a7a3e;
+  --c-danger: #a8482e;
+  --c-sidebar: #2a1f10;
+  --c-sidebarText: #e0d0b0;
+  --c-sidebarTextDim: rgba(224, 208, 176, 0.55);
+  --c-sidebarAccent: #d4a574;
+  --c-fmt-ebook:  #5a7a3e;
+  --c-fmt-pdf:    #a8482e;
+  --c-fmt-kindle: #8c6e3c;
+  --c-fmt-audio:  #6e4664;
+}

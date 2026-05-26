@@ -1,0 +1,24 @@
+/* Reverie · Dark — deep purple base, lavender accent. */
+:root[data-theme="B-iris"] {
+  --c-bg: #0c0a14;
+  --c-surface: #161224;
+  --c-surfaceAlt: #211c33;
+  --c-border: rgba(200,180,255,0.08);
+  --c-borderStrong: rgba(200,180,255,0.18);
+  --c-text: #f0eef8;
+  --c-textDim: #9d97b3;
+  --c-textMute: #605a78;
+  --c-accent: #a78bfa;
+  --c-accentSoft: rgba(167,139,250,0.16);
+  --c-accentText: #bea3ff;
+  --c-success: #86d18a;
+  --c-danger: #e87aa0;
+  --c-sidebar: #08070f;
+  --c-sidebarText: #d0cce0;
+  --c-sidebarTextDim: rgba(208,204,224,0.5);
+  --c-sidebarAccent: #bea3ff;
+  --c-fmt-ebook:  #80c8d0;
+  --c-fmt-pdf:    #e87aa0;
+  --c-fmt-kindle: #e8c878;
+  --c-fmt-audio:  #bea3ff;
+}

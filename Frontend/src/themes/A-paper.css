@@ -1,0 +1,26 @@
+/* Stacks · Light — warm paper, ink, terracotta accent. Default theme. */
+:root,
+:root[data-theme="A-paper"] {
+  --c-bg: #f5f1e8;
+  --c-surface: #fbf8f1;
+  --c-surfaceAlt: #efe9dc;
+  --c-border: rgba(60,42,20,0.10);
+  --c-borderStrong: rgba(60,42,20,0.18);
+  --c-text: #2a2118;
+  --c-textDim: #6b5d4a;
+  --c-textMute: #9a8b75;
+  --c-accent: #9c4a2a;
+  --c-accentSoft: rgba(156,74,42,0.10);
+  --c-accentText: #9c4a2a;
+  --c-success: #5a7a3e;
+  --c-danger: #a8482e;
+  --c-sidebar: #1f1812;
+  --c-sidebarText: #d8cbb3;
+  --c-sidebarTextDim: rgba(216,203,179,0.55);
+  --c-sidebarAccent: #e8a87c;
+  /* Format-pill hues (ebook=EPUB · pdf=PDF · kindle=MOBI/AZW3 · audio=MP3/M4B) */
+  --c-fmt-ebook:  #4f6b3a;
+  --c-fmt-pdf:    #8a3a25;
+  --c-fmt-kindle: #7a4f1a;
+  --c-fmt-audio:  #5a3e6e;
+}

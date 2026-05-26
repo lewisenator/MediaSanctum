@@ -1,0 +1,24 @@
+/* Reverie · Light — cool mint with deep mint accent. */
+:root[data-theme="B-mint"] {
+  --c-bg: #eef4ef;
+  --c-surface: #f6faf6;
+  --c-surfaceAlt: #dfeae0;
+  --c-border: rgba(20,50,40,0.10);
+  --c-borderStrong: rgba(20,50,40,0.20);
+  --c-text: #0e1a14;
+  --c-textDim: #56685e;
+  --c-textMute: #869488;
+  --c-accent: #1a7a5a;
+  --c-accentSoft: rgba(26,122,90,0.10);
+  --c-accentText: #1a7a5a;
+  --c-success: #1a7a5a;
+  --c-danger: #b04848;
+  --c-sidebar: #0a1410;
+  --c-sidebarText: #bdd0c4;
+  --c-sidebarTextDim: rgba(189,208,196,0.55);
+  --c-sidebarAccent: #5fc8a0;
+  --c-fmt-ebook:  #1a7a5a;
+  --c-fmt-pdf:    #b04848;
+  --c-fmt-kindle: #8e5e28;
+  --c-fmt-audio:  #503c8c;
+}

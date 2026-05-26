@@ -1,0 +1,26 @@
+/* Reverie · Dark — warm dark with vivid orange accent. The single 'Ember'
+ * theme; the previous A-ember (muted, terracotta) was consolidated into
+ * this one. Users still on the old key are migrated by the bootstrap. */
+:root[data-theme="B-ember"] {
+  --c-bg: #0c0806;
+  --c-surface: #1a100c;
+  --c-surfaceAlt: #2a1a14;
+  --c-border: rgba(255,180,140,0.08);
+  --c-borderStrong: rgba(255,180,140,0.20);
+  --c-text: #f5e2d2;
+  --c-textDim: #c0987a;
+  --c-textMute: #806652;
+  --c-accent: #ff7a3c;
+  --c-accentSoft: rgba(255,122,60,0.14);
+  --c-accentText: #ff9d70;
+  --c-success: #bcc878;
+  --c-danger: #ff5c5c;
+  --c-sidebar: #080403;
+  --c-sidebarText: #d8b89a;
+  --c-sidebarTextDim: rgba(216,184,154,0.55);
+  --c-sidebarAccent: #ff7a3c;
+  --c-fmt-ebook:  #bcc878;
+  --c-fmt-pdf:    #ff9d70;
+  --c-fmt-kindle: #ffaa70;
+  --c-fmt-audio:  #d0a8e0;
+}

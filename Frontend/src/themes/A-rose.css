@@ -1,0 +1,24 @@
+/* Stacks · Light — warm cream with rose / cherry accent. */
+:root[data-theme="A-rose"] {
+  --c-bg: #f5ece6;
+  --c-surface: #faf3ee;
+  --c-surfaceAlt: #ecdfd5;
+  --c-border: rgba(80,30,30,0.10);
+  --c-borderStrong: rgba(80,30,30,0.20);
+  --c-text: #2a1a18;
+  --c-textDim: #6e554a;
+  --c-textMute: #a08577;
+  --c-accent: #b04860;
+  --c-accentSoft: rgba(176,72,96,0.10);
+  --c-accentText: #b04860;
+  --c-success: #5a7a3e;
+  --c-danger: #b04860;
+  --c-sidebar: #1a1010;
+  --c-sidebarText: #dec5be;
+  --c-sidebarTextDim: rgba(222,197,190,0.55);
+  --c-sidebarAccent: #e890a0;
+  --c-fmt-ebook:  #46643c;
+  --c-fmt-pdf:    #b04860;
+  --c-fmt-kindle: #a06e32;
+  --c-fmt-audio:  #78508c;
+}

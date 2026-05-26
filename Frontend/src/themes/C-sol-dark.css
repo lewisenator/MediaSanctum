@@ -1,0 +1,25 @@
+/* Reader · Common — Solarized Dark. Deep teal background, low-contrast
+   muted text, with the canonical Solarized accent. */
+:root[data-theme="C-sol-dark"] {
+  --c-bg: #002b36;
+  --c-surface: #073642;
+  --c-surfaceAlt: #0a4250;
+  --c-border: rgba(147, 161, 161, 0.16);
+  --c-borderStrong: rgba(147, 161, 161, 0.30);
+  --c-text: #93a1a1;
+  --c-textDim: #839496;
+  --c-textMute: #586e75;
+  --c-accent: #2aa198;
+  --c-accentSoft: rgba(42, 161, 152, 0.18);
+  --c-accentText: #2aa198;
+  --c-success: #859900;
+  --c-danger: #dc322f;
+  --c-sidebar: #001e26;
+  --c-sidebarText: #93a1a1;
+  --c-sidebarTextDim: rgba(147, 161, 161, 0.55);
+  --c-sidebarAccent: #2aa198;
+  --c-fmt-ebook:  #859900;
+  --c-fmt-pdf:    #dc322f;
+  --c-fmt-kindle: #b58900;
+  --c-fmt-audio:  #6c71c4;
+}

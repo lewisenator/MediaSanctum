@@ -29,6 +29,7 @@ val testFrontend by tasks.registering(NpmTask::class) {
 
 tasks.named("assemble") {
     dependsOn(buildFrontend)
+    dependsOn(":Backend:assemble")
 }
 
 tasks.named("check") {

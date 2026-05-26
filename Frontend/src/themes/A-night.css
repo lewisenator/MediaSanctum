@@ -1,0 +1,24 @@
+/* Stacks · Dark — deep ink, warm amber accent. */
+:root[data-theme="A-night"] {
+  --c-bg: #181410;
+  --c-surface: #211c16;
+  --c-surfaceAlt: #2a241d;
+  --c-border: rgba(220,200,170,0.08);
+  --c-borderStrong: rgba(220,200,170,0.16);
+  --c-text: #ede2cf;
+  --c-textDim: #a89878;
+  --c-textMute: #7a6c52;
+  --c-accent: #e8a87c;
+  --c-accentSoft: rgba(232,168,124,0.14);
+  --c-accentText: #f0b890;
+  --c-success: #9bb87a;
+  --c-danger: #d68066;
+  --c-sidebar: #0f0c08;
+  --c-sidebarText: #c8b896;
+  --c-sidebarTextDim: rgba(200,184,150,0.55);
+  --c-sidebarAccent: #e8a87c;
+  --c-fmt-ebook:  #a8c080;
+  --c-fmt-pdf:    #e89880;
+  --c-fmt-kindle: #f0c088;
+  --c-fmt-audio:  #c0a0d8;
+}

@@ -1,0 +1,24 @@
+/* Stacks · Light — linen with deep green accent. */
+:root[data-theme="A-linen"] {
+  --c-bg: #eae6dc;
+  --c-surface: #f3efe5;
+  --c-surfaceAlt: #dfd9c9;
+  --c-border: rgba(40,30,15,0.12);
+  --c-borderStrong: rgba(40,30,15,0.22);
+  --c-text: #211a12;
+  --c-textDim: #5d5240;
+  --c-textMute: #8c8170;
+  --c-accent: #3d5a3c;
+  --c-accentSoft: rgba(61,90,60,0.10);
+  --c-accentText: #3d5a3c;
+  --c-success: #3d5a3c;
+  --c-danger: #9a3a2a;
+  --c-sidebar: #1a1810;
+  --c-sidebarText: #cec6b0;
+  --c-sidebarTextDim: rgba(206,198,176,0.55);
+  --c-sidebarAccent: #a8c08a;
+  --c-fmt-ebook:  #3d5a3c;
+  --c-fmt-pdf:    #9a3a2a;
+  --c-fmt-kindle: #8c6e3c;
+  --c-fmt-audio:  #6e4664;
+}

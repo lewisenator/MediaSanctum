@@ -1,0 +1,24 @@
+/* Reverie · Light — cool greys, deep blue accent. */
+:root[data-theme="B-glacier"] {
+  --c-bg: #f4f5f7;
+  --c-surface: #ffffff;
+  --c-surfaceAlt: #eaecf0;
+  --c-border: rgba(20,30,50,0.08);
+  --c-borderStrong: rgba(20,30,50,0.16);
+  --c-text: #0f1218;
+  --c-textDim: #5a6275;
+  --c-textMute: #8a93a6;
+  --c-accent: #0d4a6b;
+  --c-accentSoft: rgba(13,74,107,0.10);
+  --c-accentText: #0d4a6b;
+  --c-success: #1f6f4a;
+  --c-danger: #b83a3a;
+  --c-sidebar: #0c0e14;
+  --c-sidebarText: #d8dce5;
+  --c-sidebarTextDim: rgba(216,220,229,0.5);
+  --c-sidebarAccent: #7fb3d4;
+  --c-fmt-ebook:  #0d4a6b;
+  --c-fmt-pdf:    #b83a3a;
+  --c-fmt-kindle: #8e5e1e;
+  --c-fmt-audio:  #6e3c82;
+}

@@ -1,0 +1,24 @@
+/* Reverie · Light — bone, oxblood, near-black accent. */
+:root[data-theme="B-bone"] {
+  --c-bg: #e8e4dc;
+  --c-surface: #f5f2eb;
+  --c-surfaceAlt: #dcd6c8;
+  --c-border: rgba(20,15,5,0.10);
+  --c-borderStrong: rgba(20,15,5,0.20);
+  --c-text: #0e0c08;
+  --c-textDim: #5a5240;
+  --c-textMute: #8a826d;
+  --c-accent: #1a1a1a;
+  --c-accentSoft: rgba(20,20,20,0.06);
+  --c-accentText: #1a1a1a;
+  --c-success: #3d5a3c;
+  --c-danger: #8a2a1f;
+  --c-sidebar: #0c0a06;
+  --c-sidebarText: #d6d0bc;
+  --c-sidebarTextDim: rgba(214,208,188,0.55);
+  --c-sidebarAccent: #e8be8d;
+  --c-fmt-ebook:  #2c5a64;
+  --c-fmt-pdf:    #8a2a1f;
+  --c-fmt-kindle: #8c5e1e;
+  --c-fmt-audio:  #3c3c6e;
+}

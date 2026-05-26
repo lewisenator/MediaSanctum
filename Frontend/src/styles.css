@@ -1,4 +1,36 @@
 @import "tailwindcss";
+@import './themes/index.css';
+
+@theme inline {
+  --color-bg: var(--c-bg);
+  --color-surface: var(--c-surface);
+  --color-surfaceAlt: var(--c-surfaceAlt);
+  --color-border: var(--c-border);
+  --color-borderStrong: var(--c-borderStrong);
+  --color-text: var(--c-text);
+  --color-textDim: var(--c-textDim);
+  --color-textMute: var(--c-textMute);
+  --color-accent: var(--c-accent);
+  --color-accentSoft: var(--c-accentSoft);
+  --color-accentText: var(--c-accentText);
+  --color-success: var(--c-success);
+  --color-danger: var(--c-danger);
+  --color-sidebar: var(--c-sidebar);
+  --color-sidebarText: var(--c-sidebarText);
+  --color-sidebarTextDim: var(--c-sidebarTextDim);
+  --color-sidebarAccent: var(--c-sidebarAccent);
+  --color-fmt-ebook: var(--c-fmt-ebook);
+  --color-fmt-pdf: var(--c-fmt-pdf);
+  --color-fmt-kindle: var(--c-fmt-kindle);
+  --color-fmt-audio: var(--c-fmt-audio);
+}
+
+:root {
+  --font-display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-text:    'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-ui:      'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+}
 
 * {
   box-sizing: border-box;
@@ -12,5 +44,49 @@ body,
 
 body {
   margin: 0;
+  font-family: var(--font-text);
+  background-color: var(--c-bg);
+  color: var(--c-text);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-borderStrong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background: transparent;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--c-borderStrong);
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 999px;
+  transition: background-color 200ms;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--c-textMute);
+}
+*::-webkit-scrollbar-thumb:active {
+  background-color: var(--c-textDim);
+}
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+/* Sidebar uses its own surface palette, so override the thumb colour
+ * there too — keeps the scrollbar legible against the dark sidebar bg. */
+#sidebar,
+#sidebar * {
+  scrollbar-color: var(--c-sidebarTextDim) transparent;
+}
+#sidebar *::-webkit-scrollbar-thumb {
+  background-color: var(--c-sidebarTextDim);
+}
+#sidebar *::-webkit-scrollbar-thumb:hover {
+  background-color: var(--c-sidebarText);
 }
 

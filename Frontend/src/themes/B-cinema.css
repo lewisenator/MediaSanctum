@@ -1,0 +1,24 @@
+/* Reverie · Dark — cinematic noir, gold accent. */
+:root[data-theme="B-cinema"] {
+  --c-bg: #0a0a0c;
+  --c-surface: #13131a;
+  --c-surfaceAlt: #1c1c26;
+  --c-border: rgba(255,255,255,0.06);
+  --c-borderStrong: rgba(255,255,255,0.14);
+  --c-text: #f4f3f0;
+  --c-textDim: #9b9aa5;
+  --c-textMute: #5d5d6a;
+  --c-accent: #d4a574;
+  --c-accentSoft: rgba(212,165,116,0.14);
+  --c-accentText: #e8be8d;
+  --c-success: #7fb78e;
+  --c-danger: #e87878;
+  --c-sidebar: #08080a;
+  --c-sidebarText: #d6d4d0;
+  --c-sidebarTextDim: rgba(214,212,208,0.45);
+  --c-sidebarAccent: #d4a574;
+  --c-fmt-ebook:  #d4a574;
+  --c-fmt-pdf:    #ec8b6c;
+  --c-fmt-kindle: #f0b56a;
+  --c-fmt-audio:  #c0a8e0;
+}

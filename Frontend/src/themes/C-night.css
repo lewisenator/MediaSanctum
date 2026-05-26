@@ -1,0 +1,25 @@
+/* Reader · Common — Night. Neutral-grey dark with a soft blue accent,
+   distinct from A-night (warm-amber Stacks dark). */
+:root[data-theme="C-night"] {
+  --c-bg: #1a1a1a;
+  --c-surface: #242424;
+  --c-surfaceAlt: #2e2e2e;
+  --c-border: rgba(229, 231, 235, 0.10);
+  --c-borderStrong: rgba(229, 231, 235, 0.20);
+  --c-text: #e5e7eb;
+  --c-textDim: #b0b3ba;
+  --c-textMute: #7a7d84;
+  --c-accent: #60a5fa;
+  --c-accentSoft: rgba(96, 165, 250, 0.16);
+  --c-accentText: #93c5fd;
+  --c-success: #86d18a;
+  --c-danger: #f87171;
+  --c-sidebar: #0f0f0f;
+  --c-sidebarText: #d0d2d8;
+  --c-sidebarTextDim: rgba(208, 210, 216, 0.55);
+  --c-sidebarAccent: #93c5fd;
+  --c-fmt-ebook:  #93c5fd;
+  --c-fmt-pdf:    #f87171;
+  --c-fmt-kindle: #fbbf24;
+  --c-fmt-audio:  #c4b5fd;
+}
