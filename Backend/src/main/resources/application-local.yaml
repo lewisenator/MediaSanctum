@@ -1,0 +1,6 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+media-sanctum:
+  cookies-secure: false

@@ -1,0 +1,112 @@
+package com.media_sanctum.backend.security;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Service;
+
+import java.text.ParseException;
+import java.time.Duration;
+import java.time.Instant;
+
+@Slf4j
+@Service
+public class JwtService {
+
+    public static final Duration ACCESS_TOKEN_TTL = Duration.ofHours(1);
+    public static final Duration REFRESH_TOKEN_TTL = Duration.ofDays(30);
+
+    private final JWSSigner jwsSigner;
+    private final JWSVerifier jwsVerifier;
+    private final ObjectMapper objectMapper;
+
+    public JwtService(
+            // Must be 256 bits / 32 bytes
+            @Value("${JWT_SECRET}") String jwtSecret,
+            ObjectMapper objectMapper
+    ) throws JOSEException {
+        this.jwsSigner = new MACSigner(jwtSecret);
+        this.jwsVerifier = new MACVerifier(jwtSecret);
+        this.objectMapper = objectMapper;
+    }
+
+    public String generateAccessToken(String userId) {
+        var tokenPayload = TokenPayload.builder()
+                .tokenType(TokenType.ACCESS)
+                .userId(userId)
+                .build();
+        return generateJwtToken(tokenPayload, ACCESS_TOKEN_TTL);
+    }
+
+    public String generateRefreshToken(String userId) {
+        var tokenPayload = TokenPayload.builder()
+                .tokenType(TokenType.REFRESH)
+                .userId(userId)
+                .build();
+        return generateJwtToken(tokenPayload, REFRESH_TOKEN_TTL);
+    }
+
+    protected String generateJwtToken(TokenPayload tokenPayload, Duration ttl) throws AuthenticationException {
+        tokenPayload.setExp(Instant.now().plus(ttl));
+        try {
+            String stringPayload = objectMapper.writeValueAsString(tokenPayload);
+            var header = new JWSHeader(JWSAlgorithm.HS256);
+            var payload = new Payload(stringPayload);
+            var jwsObject = new JWSObject(header, payload);
+            jwsObject.sign(jwsSigner);
+            return jwsObject.serialize();
+        } catch (JOSEException|JsonProcessingException e) {
+            var message = String.format("Failed to generate JWT Token. %s", e.getMessage());
+            log.error(message, e);
+            throw new InternalAuthenticationServiceException(message, e);
+        }
+    }
+
+    public TokenPayload verifyJwtToken(String token) throws AuthenticationException {
+        try {
+            var jwsObject = JWSObject.parse(token);
+            var valid = jwsObject.verify(jwsVerifier);
+            if (!valid) {
+                throw new JOSEException("Invalid token");
+            }
+
+            var stringPayload = jwsObject.getPayload().toString();
+            var tokenPayload = objectMapper.readValue(stringPayload, TokenPayload.class);
+            if (tokenPayload.getExp().isBefore(Instant.now())) {
+                var message = String.format("Expired token for user: %s", tokenPayload.getUserId());
+                log.warn(message);
+                throw new BadCredentialsException(message);
+            }
+            return tokenPayload;
+        } catch (JOSEException|JsonProcessingException|ParseException e) {
+            var message = String.format("Failed to validate JWT Token. %s", e.getMessage());
+            log.error(message, e);
+            throw new BadCredentialsException(message, e);
+        }
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TokenPayload {
+        private String userId;
+        private Instant exp;
+        private TokenType tokenType;
+    }
+
+    public enum TokenType {
+        ACCESS, REFRESH
+    }
+}

@@ -44,7 +44,7 @@ function LoginPage() {
         </div>
         <button
           type='submit'
-          className='!w-full text-center justify-center inline-flex mt-3 items-center gap-1.5 rounded-sm px-4 !py-2.5 text-sm transition-colors bg-accent text-surface font-ui font-medium border border-accent hover:brightness-[1.08] active:brightness-[0.92]]'
+          className='w-full! text-center justify-center inline-flex mt-3 items-center gap-1.5 rounded-sm px-4 py-2.5! text-sm transition-colors bg-accent text-surface font-ui font-medium border border-accent hover:brightness-[1.08] active:brightness-[0.92]]'
         >
           Sign In
         </button>
