@@ -40,6 +40,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-security")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.assertj:assertj-core:3.27.7")
+    testImplementation("org.skyscreamer:jsonassert:1.5.3")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

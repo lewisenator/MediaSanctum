@@ -1,8 +1,8 @@
 package com.media_sanctum.backend.controller;
 
-import com.media_sanctum.backend.model.DataResponse;
-import com.media_sanctum.backend.model.UserResponse;
-import com.media_sanctum.backend.repository.UserRepository;
+import com.media_sanctum.backend.resource.DataResponse;
+import com.media_sanctum.backend.resource.UserResponse;
+import com.media_sanctum.backend.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,22 +14,22 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
     public ResponseEntity<DataResponse<List<UserResponse>>> getUsers() {
-        var allUserEntities = userRepository.findAll();
-        var users = allUserEntities.stream().map(entity ->
+        var users = userService.getUsers();
+        var usersForResponse = users.stream().map(user ->
                 UserResponse.builder()
-                    .email(entity.getEmail())
-                    .firstName(entity.getFirstName())
-                    .lastName(entity.getLastName())
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
                     .build()
         ).toList();
-        return ResponseEntity.ok(DataResponse.data(users));
+        return ResponseEntity.ok(DataResponse.data(usersForResponse));
     }
 }

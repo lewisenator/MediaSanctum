@@ -1,8 +1,7 @@
 package com.media_sanctum.backend.exception;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.media_sanctum.backend.model.DataResponse;
-import com.media_sanctum.backend.model.ErrorResponse;
+import com.media_sanctum.backend.resource.DataResponse;
+import com.media_sanctum.backend.resource.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

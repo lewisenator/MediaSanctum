@@ -1,4 +1,4 @@
-package com.media_sanctum.backend.model;
+package com.media_sanctum.backend.resource;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

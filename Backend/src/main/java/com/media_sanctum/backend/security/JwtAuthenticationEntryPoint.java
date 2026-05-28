@@ -1,8 +1,8 @@
 package com.media_sanctum.backend.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.media_sanctum.backend.model.DataResponse;
-import com.media_sanctum.backend.model.ErrorResponse;
+import com.media_sanctum.backend.resource.DataResponse;
+import com.media_sanctum.backend.resource.ErrorResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,7 +30,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                 .timestamp(Instant.now().toString())
                 .build();
         var dataResponse = DataResponse.error(error);
-        
+
         var errorString = objectMapper.writeValueAsString(dataResponse);
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

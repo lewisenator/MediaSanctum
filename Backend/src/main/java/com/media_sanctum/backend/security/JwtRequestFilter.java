@@ -1,13 +1,12 @@
 package com.media_sanctum.backend.security;
 
-import com.media_sanctum.backend.repository.UserRepository;
+import com.media_sanctum.backend.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.NonNull;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -20,13 +19,11 @@ import java.io.IOException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserDetailsServiceImpl userDetailsService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public JwtRequestFilter(JwtService jwtService, UserDetailsServiceImpl userDetailsService, UserRepository userRepository) {
+    public JwtRequestFilter(JwtService jwtService, UserService userService) {
         this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -39,8 +36,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (StringUtils.isNoneEmpty(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
             var tokenDetails = jwtService.verifyJwtToken(token);
             var userId = tokenDetails.getUserId();
-            var user = userRepository.findById(userId).orElseThrow();
-            var userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+            var user = userService.getUserById(userId).orElseThrow();
+            var userDetails = userService.loadUserByUsername(user.getEmail());
             var authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);

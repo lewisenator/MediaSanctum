@@ -1,4 +1,4 @@
-package com.media_sanctum.backend.model;
+package com.media_sanctum.backend.resource;
 
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
