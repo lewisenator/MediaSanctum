@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -35,8 +36,8 @@ public class DatabaseConfig {
         try {
             Files.createDirectories(Path.of(dbPath));
         } catch (IOException e) {
-            LOG.error("Failed to create db path: {}", dbPath, e);
-            throw new RuntimeException(e);
+            LOG.error("Failed to create db directory: {}", dbPath, e);
+            throw new UncheckedIOException(e);
         }
 
         SQLiteConfig sqliteConfig = new SQLiteConfig();

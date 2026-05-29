@@ -2,6 +2,10 @@ plugins {
     java
     id("org.springframework.boot") version "4.0.6"
     id("io.spring.dependency-management") version "1.1.7"
+    jacoco
+    checkstyle
+    pmd
+    id("com.github.spotbugs") version "6.5.5"
 }
 
 group = "com.media-sanctum"
@@ -36,6 +40,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
 
     compileOnly("org.projectlombok:lombok")
+    compileOnly("com.github.spotbugs:spotbugs-annotations:4.9.8")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-security")
@@ -46,6 +51,116 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+// Packages excluded from coverage measurement — configuration, data classes, and
+// framework-glue that have no meaningful unit-test surface.
+val coverageExclusions = listOf(
+    "**/config/**",
+    "**/entity/**",
+    "**/model/**",
+    "**/resource/**",
+    "**/exception/**",
+    "**/repository/**",
+    "**/*Application*"
+)
+
+// =============================================================================
+// Tests
+// =============================================================================
+
 tasks.withType<Test> {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
 }
+
+// =============================================================================
+// JaCoCo — code coverage
+// =============================================================================
+
+jacoco {
+    toolVersion = "0.8.13"
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = true
+        html.required = true
+    }
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) { exclude(coverageExclusions) }
+        })
+    )
+}
+
+tasks.jacocoTestCoverageVerification {
+    dependsOn(tasks.jacocoTestReport)
+    violationRules {
+        rule {
+            limit {
+                // Build fails if instruction coverage drops below 80%
+                counter = "INSTRUCTION"
+                minimum = "0.80".toBigDecimal()
+            }
+        }
+    }
+    // Apply the same exclusions so excluded packages don't drag coverage down
+    classDirectories.setFrom(tasks.jacocoTestReport.get().classDirectories)
+}
+
+tasks.check {
+    dependsOn(tasks.jacocoTestCoverageVerification)
+}
+
+// =============================================================================
+// Checkstyle — Google Java Style
+// =============================================================================
+
+checkstyle {
+    toolVersion = "10.21.4"
+    configFile = file("${projectDir}/config/checkstyle/checkstyle.xml")
+    isIgnoreFailures = false
+    maxWarnings = 0
+}
+
+// =============================================================================
+// PMD — source-level static analysis
+// =============================================================================
+
+pmd {
+    toolVersion = "7.9.0"
+    isConsoleOutput = true
+    ruleSets = emptyList()
+    ruleSetFiles = files("${projectDir}/config/pmd/ruleset.xml")
+}
+
+// PMD 7.x has a known StackOverflowError when resolving Spring's self-referential
+// generic bounds (e.g. ResponseEntity.BodyBuilder). Clearing the aux classpath
+// disables deep type resolution and works around the crash; source-level rules
+// still run normally.
+tasks.withType<Pmd> {
+    classpath = files()
+}
+
+// =============================================================================
+// SpotBugs — bytecode static analysis
+// =============================================================================
+
+spotbugs {
+    toolVersion = "4.9.8"
+    ignoreFailures = false
+    showProgress = true
+    excludeFilter = file("${projectDir}/config/spotbugs/exclude.xml")
+}
+
+tasks.withType<com.github.spotbugs.snom.SpotBugsTask> {
+    reports.create("html") { required = true }
+    reports.create("xml") { required = false }
+}
+
+// Test sources use underscore-separated method names (BDD style), text blocks with
+// non-standard indentation, and other patterns that don't fit production style rules.
+// Quality of tests is enforced by running them, not by linting them.
+tasks.checkstyleTest { enabled = false }
+tasks.pmdTest { enabled = false }
+tasks.spotbugsTest { enabled = false }

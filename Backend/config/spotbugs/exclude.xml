@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter
+    xmlns="https://github.com/spotbugs/filter/3.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/master/spotbugs/etc/findbugsfilter.xsd">
+
+  <!-- Lombok-generated code routinely exposes internal collections/arrays; these are false positives -->
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+  </Match>
+
+  <!-- Spring Boot beans are intentionally non-serializable singletons -->
+  <Match>
+    <Bug pattern="SE_NO_SERIALVERSIONUID,SE_BAD_FIELD"/>
+    <Class name="~.*\.(config|security|service|controller|repository)\..*"/>
+  </Match>
+
+  <!-- Spring Security config chains use null-returning method patterns by design -->
+  <Match>
+    <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+    <Class name="~.*\.security\.SecurityConfig"/>
+  </Match>
+
+  <!-- JPA entities with Lombok @EqualsAndHashCode intentionally use mutable fields -->
+  <Match>
+    <Bug pattern="HE_EQUALS_USE_HASHCODE"/>
+    <Class name="~.*\.entity\..*"/>
+  </Match>
+
+  <!-- Spring @Value / @Autowired fields appear unread to SpotBugs -->
+  <Match>
+    <Bug pattern="URF_UNREAD_FIELD"/>
+  </Match>
+
+</FindBugsFilter>

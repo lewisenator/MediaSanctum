@@ -8,7 +8,8 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "media-sanctum")
 @Validated
 public record MediaSanctumConfig(
-   @NotBlank String dataDir,
-   @NotBlank String configDir,
-   @NotNull Boolean cookiesSecure
-) {}
+        @NotBlank String dataDir,
+        @NotBlank String configDir,
+        @NotNull Boolean cookiesSecure
+) {
+}

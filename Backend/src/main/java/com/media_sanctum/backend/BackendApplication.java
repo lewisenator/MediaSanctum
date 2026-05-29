@@ -7,14 +7,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties(value  = {
-		MediaSanctumConfig.class,
-		MediaSanctumLogConfig.class,
+@EnableConfigurationProperties(value = {
+        MediaSanctumConfig.class,
+        MediaSanctumLogConfig.class,
 })
 public class BackendApplication {
 
-	// Keep "public" for Spring Boot Gradle plugin
-	public static void main(String[] args) {
-		SpringApplication.run(BackendApplication.class, args);
-	}
+    // Keep "public" for Spring Boot Gradle plugin
+    public static void main(String[] args) {
+        SpringApplication.run(BackendApplication.class, args);
+    }
 }

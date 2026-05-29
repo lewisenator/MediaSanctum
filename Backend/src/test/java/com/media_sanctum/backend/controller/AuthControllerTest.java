@@ -161,7 +161,7 @@ class AuthControllerTest extends BaseControllerTest {
         var refreshTokenCookieName = refreshTokenCookie.split("=")[0];
         var refreshTokenCookieValue = refreshTokenCookie.split("=")[1];
 
-        // -----------------------------------------------
+        // Perform actual refresh
 
         var response = restClient.post()
                 .uri("/api/auth/refresh")

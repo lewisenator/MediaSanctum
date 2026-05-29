@@ -8,4 +8,5 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public record MediaSanctumLogConfig(
         @NotBlank String path
-) {}
+) {
+}

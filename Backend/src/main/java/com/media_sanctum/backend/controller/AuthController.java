@@ -17,7 +17,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -47,7 +51,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<DataResponse<AuthResponse>> login(@RequestBody LoginRequest loginRequest) {
-        var authentication = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+        var authentication = new UsernamePasswordAuthenticationToken(
+                loginRequest.getEmail(), loginRequest.getPassword());
 
         authenticationManager.authenticate(authentication);
 
@@ -59,7 +64,8 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<DataResponse<AuthResponse>> refresh(@CookieValue(name = REFRESH_COOKIE_NAME) String refreshToken) {
+    public ResponseEntity<DataResponse<AuthResponse>> refresh(
+            @CookieValue(name = REFRESH_COOKIE_NAME) String refreshToken) {
         var tokenPayload = jwtService.verifyJwtToken(refreshToken);
 
         var user = userService.getUserById(tokenPayload.getUserId()).orElseThrow();
@@ -69,7 +75,8 @@ public class AuthController {
         return buildAuthResponseEntity(user, authorities);
     }
 
-    private @NonNull ResponseEntity<DataResponse<AuthResponse>> buildAuthResponseEntity(UserModel user, List<@Nullable String> authorities) {
+    private @NonNull ResponseEntity<DataResponse<AuthResponse>> buildAuthResponseEntity(
+            UserModel user, List<@Nullable String> authorities) {
         var accessToken = jwtService.generateAccessToken(user.getId());
         var refreshToken = jwtService.generateRefreshToken(user.getId());
 

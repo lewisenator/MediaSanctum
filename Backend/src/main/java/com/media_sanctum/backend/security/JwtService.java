@@ -2,7 +2,13 @@ package com.media_sanctum.backend.security;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.*;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import lombok.AllArgsConstructor;
@@ -66,7 +72,7 @@ public class JwtService {
             var jwsObject = new JWSObject(header, payload);
             jwsObject.sign(jwsSigner);
             return jwsObject.serialize();
-        } catch (JOSEException|JsonProcessingException e) {
+        } catch (JOSEException | JsonProcessingException e) {
             var message = String.format("Failed to generate JWT Token. %s", e.getMessage());
             log.error(message, e);
             throw new InternalAuthenticationServiceException(message, e);
@@ -76,9 +82,8 @@ public class JwtService {
     public TokenPayload verifyJwtToken(String token) throws AuthenticationException {
         try {
             var jwsObject = JWSObject.parse(token);
-            var valid = jwsObject.verify(jwsVerifier);
-            if (!valid) {
-                throw new JOSEException("Invalid token");
+            if (!jwsObject.verify(jwsVerifier)) {
+                throw new BadCredentialsException("Invalid token");
             }
 
             var stringPayload = jwsObject.getPayload().toString();
@@ -89,7 +94,7 @@ public class JwtService {
                 throw new BadCredentialsException(message);
             }
             return tokenPayload;
-        } catch (JOSEException|JsonProcessingException|ParseException e) {
+        } catch (JOSEException | JsonProcessingException | ParseException e) {
             var message = String.format("Failed to validate JWT Token. %s", e.getMessage());
             log.error(message, e);
             throw new BadCredentialsException(message, e);
