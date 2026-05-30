@@ -1,6 +1,7 @@
 package com.media_sanctum.backend.controller;
 
 import com.media_sanctum.backend.config.MediaSanctumConfig;
+import com.media_sanctum.backend.config.MediaSanctumJwtConfig;
 import com.media_sanctum.backend.model.UserModel;
 import com.media_sanctum.backend.resource.AuthResponse;
 import com.media_sanctum.backend.resource.DataResponse;
@@ -35,18 +36,21 @@ public class AuthController {
     private final UserService userService;
     private final JwtService jwtService;
     private final MediaSanctumConfig mediaSanctumConfig;
+    private final MediaSanctumJwtConfig jwtConfig;
 
     @Autowired
     public AuthController(
             AuthenticationManager authenticationManager,
             UserService userService,
             JwtService jwtService,
-            MediaSanctumConfig mediaSanctumConfig
+            MediaSanctumConfig mediaSanctumConfig,
+            MediaSanctumJwtConfig jwtConfig
     ) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.jwtService = jwtService;
         this.mediaSanctumConfig = mediaSanctumConfig;
+        this.jwtConfig = jwtConfig;
     }
 
     @PostMapping("/login")
@@ -69,7 +73,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(mediaSanctumConfig.cookiesSecure())
                 .path("/api/auth")
-                .maxAge(JwtService.REFRESH_TOKEN_TTL)
+                .maxAge(jwtConfig.refreshExp().getDuration())
                 .build();
 
         return ResponseEntity.ok()
@@ -98,7 +102,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(mediaSanctumConfig.cookiesSecure())
                 .path("/api/auth")
-                .maxAge(JwtService.REFRESH_TOKEN_TTL)
+                .maxAge(jwtConfig.refreshExp().getDuration())
                 .build();
 
         var userResponse = UserResponse.builder()

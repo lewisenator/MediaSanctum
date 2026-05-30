@@ -2,6 +2,7 @@ package com.media_sanctum.backend.security;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.media_sanctum.backend.config.MediaSanctumJwtConfig;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -16,7 +17,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -30,20 +30,18 @@ import java.time.Instant;
 @Service
 public class JwtService {
 
-    public static final Duration ACCESS_TOKEN_TTL = Duration.ofHours(1);
-    public static final Duration REFRESH_TOKEN_TTL = Duration.ofDays(30);
-
+    private final MediaSanctumJwtConfig jwtConfig;
     private final JWSSigner jwsSigner;
     private final JWSVerifier jwsVerifier;
     private final ObjectMapper objectMapper;
 
     public JwtService(
-            // Must be 256 bits / 32 bytes
-            @Value("${JWT_SECRET}") String jwtSecret,
+            MediaSanctumJwtConfig jwtConfig,
             ObjectMapper objectMapper
     ) throws JOSEException {
-        this.jwsSigner = new MACSigner(jwtSecret);
-        this.jwsVerifier = new MACVerifier(jwtSecret);
+        this.jwtConfig = jwtConfig;
+        this.jwsSigner = new MACSigner(jwtConfig.secret());
+        this.jwsVerifier = new MACVerifier(jwtConfig.secret());
         this.objectMapper = objectMapper;
     }
 
@@ -52,7 +50,7 @@ public class JwtService {
                 .tokenType(TokenType.ACCESS)
                 .userId(userId)
                 .build();
-        return generateJwtToken(tokenPayload, ACCESS_TOKEN_TTL);
+        return generateJwtToken(tokenPayload, jwtConfig.accessExp().getDuration());
     }
 
     public String generateRefreshToken(String userId) {
@@ -60,7 +58,7 @@ public class JwtService {
                 .tokenType(TokenType.REFRESH)
                 .userId(userId)
                 .build();
-        return generateJwtToken(tokenPayload, REFRESH_TOKEN_TTL);
+        return generateJwtToken(tokenPayload, jwtConfig.refreshExp().getDuration());
     }
 
     protected String generateJwtToken(TokenPayload tokenPayload, Duration ttl) throws AuthenticationException {

@@ -33,6 +33,7 @@ dependencies {
     implementation("com.nimbusds:nimbus-jose-jwt:10.9")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.apache.commons:commons-lang3:3.20.0")
+    implementation("io.github.resilience4j:resilience4j-spring-boot4:2.4.0")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
@@ -68,6 +69,17 @@ val coverageExclusions = listOf(
 // =============================================================================
 
 tasks.withType<Test> {
+    val envFile = file("${projectDir}/.env")
+    if (envFile.exists()) {
+        envFile.forEachLine { line ->
+            if (line.isNotBlank() && !line.startsWith("#")) {
+                val idx = line.indexOf('=')
+                if (idx > 0) {
+                    environment(line.substring(0, idx).trim(), line.substring(idx + 1).trim())
+                }
+            }
+        }
+    }
     useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport)
 }
@@ -128,7 +140,7 @@ checkstyle {
 // =============================================================================
 
 pmd {
-    toolVersion = "7.9.0"
+    toolVersion = "7.25.0"
     isConsoleOutput = true
     ruleSets = emptyList()
     ruleSetFiles = files("${projectDir}/config/pmd/ruleset.xml")

@@ -9,8 +9,6 @@
   <!-- Best practices -->
   <rule ref="category/java/bestpractices.xml">
     <exclude name="GuardLogStatement"/>              <!-- Slf4j/Lombok @Slf4j handles this -->
-    <exclude name="JUnitTestContainsTooManyAsserts"/> <!-- Fine in integration tests -->
-    <exclude name="JUnitAssertionsShouldIncludeMessage"/> <!-- AssertJ messages are optional -->
     <exclude name="UnusedPrivateMethod"/>             <!-- JPA @PrePersist / @PreUpdate appear unused -->
   </rule>
 
@@ -35,6 +33,7 @@
     <exclude name="LoosePackageCoupling"/>
     <exclude name="DataClass"/>                      <!-- DTOs / resource classes are intentional data classes -->
     <exclude name="TooManyMethods"/>                 <!-- Controllers naturally have many endpoints -->
+    <exclude name="TooManyFields"/>                  <!-- External API model classes require all fields -->
     <exclude name="ExcessiveImports"/>               <!-- Spring Boot services often have many deps -->
     <exclude name="CouplingBetweenObjects"/>
     <exclude name="UseUtilityClass"/>                <!-- Spring Boot main class must have a public constructor -->

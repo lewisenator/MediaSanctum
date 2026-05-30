@@ -17,9 +17,28 @@ media-sanctum:
   config-dir: ${CONFIG}
   data-dir: ${DATA}
   cookies-secure: true
+  jwt:
+    secret: ${JWT_SECRET}
+    access-exp:
+      time-unit: HOURS
+      value: 1
+    refresh-exp:
+      time-unit: DAYS
+      value: 30
   log:
     path: ${CONFIG}/logs/media-sanctum.jsonl
   db:
     pool-size: 5
     connection-timeout-ms: 30_000
     busy-timeout-ms: 30_000
+  hardcover:
+    api-key: ${HARDCOVER_API_KEY}
+    endpoint: https://api.hardcover.app/v1/graphql
+
+resilience4j:
+  ratelimiter:
+    instances:
+      hardcover:
+        limit-for-period: 1
+        limit-refresh-period: 1s
+        timeout-duration: 1s

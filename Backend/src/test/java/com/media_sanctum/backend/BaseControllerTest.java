@@ -9,6 +9,7 @@ import com.media_sanctum.backend.security.AdminUserBootstrapService;
 import com.media_sanctum.backend.service.UserService;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
+import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import org.springframework.web.client.RestClient;
 
 
 import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -32,7 +37,7 @@ import java.util.UUID;
 				"ADMIN_PASSWORD=password",
 				"JWT_SECRET=VUVnC7FxCBjGVgRrZdfLXD3GQjg/lkpptSAoQwibqGY=",
 				"SPRING_PROFILES_ACTIVE=local",
-				"spring.flyway.enabled=false"
+				"spring.flyway.enabled=false",
 		})
 @Import(FlywayTestConfig.class)
 public abstract class BaseControllerTest {
@@ -47,6 +52,12 @@ public abstract class BaseControllerTest {
 	protected UserService userService;
 
 	protected RestClient restClient;
+
+	protected String getAccessToken() {
+		var authResponse = login();
+		assertThat(authResponse).isNotNull();
+		return authResponse.getAccessToken();
+	}
 
 	@BeforeEach
 	public void setup() {

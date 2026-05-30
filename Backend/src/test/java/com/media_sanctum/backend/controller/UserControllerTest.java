@@ -17,13 +17,9 @@ class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void getUser_ok() throws Exception {
-        var authResponse = login();
-        assertThat(authResponse).isNotNull();
-        var accessToken = authResponse.getAccessToken();
-
         var response = restClient.get()
                 .uri("/api/users")
-                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization", "Bearer " + getAccessToken())
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
                 .toEntity(String.class);

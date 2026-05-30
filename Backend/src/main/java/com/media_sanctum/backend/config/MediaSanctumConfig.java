@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 public record MediaSanctumConfig(
         @NotBlank String dataDir,
         @NotBlank String configDir,
-        @NotNull Boolean cookiesSecure
+        @NotNull Boolean cookiesSecure,
+        @NotNull MediaSanctumJwtConfig jwt
 ) {
 }
