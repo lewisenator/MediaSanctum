@@ -5,7 +5,7 @@ export const Route = createFileRoute('/(unauthenticated)/login')({
   component: LoginPage,
 })
 
-function LoginPage() {
+export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -20,6 +20,7 @@ function LoginPage() {
             Email
           </label>
           <input
+            id="email"
             type='email'
             className='bg-surface font-ui border border-border text-ui w-full rounded-md px-3 py-2 transition-colors focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent'
             value={email}
@@ -35,11 +36,12 @@ function LoginPage() {
             Password
           </label>
           <input
+            id="password"
             type='password'
             className='bg-surface font-ui border border-border text-ui w-full rounded-md px-3 py-2 transition-colors focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            autoComplete="password"
+            autoComplete="current-password"
           />
         </div>
         <button

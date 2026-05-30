@@ -3,7 +3,7 @@ import Logo from '#/components/Logo.tsx';
 
 const AuthLayout = () => {
   return (
-    <div className="flex items-center justify-center p-4 min-h-screen">
+    <div id="auth-layout" className="flex items-center justify-center p-4 min-h-screen">
       <div className="w-full max-w-sm">
         <div className='mb-8 flex flex-col items-center text-center'>
           <Logo size={14} />
