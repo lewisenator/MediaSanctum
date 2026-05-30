@@ -6,9 +6,9 @@ import { login } from '#/client/mediaSanctumClient.ts';
 
 export const Route = createFileRoute('/(unauthenticated)/login')({
   component: LoginPage,
-})
+});
 
-export function LoginPage() {
+function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -39,7 +39,8 @@ export function LoginPage() {
     try {
       await mutateAsync();
     } catch (err: any) {
-      console.error(err?.message || 'Failed to submit login form');
+      const message = err?.message || 'Failed to submit login form';
+      setError(message);
     }
   };
 

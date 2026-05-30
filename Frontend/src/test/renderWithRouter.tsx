@@ -17,12 +17,16 @@ export async function renderWithRouter(ui: React.ReactElement, initialPath = '/'
     },
   });
 
-  const rootRoute = createRootRoute();
+  const rootRoute = createRootRoute({
+    notFoundComponent: () => (
+      <>Not Found</>
+    )
+  });
 
   const testRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: initialPath,
-    component: () => ui,
+    component: () => ui
   });
 
   const routeTree = rootRoute.addChildren([testRoute]);

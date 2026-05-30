@@ -11,7 +11,7 @@ const config = defineConfig({
   plugins: [
     devtools(),
     tailwindcss(),
-    tanstackRouter({ target: 'react', autoCodeSplitting: true }),
+    tanstackRouter({ target: 'react', autoCodeSplitting: true, routeFileIgnorePattern: '\\.(test|spec)\\.[jt]sx?$' }),
     viteReact(),
   ],
   server: {

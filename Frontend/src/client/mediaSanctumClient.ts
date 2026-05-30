@@ -36,31 +36,22 @@ export const login = async (
 ): Promise<AuthResponse> => {
     try {
         const res: AxiosResponse<DataResponse<AuthResponse>> = await api.post('/auth/login', credentials);
-        const authResponse = res?.data?.data;
-        if (!authResponse) {
-            throw new Error("Did not receive auth response");
-        }
-        return authResponse;
+        return res.data.data!;
     } catch (err: any) {
-        console.log(err.response);
-        const message = err?.response?.data?.message || 'Failed to login';
-        console.error(message);
-        throw new Error(message);
+        const { status, statusText, data } = err.response;
+        console.log(`Received a ${status} - ${statusText} - `, JSON.stringify(data));
+        throw new Error(data?.error?.message || 'Login failed');
     }
 };
 
 export const refresh = async (): Promise<AuthResponse> => {
     try {
         const res: AxiosResponse<DataResponse<AuthResponse>> = await api.post('/auth/refresh');
-        const authResponse = res?.data?.data;
-        if (!authResponse) {
-            throw new Error("Did not receive auth response");
-        }
-        return authResponse;
+        return res.data.data!;
     } catch (err: any) {
-        const message = err?.response?.data?.error?.message || 'Failed to refresh access token';
-        console.error(message);
-        throw new Error(message);
+        const { status, statusText, data } = err.response;
+        console.log(`Received a ${status} - ${statusText} - `, JSON.stringify(data));
+        throw new Error(data?.error?.message || 'Refresh failed');
     }
 }
 
@@ -68,8 +59,8 @@ export const logout = async (): Promise<void> => {
     try {
         await api.post('/auth/logout');
     } catch (err: any) {
-        const message = err?.response?.data?.message || 'Failed to logout';
-        console.error(message);
-        throw new Error(message);
+        const { status, statusText, data } = err.response;
+        console.log(`Received a ${status} - ${statusText} - `, JSON.stringify(data));
+        throw new Error(data?.error?.message || 'Logout failed');
     }
 }

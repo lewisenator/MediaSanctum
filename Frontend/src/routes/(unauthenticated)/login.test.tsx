@@ -2,9 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { LoginPage } from './login';
+import { Route } from './login';
 import { renderWithRouter } from '#/test/renderWithRouter.tsx';
 import { login } from '#/client/mediaSanctumClient.ts';
+
+const LoginPage = Route.options.component!;
 
 const mockSetAccessToken = vi.fn();
 const mockSetUser = vi.fn();
