@@ -8,7 +8,6 @@ import com.media_sanctum.backend.resource.LoginRequest;
 import com.media_sanctum.backend.resource.UserResponse;
 import com.media_sanctum.backend.security.JwtService;
 import com.media_sanctum.backend.service.UserService;
-import jakarta.servlet.http.HttpServletResponse;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
