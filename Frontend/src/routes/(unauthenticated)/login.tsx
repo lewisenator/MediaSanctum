@@ -1,5 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
+import { useAuth } from '#/context/AuthContext.tsx';
+import { useMutation } from '@tanstack/react-query';
+import { login } from '#/client/mediaSanctumClient.ts';
 
 export const Route = createFileRoute('/(unauthenticated)/login')({
   component: LoginPage,
@@ -8,10 +11,46 @@ export const Route = createFileRoute('/(unauthenticated)/login')({
 export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const navigate = useNavigate();
+  const { setAccessToken, setUser } = useAuth();
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: () => login({email, password}),
+    onSuccess: (data) => {
+      setAccessToken(data.accessToken);
+      setUser(data.user);
+      navigate({
+        to: '/books'
+      });
+    },
+    onError: (error) => {
+      setError(error.message);
+    }
+  });
+
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
+    }
+    try {
+      await mutateAsync();
+    } catch (err: any) {
+      console.error(err?.message || 'Failed to submit login form');
+    }
+  };
 
   return (
     <>
-      <form className='space-y-4'>
+      <form className='space-y-4' onSubmit={handleSubmit}>
+        { error && (
+          <div className="bg-surfaceAlt text-danger px-4 py-2 rounded mb-4">
+            { error }
+          </div>
+        )}
         <div>
           <label
             className='mb-1.5 block text-sm font-medium text-textDim font-sans'
@@ -48,7 +87,7 @@ export function LoginPage() {
           type='submit'
           className='w-full! text-center justify-center inline-flex mt-3 items-center gap-1.5 rounded-sm px-4 py-2.5! text-sm transition-colors bg-accent text-surface font-ui font-medium border border-accent hover:brightness-[1.08] active:brightness-[0.92]]'
         >
-          Sign In
+          { isPending ? 'Signing in...' : 'Sign In' }
         </button>
       </form>
     </>

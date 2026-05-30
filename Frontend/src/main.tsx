@@ -4,6 +4,7 @@ import { StrictMode } from "react";
 import { QueryClientProvider } from '@tanstack/react-query';
 import { getRouter, queryClient } from './router';
 import { ThemeProvider } from '#/context/ThemeContext.tsx';
+import { AuthProvider } from '#/context/AuthContext.tsx';
 
 const router = getRouter();
 
@@ -14,9 +15,11 @@ if (!rootElement.innerHTML) {
   root.render(
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <StrictMode>
-          <RouterProvider router={router} />
-        </StrictMode>
+        <AuthProvider>
+          <StrictMode>
+            <RouterProvider router={router} />
+          </StrictMode>
+        </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
   )

@@ -1,9 +1,11 @@
 import React from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import Logo from '#/components/Logo.tsx';
 import { IoBookOutline } from "react-icons/io5";
 import { PiListLight, PiSignOutLight } from "react-icons/pi";
 import { IoPersonOutline } from "react-icons/io5";
+import { logout } from '#/client/mediaSanctumClient.ts';
+import { useAuth } from '#/context/AuthContext.tsx';
 
 
 const styles = {
@@ -11,6 +13,8 @@ const styles = {
 };
 
 const LeftHandMenu = () => {
+  const navigate = useNavigate();
+  const { setUser, setAccessToken } = useAuth();
 
   const menuItems: {
     name: string;
@@ -21,6 +25,19 @@ const LeftHandMenu = () => {
     {name: 'Series', route: '/series', icon: <PiListLight />},
     {name: 'Authors', route: '/authors', icon: <IoPersonOutline />},
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setAccessToken(null);
+      setUser(null);
+      navigate({
+        to: '/login'
+      });
+    } catch (err) {
+      console.error("Logout failed: ", err);
+    }
+  };
 
   return (
     <aside className="bg-sidebar text-sidebarText flex flex-col w-16 md:w-64 shadow-[4px_0_6px_-2px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out">
@@ -46,12 +63,11 @@ const LeftHandMenu = () => {
       </nav>
 
       <div className='py-4 px-3 space-y-1 overflow-y-auto'>
-        <Link to='/' className={styles.linkClass}>
+        <button onClick={handleLogout} className={`${styles.linkClass} w-full`}>
           <span className='shrink-0 opacity-50'><PiSignOutLight /></span>
           <span className='pl-1 font-sans opacity-0 md:opacity-50'>Sign Out</span>
-        </Link>
+        </button>
       </div>
-
     </aside>
   );
 };

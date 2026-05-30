@@ -6,12 +6,14 @@ import com.media_sanctum.backend.model.UserModel;
 import com.media_sanctum.backend.resource.LoginRequest;
 import com.media_sanctum.backend.service.UserService;
 import com.media_sanctum.backend.utils.json.JsonAssertionBuilder;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;
 
@@ -39,39 +41,9 @@ class AuthControllerTest extends BaseControllerTest {
 
     @Test
     public void login_ok() {
-        var loginRequest = LoginRequest.builder()
-                .email(email)
-                .password(password)
-                .build();
-
-        var response = restClient.post()
-                .uri("/api/auth/login")
-                .body(loginRequest)
-                .retrieve()
-                .toEntity(String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(response.getHeaders().headerNames()).contains("set-cookie");
-
-        var expectedRespnse = String.format("""
-            {
-                "data": {
-                    "user": {
-                        "email": "%s",
-                        "lastName": "User",
-                        "firstName": "Test",
-                        "authorities": []
-                    },
-                    "accessToken": "{{ANY-STRING}}"
-                },
-                "error": null
-            }
-        """.formatted(email));
-
-        JsonAssertionBuilder.assertThatJson(response.getBody())
-                .matchesContract(expectedRespnse);
+        loginExpectingSuccess();
     }
+
 
     @Test
     public void login_badPassword() {
@@ -141,31 +113,13 @@ class AuthControllerTest extends BaseControllerTest {
 
     @Test
     public void refresh_ok() throws Exception {
-        var loginRequest = LoginRequest.builder()
-                .email(email)
-                .password(password)
-                .build();
-
-        var loginResponse = restClient.post()
-                .uri("/api/auth/login")
-                .body(loginRequest)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
-                .toEntity(String.class);
-
-        var setCookieHheaders = loginResponse.getHeaders().get("set-cookie");
-
-        assertThat(setCookieHheaders).hasSize(1);
-
-        var refreshTokenCookie = setCookieHheaders.get(0);
-        var refreshTokenCookieName = refreshTokenCookie.split("=")[0];
-        var refreshTokenCookieValue = refreshTokenCookie.split("=")[1];
+        var loginResponse = loginExpectingSuccess();
+        var cookie = getRefreshTokenCookie(loginResponse);
 
         // Perform actual refresh
-
         var response = restClient.post()
                 .uri("/api/auth/refresh")
-                .cookie(refreshTokenCookieName, refreshTokenCookieValue)
+                .cookie(cookie.getKey(), cookie.getValue())
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
                 .toEntity(String.class);
@@ -194,10 +148,125 @@ class AuthControllerTest extends BaseControllerTest {
     }
 
     @Test
-    public void refresh_badCookie() throws Exception {
+    public void refresh_badCookie() {
+        refreshExpectingBadTokenError("bad-cookie");
+    }
+
+    @Test
+    public void logout_ok() throws Exception {
+        // login
+        var loginResponse = loginExpectingSuccess();
+        var cookie = getRefreshTokenCookie(loginResponse);
+
+        // Refresh (expecting success)
+        var refreshResponse = restClient.post()
+                .uri("/api/auth/refresh")
+                .cookie(cookie.getKey(), cookie.getValue())
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .toEntity(String.class);
+
+        assertThat(refreshResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(refreshResponse.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+        assertThat(refreshResponse.getHeaders().headerNames()).contains("set-cookie");
+
+        var expectedRespnse = String.format("""
+            {
+                "data": {
+                    "user": {
+                        "email": "%s",
+                        "lastName": "User",
+                        "firstName": "Test",
+                        "authorities": []
+                    },
+                    "accessToken": "{{ANY-STRING}}"
+                },
+                "error": null
+            }
+        """.formatted(email));
+
+        JsonAssertionBuilder.assertThatJson(refreshResponse.getBody())
+                .matchesContract(expectedRespnse);
+
+        cookie = getRefreshTokenCookie(refreshResponse);
+
+        // logout
+        var logoutResponse = restClient.post()
+                .uri("/api/auth/logout")
+                .cookie(cookie.getKey(), cookie.getValue())
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .toEntity(String.class);
+
+        assertThat(logoutResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(logoutResponse.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+        assertThat(logoutResponse.getHeaders().headerNames()).contains("set-cookie");
+
+        expectedRespnse = """
+            {
+                "data": "You have been logged out",
+                "error": null
+            }
+        """;
+
+        JsonAssertionBuilder.assertThatJson(logoutResponse.getBody())
+                .matchesContract(expectedRespnse);
+
+        cookie = getRefreshTokenCookie(logoutResponse);
+
+        refreshExpectingBadTokenError(cookie.getValue());
+    }
+
+    private <T> Pair<String, String> getRefreshTokenCookie(ResponseEntity<T> response) throws Exception {
+        var setCookieHheaders = response.getHeaders().get("set-cookie");
+        assertThat(setCookieHheaders).hasSize(1);
+        var refreshTokenCookie = setCookieHheaders.getFirst();
+        var cookieName = refreshTokenCookie.split("=")[0];
+        var cookieValue = refreshTokenCookie.split("=")[1];
+        return Pair.of(cookieName, cookieValue);
+    }
+
+    private ResponseEntity<String> loginExpectingSuccess() {
+        var loginRequest = LoginRequest.builder()
+                .email(email)
+                .password(password)
+                .build();
+
+        var response = restClient.post()
+                .uri("/api/auth/login")
+                .body(loginRequest)
+                .retrieve()
+                .toEntity(String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+        assertThat(response.getHeaders().headerNames()).contains("set-cookie");
+
+        var expectedRespnse = String.format("""
+            {
+                "data": {
+                    "user": {
+                        "email": "%s",
+                        "lastName": "User",
+                        "firstName": "Test",
+                        "authorities": []
+                    },
+                    "accessToken": "{{ANY-STRING}}"
+                },
+                "error": null
+            }
+        """.formatted(email));
+
+        JsonAssertionBuilder.assertThatJson(response.getBody())
+                .matchesContract(expectedRespnse);
+
+        return response;
+    }
+
+    private void refreshExpectingBadTokenError(String badCookie) {
         var response = restClient.post()
                 .uri("/api/auth/refresh")
-                .cookie("refresh-token", "bad")
+                .cookie("refresh-token", badCookie)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
                 .toEntity(String.class);
