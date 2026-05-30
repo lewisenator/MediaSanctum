@@ -11,6 +11,21 @@ plugins {
 group = "com.media-sanctum"
 version = "0.0.1-SNAPSHOT"
 
+// Override versions of Spring Boot BOM-managed dependencies
+extra["tomcat.version"] = "11.0.22"
+
+// Force patched versions of vulnerable transitive dependencies
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "commons-beanutils" && requested.name == "commons-beanutils") {
+            useVersion("1.11.0")
+        }
+        if (requested.group == "org.codehaus.plexus" && requested.name == "plexus-utils") {
+            useVersion("3.6.1")
+        }
+    }
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
