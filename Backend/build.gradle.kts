@@ -61,7 +61,8 @@ val coverageExclusions = listOf(
     "**/resource/**",
     "**/exception/**",
     "**/repository/**",
-    "**/*Application*"
+    "**/*Application*",
+    "**/client/*/model/**",
 )
 
 // =============================================================================
