@@ -22,4 +22,6 @@ public class BookResponse {
     private String createdAt;
     private String updatedAt;
     private AuthorResponse author;
+    private EditionResponse ebookEdition;
+    private EditionResponse audiobookEdition;
 }

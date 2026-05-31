@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -23,8 +22,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "books")
-public class Book {
+@Table(name = "editions")
+public class Edition {
 
     @Id
     @Column(name = "id", nullable = false, updatable = false)
@@ -33,52 +32,33 @@ public class Book {
     @Column(name = "hardcover_id")
     private Integer hardcoverId;
 
-    @Column(name = "headline")
-    private String headline;
+    @Column(name = "asin")
+    private String asin;
 
-    @Column(name = "title", nullable = false)
-    private String title;
+    @Column(name = "isbn10")
+    private String isbn10;
 
-    @Column(name = "slug")
-    private String slug;
+    @Column(name = "isbn13")
+    private String isbn13;
 
-    @Column(name = "subtitle")
-    private String subtitle;
+    @Column(name = "language")
+    private String language;
 
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "release_year")
-    private Integer releaseYear;
-
-    @Column(name = "pages")
-    private Integer pages;
-
-    @Column(name = "audio_seconds")
-    private Integer audioSeconds;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "author_id")
-    private Author author;
+    @Column(name = "country")
+    private String country;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ebook_edition_id")
-    private Edition ebookEdition;
+    @JoinColumn(name = "image_id")
+    private Image image;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "audiobook_edition_id")
-    private Edition audiobookEdition;
+    @Column(name = "edition_type")
+    private EditionType editionType;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    public void setAuthor(Author author) {
-        this.author = author;
-        author.addBook(this);
-    }
 
     @PrePersist
     private void prePersist() {

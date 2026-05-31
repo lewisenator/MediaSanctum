@@ -10,8 +10,12 @@ CREATE TABLE books (
     release_year     INTEGER,
     pages            INTEGER,
     audio_seconds    INTEGER,
+    ebook_edition_id INTEGER,
+    audiobook_edition_id INTEGER,
     created_at       TEXT NOT NULL,
     updated_at       TEXT NOT NULL,
     CONSTRAINT uq_books_hardcover_id UNIQUE (hardcover_id),
-    CONSTRAINT fk_books_author_id FOREIGN KEY (author_id) REFERENCES authors(id)
+    CONSTRAINT fk_books_author_id FOREIGN KEY (author_id) REFERENCES authors(id),
+    CONSTRAINT fk_books_ebook_edition_id FOREIGN KEY (ebook_edition_id) REFERENCES editions(id),
+    CONSTRAINT fk_books_audiobook_edition_id FOREIGN KEY (audiobook_edition_id) REFERENCES editions(id)
 );

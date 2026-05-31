@@ -66,6 +66,9 @@ function BooksPage() {
           { books.map((book) => (
             <div key={book.id}>
               <div>{book.title}</div>
+              {book.ebookEdition && book.ebookEdition.image && (
+                <img src={book.ebookEdition.image.url} alt={`${book.title} Cover`} className="object-cover h-40 max-w-30" />
+              )}
               <div>{JSON.stringify(book)}</div>
             </div>
           ))}

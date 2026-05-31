@@ -97,6 +97,17 @@ export const addBook = async (hardcoverId: string): Promise<void> => {
     }
 }
 
+export type Edition = {
+    id: string;
+    asin: string;
+    isbn10: string;
+    isbn20: string;
+    language: string;
+    country: string;
+    editionType: string;
+    image?: Image;
+}
+
 export type Book = {
     id: string;
     hardcoverId: string;
@@ -110,6 +121,8 @@ export type Book = {
     audioSeconds: number;
     createdAt: string;
     updatedAt: string;
+    ebookEdition?: Edition;
+    audiobookEdition?: Edition;
 };
 
 export const getBooks = async (): Promise<Array<Book>> => {

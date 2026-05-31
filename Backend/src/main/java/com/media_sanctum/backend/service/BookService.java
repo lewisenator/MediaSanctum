@@ -35,7 +35,7 @@ public class BookService {
     }
 
     public Book getBook(String id) {
-        return bookRepository.findById(id).orElseThrow();
+        return bookRepository.findById(id).orElse(null);
     }
 
     public Book saveBook(Book book) {
@@ -56,6 +56,8 @@ public class BookService {
                 .createdAt(book.getCreatedAt().toString())
                 .updatedAt(book.getUpdatedAt().toString())
                 .author(AuthorService.toResponse(book.getAuthor()))
+                .ebookEdition(EditionService.toResponse(book.getEbookEdition()))
+                .audiobookEdition(EditionService.toResponse(book.getAudiobookEdition()))
                 .build();
     }
 }
