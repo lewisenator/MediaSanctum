@@ -17,6 +17,8 @@ import { Route as authenticatedStatusIndexRouteImport } from './routes/(authenti
 import { Route as authenticatedSeriesIndexRouteImport } from './routes/(authenticated)/series/index'
 import { Route as authenticatedBooksIndexRouteImport } from './routes/(authenticated)/books/index'
 import { Route as authenticatedAuthorsIndexRouteImport } from './routes/(authenticated)/authors/index'
+import { Route as authenticatedBooksSearchRouteImport } from './routes/(authenticated)/books/search'
+import { Route as authenticatedAuthorsSearchRouteImport } from './routes/(authenticated)/authors/search'
 
 const unauthenticatedRouteRoute = unauthenticatedRouteRouteImport.update({
   id: '/(unauthenticated)',
@@ -59,10 +61,24 @@ const authenticatedAuthorsIndexRoute =
     path: '/authors/',
     getParentRoute: () => authenticatedRouteRoute,
   } as any)
+const authenticatedBooksSearchRoute =
+  authenticatedBooksSearchRouteImport.update({
+    id: '/books/search',
+    path: '/books/search',
+    getParentRoute: () => authenticatedRouteRoute,
+  } as any)
+const authenticatedAuthorsSearchRoute =
+  authenticatedAuthorsSearchRouteImport.update({
+    id: '/authors/search',
+    path: '/authors/search',
+    getParentRoute: () => authenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof unauthenticatedLoginRoute
+  '/authors/search': typeof authenticatedAuthorsSearchRoute
+  '/books/search': typeof authenticatedBooksSearchRoute
   '/authors/': typeof authenticatedAuthorsIndexRoute
   '/books/': typeof authenticatedBooksIndexRoute
   '/series/': typeof authenticatedSeriesIndexRoute
@@ -71,6 +87,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof unauthenticatedLoginRoute
+  '/authors/search': typeof authenticatedAuthorsSearchRoute
+  '/books/search': typeof authenticatedBooksSearchRoute
   '/authors': typeof authenticatedAuthorsIndexRoute
   '/books': typeof authenticatedBooksIndexRoute
   '/series': typeof authenticatedSeriesIndexRoute
@@ -82,6 +100,8 @@ export interface FileRoutesById {
   '/(authenticated)': typeof authenticatedRouteRouteWithChildren
   '/(unauthenticated)': typeof unauthenticatedRouteRouteWithChildren
   '/(unauthenticated)/login': typeof unauthenticatedLoginRoute
+  '/(authenticated)/authors/search': typeof authenticatedAuthorsSearchRoute
+  '/(authenticated)/books/search': typeof authenticatedBooksSearchRoute
   '/(authenticated)/authors/': typeof authenticatedAuthorsIndexRoute
   '/(authenticated)/books/': typeof authenticatedBooksIndexRoute
   '/(authenticated)/series/': typeof authenticatedSeriesIndexRoute
@@ -89,15 +109,33 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/authors/' | '/books/' | '/series/' | '/status/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/authors/search'
+    | '/books/search'
+    | '/authors/'
+    | '/books/'
+    | '/series/'
+    | '/status/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/authors' | '/books' | '/series' | '/status'
+  to:
+    | '/'
+    | '/login'
+    | '/authors/search'
+    | '/books/search'
+    | '/authors'
+    | '/books'
+    | '/series'
+    | '/status'
   id:
     | '__root__'
     | '/'
     | '/(authenticated)'
     | '/(unauthenticated)'
     | '/(unauthenticated)/login'
+    | '/(authenticated)/authors/search'
+    | '/(authenticated)/books/search'
     | '/(authenticated)/authors/'
     | '/(authenticated)/books/'
     | '/(authenticated)/series/'
@@ -168,10 +206,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedAuthorsIndexRouteImport
       parentRoute: typeof authenticatedRouteRoute
     }
+    '/(authenticated)/books/search': {
+      id: '/(authenticated)/books/search'
+      path: '/books/search'
+      fullPath: '/books/search'
+      preLoaderRoute: typeof authenticatedBooksSearchRouteImport
+      parentRoute: typeof authenticatedRouteRoute
+    }
+    '/(authenticated)/authors/search': {
+      id: '/(authenticated)/authors/search'
+      path: '/authors/search'
+      fullPath: '/authors/search'
+      preLoaderRoute: typeof authenticatedAuthorsSearchRouteImport
+      parentRoute: typeof authenticatedRouteRoute
+    }
   }
 }
 
 interface authenticatedRouteRouteChildren {
+  authenticatedAuthorsSearchRoute: typeof authenticatedAuthorsSearchRoute
+  authenticatedBooksSearchRoute: typeof authenticatedBooksSearchRoute
   authenticatedAuthorsIndexRoute: typeof authenticatedAuthorsIndexRoute
   authenticatedBooksIndexRoute: typeof authenticatedBooksIndexRoute
   authenticatedSeriesIndexRoute: typeof authenticatedSeriesIndexRoute
@@ -179,6 +233,8 @@ interface authenticatedRouteRouteChildren {
 }
 
 const authenticatedRouteRouteChildren: authenticatedRouteRouteChildren = {
+  authenticatedAuthorsSearchRoute: authenticatedAuthorsSearchRoute,
+  authenticatedBooksSearchRoute: authenticatedBooksSearchRoute,
   authenticatedAuthorsIndexRoute: authenticatedAuthorsIndexRoute,
   authenticatedBooksIndexRoute: authenticatedBooksIndexRoute,
   authenticatedSeriesIndexRoute: authenticatedSeriesIndexRoute,

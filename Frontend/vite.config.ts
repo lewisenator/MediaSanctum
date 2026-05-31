@@ -19,6 +19,10 @@ const config = defineConfig({
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+      },
+      '/public': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
       }
     }
   }

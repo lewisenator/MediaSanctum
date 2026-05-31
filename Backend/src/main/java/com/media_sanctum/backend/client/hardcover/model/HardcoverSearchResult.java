@@ -8,14 +8,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FeaturedSeries {
-    private String id;
-    private Float position;
-    private Series series;
+public class HardcoverSearchResult<T> {
+    private Integer found;
+    private Integer outOf;
+    private Integer page;
+    private Boolean searchCutoff;
+    private Long searchTimeMs;
+    private List<HardcoverSearchHit<T>> hits;
+    private HardcoverRequestParams requestParams;
 }

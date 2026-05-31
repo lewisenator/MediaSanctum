@@ -14,6 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SearchHit<T> {
-    private T document;
+public class HardcoverRequestParams {
+    private String collectionName;
+    private String firstQ;
+    private Integer perPage;
+    private String q;
 }

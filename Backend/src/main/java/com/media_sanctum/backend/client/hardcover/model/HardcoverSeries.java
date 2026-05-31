@@ -8,20 +8,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SearchResult<T> {
-    private Integer found;
-    private Integer outOf;
-    private Integer page;
-    private Boolean searchCutoff;
-    private Long searchTimeMs;
-    private List<SearchHit<T>> hits;
-    private RequestParams requestParams;
+public class HardcoverSeries {
+    private Integer booksCount;
+    private Integer id;
+    private Integer canonicalId;
+    private String name;
+    private Integer primaryBooksCount;
+    private String slug;
+    private Boolean isCompleted;
+
+    public boolean isNonCanonical() {
+        return canonicalId != null && id != null && !canonicalId.equals(id);
+    }
 }

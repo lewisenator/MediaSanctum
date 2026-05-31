@@ -1,8 +1,8 @@
 package com.media_sanctum.backend.controller;
 
 import com.media_sanctum.backend.BaseControllerTest;
-import com.media_sanctum.backend.resource.AuthorResponse;
-import com.media_sanctum.backend.resource.BookResponse;
+import com.media_sanctum.backend.resource.AuthorSearchResultResponse;
+import com.media_sanctum.backend.resource.BookSearchResultResponse;
 import com.media_sanctum.backend.resource.DataResponse;
 import com.media_sanctum.backend.resource.SearchResponse;
 import org.assertj.core.api.Assertions;
@@ -29,7 +29,7 @@ public class SearchControllerTest extends BaseControllerTest {
                 .header("Authorization", "Bearer " + getAccessToken())
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
-                .toEntity(new ParameterizedTypeReference<DataResponse<SearchResponse<AuthorResponse>>>() {
+                .toEntity(new ParameterizedTypeReference<DataResponse<SearchResponse<AuthorSearchResultResponse>>>() {
                 });
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -48,7 +48,7 @@ public class SearchControllerTest extends BaseControllerTest {
                 .header("Authorization", "Bearer " + getAccessToken())
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
-                .toEntity(new ParameterizedTypeReference<DataResponse<SearchResponse<BookResponse>>>() {
+                .toEntity(new ParameterizedTypeReference<DataResponse<SearchResponse<BookSearchResultResponse>>>() {
                 });
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

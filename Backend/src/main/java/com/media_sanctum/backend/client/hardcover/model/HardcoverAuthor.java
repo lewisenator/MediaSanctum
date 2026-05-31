@@ -8,17 +8,29 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Image {
-    private String color;
-    private String colorName;
-    private Integer height;
-    private Integer width;
+public class HardcoverAuthor {
     private Integer id;
-    private String url;
+    private Integer canonicalId;
+    private String name;
+    private String title;
+    private List<String> alternateNames;
+    private String slug;
+    private String bio;
+    private Integer bornYear;
+    private Integer deathYear;
+    private Integer booksCount;
+    private HardcoverImage cachedImage;
+    private List<HardcoverLink> links;
+
+    public boolean isNonCanonical() {
+        return canonicalId != null && id != null && !canonicalId.equals(id);
+    }
 }

@@ -32,8 +32,8 @@ public class UserService implements UserDetailsService {
     }
 
     public List<UserModel> getUsers() {
-        var sortByName = Sort.by("createdAt").descending();
-        var pageRequest = PageRequest.of(0, 10, sortByName);
+        var sortByCreatedAt = Sort.by("createdAt").descending();
+        var pageRequest = PageRequest.of(0, 10, sortByCreatedAt);
         var entities = userRepository.findAll(pageRequest);
         return entities.stream().map(this::fromEntity).toList();
     }

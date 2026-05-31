@@ -18,16 +18,16 @@ import java.util.Optional;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Book {
+public class HardcoverBookSearchResult {
     private List<String> authorNames;
-    private List<TypedContribution> contributions;
+    private List<HardcoverContribution> contributions;
     private String description;
-    private FeaturedSeries featuredSeries;
+    private HardcoverFeaturedSeriesSearchResult featuredSeries;
     private List<String> genres;
     private Boolean hasAudiobook;
     private Boolean hasEbook;
     private String id;
-    private Image image;
+    private HardcoverImage image;
     private List<String> isbns;
     private List<String> moods;
     private Integer pages;
@@ -41,9 +41,9 @@ public class Book {
     private List<String> tags;
     private String title;
 
-    public Optional<Contribution> getAuthorContribution() {
+    public Optional<HardcoverAuthorContribution> getAuthorContribution() {
         return Optional.ofNullable(contributions).orElse(List.of()).stream()
-                .map(TypedContribution::getAuthor)
+                .map(HardcoverContribution::getAuthor)
                 .filter(Objects::nonNull)
                 .findFirst();
     }

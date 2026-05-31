@@ -1,7 +1,7 @@
 package com.media_sanctum.backend.controller;
 
-import com.media_sanctum.backend.resource.AuthorResponse;
-import com.media_sanctum.backend.resource.BookResponse;
+import com.media_sanctum.backend.resource.AuthorSearchResultResponse;
+import com.media_sanctum.backend.resource.BookSearchResultResponse;
 import com.media_sanctum.backend.resource.DataResponse;
 import com.media_sanctum.backend.resource.SearchResponse;
 import com.media_sanctum.backend.service.SearchService;
@@ -23,7 +23,7 @@ public class SearchController {
     }
 
     @PostMapping("/authors")
-    public ResponseEntity<DataResponse<SearchResponse<AuthorResponse>>> searchAuthors(
+    public ResponseEntity<DataResponse<SearchResponse<AuthorSearchResultResponse>>> searchAuthors(
             @NotBlank @Param("q") String q
     ) {
         var searchResponse = searchService.searchAuthors(q);
@@ -31,7 +31,7 @@ public class SearchController {
     }
 
     @PostMapping("/books")
-    public ResponseEntity<DataResponse<SearchResponse<BookResponse>>> searchBooks(
+    public ResponseEntity<DataResponse<SearchResponse<BookSearchResultResponse>>> searchBooks(
             @NotBlank @Param("q") String q
     ) {
         var searchResponse = searchService.searchBooks(q);

@@ -12,12 +12,17 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthorResponse {
-    private String hardcoverId;
-    private List<String> books;
-    private Integer booksCount;
-    private String imageUrl;
+    private String id;
     private String name;
-    private String namePersonal;
-    private List<String> seriesNames;
+    private String title;
+    private List<String> alternateNames;
     private String slug;
+    private String bio;
+    private Integer bornYear;
+    private Integer deathYear;
+    private Integer booksCount;
+    private List<LinkResponse> links;
+    private String createdAt;
+    private String updatedAt;
+    private ImageResponse image;
 }

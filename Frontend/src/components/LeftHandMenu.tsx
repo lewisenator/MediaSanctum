@@ -28,7 +28,9 @@ const LeftHandMenu = () => {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      try {
+        await logout();
+      } catch (_) {}
       setAccessToken(null);
       setUser(null);
       navigate({

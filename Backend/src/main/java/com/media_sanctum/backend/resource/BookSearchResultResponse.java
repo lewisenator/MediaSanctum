@@ -5,21 +5,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookResponse {
-    private String id;
-    private String headline;
+public class BookSearchResultResponse {
+    private String hardcoverId;
     private String title;
-    private String slug;
-    private String subtitle;
+
+    private List<String> authors;
     private String description;
+    private String featureSeriesName;
+    private Float featureSeriesPosition;
+    private String imageUrl;
     private Integer releaseYear;
-    private Integer pages;
-    private Integer audioSeconds;
-    private String createdAt;
-    private String updatedAt;
-    private AuthorResponse author;
 }

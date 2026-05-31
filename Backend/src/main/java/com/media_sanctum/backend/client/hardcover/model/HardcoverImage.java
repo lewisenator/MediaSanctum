@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Series {
-    private Integer booksCount;
+public class HardcoverImage {
+    private String color;
+    private Integer height;
+    private Integer width;
     private Integer id;
-    private String name;
-    private Integer primaryBooksCount;
-    private String slug;
+    private String url;
 }

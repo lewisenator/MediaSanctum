@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Contribution {
-    private String id;
-    private Image image;
+public class HardcoverAuthorContribution {
+    private Integer id;
+    private HardcoverImage image;
     private String name;
     private String slug;
 }

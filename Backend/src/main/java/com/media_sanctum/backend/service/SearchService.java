@@ -1,11 +1,11 @@
 package com.media_sanctum.backend.service;
 
 import com.media_sanctum.backend.client.hardcover.HardcoverClient;
-import com.media_sanctum.backend.client.hardcover.model.FeaturedSeries;
-import com.media_sanctum.backend.client.hardcover.model.Image;
-import com.media_sanctum.backend.client.hardcover.model.Series;
-import com.media_sanctum.backend.resource.AuthorResponse;
-import com.media_sanctum.backend.resource.BookResponse;
+import com.media_sanctum.backend.client.hardcover.model.HardcoverFeaturedSeriesSearchResult;
+import com.media_sanctum.backend.client.hardcover.model.HardcoverImage;
+import com.media_sanctum.backend.client.hardcover.model.HardcoverSeries;
+import com.media_sanctum.backend.resource.AuthorSearchResultResponse;
+import com.media_sanctum.backend.resource.BookSearchResultResponse;
 import com.media_sanctum.backend.resource.SearchResponse;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +21,12 @@ public class SearchService {
         this.hardcoverClient = hardcoverClient;
     }
 
-    public SearchResponse<AuthorResponse> searchAuthors(String query) {
+    public SearchResponse<AuthorSearchResultResponse> searchAuthors(String query) {
         var result = hardcoverClient.searchAuthors(query);
 
-        List<AuthorResponse> hits = result.getHits().stream().map(hit -> {
+        List<AuthorSearchResultResponse> hits = result.getHits().stream().map(hit -> {
             var doc = hit.getDocument();
-            return AuthorResponse.builder()
+            return AuthorSearchResultResponse.builder()
                     .hardcoverId(doc.getId())
                     .books(doc.getBooks())
                     .booksCount(doc.getBooksCount())
@@ -38,7 +38,7 @@ public class SearchService {
                     .build();
         }).toList();
 
-        return SearchResponse.<AuthorResponse>builder()
+        return SearchResponse.<AuthorSearchResultResponse>builder()
                 .found(result.getFound())
                 .page(result.getPage())
                 .perPage(result.getRequestParams().getPerPage())
@@ -46,30 +46,30 @@ public class SearchService {
                 .build();
     }
 
-    public SearchResponse<BookResponse> searchBooks(String query) {
+    public SearchResponse<BookSearchResultResponse> searchBooks(String query) {
         var result = hardcoverClient.searchBooks(query);
 
-        List<BookResponse> hits = result.getHits().stream().map(hit -> {
+        List<BookSearchResultResponse> hits = result.getHits().stream().map(hit -> {
             var doc = hit.getDocument();
-            return BookResponse.builder()
+            return BookSearchResultResponse.builder()
                     .hardcoverId(doc.getId())
                     .title(doc.getTitle())
                     .description(doc.getDescription())
                     .authors(doc.getAuthorNames())
                     .featureSeriesName(Optional.ofNullable(doc.getFeaturedSeries())
-                            .map(FeaturedSeries::getSeries)
-                            .map(Series::getName)
+                            .map(HardcoverFeaturedSeriesSearchResult::getSeries)
+                            .map(HardcoverSeries::getName)
                             .orElse(null))
                     .featureSeriesPosition(Optional.ofNullable(doc.getFeaturedSeries())
-                            .map(FeaturedSeries::getPosition)
+                            .map(HardcoverFeaturedSeriesSearchResult::getPosition)
                             .orElse(null))
                     .imageUrl(Optional.ofNullable(doc.getImage())
-                            .map(Image::getUrl)
+                            .map(HardcoverImage::getUrl)
                             .orElse(null))
                     .releaseYear(doc.getReleaseYear())
                     .build();
         }).toList();
-        return SearchResponse.<BookResponse>builder()
+        return SearchResponse.<BookSearchResultResponse>builder()
                 .found(result.getFound())
                 .page(result.getPage())
                 .perPage(result.getRequestParams().getPerPage())

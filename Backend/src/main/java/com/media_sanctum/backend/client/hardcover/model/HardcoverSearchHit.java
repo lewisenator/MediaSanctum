@@ -8,21 +8,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Author {
-    private String id;
-    private List<String> books;
-    private Integer booksCount;
-    private Image image;
-    private String name;
-    private String namePersonal;
-    private List<String> seriesNames;
-    private String slug;
+public class HardcoverSearchHit<T> {
+    private T document;
 }

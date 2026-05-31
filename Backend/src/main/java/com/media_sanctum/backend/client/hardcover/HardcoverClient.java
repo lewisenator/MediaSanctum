@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.media_sanctum.backend.client.hardcover.exception.HardcoverException;
-import com.media_sanctum.backend.client.hardcover.model.Author;
-import com.media_sanctum.backend.client.hardcover.model.Book;
-import com.media_sanctum.backend.client.hardcover.model.SearchResult;
+import com.media_sanctum.backend.client.hardcover.model.HardcoverAuthor;
+import com.media_sanctum.backend.client.hardcover.model.HardcoverAuthorSearchResult;
+import com.media_sanctum.backend.client.hardcover.model.HardcoverBook;
+import com.media_sanctum.backend.client.hardcover.model.HardcoverBookSearchResult;
+import com.media_sanctum.backend.client.hardcover.model.HardcoverSearchResult;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -21,21 +23,7 @@ public class HardcoverClient {
 
     private static final String ERRORS_FIELD = "errors";
 
-    private static final String SEARCH_AUTHORS = """
-            query SearchAuthors($q: String!) {
-                search(query: $q, query_type: "author", per_page: 25, page: 1) {
-                    results
-                }
-            }
-            """;
 
-    private static final String SEARCH_BOOKS = """
-            query SearchBooks($q: String!) {
-                search(query: $q, query_type: "book", per_page: 25, page: 1) {
-                    results
-                }
-            }
-            """;
 
     private final String apiKey;
     private final RestClient restClient;
@@ -52,21 +40,35 @@ public class HardcoverClient {
     }
 
     @RateLimiter(name = INSTANCE)
-    public SearchResult<Author> searchAuthors(String query) {
-        JsonNode root = executeQuery(SEARCH_AUTHORS, Map.of("q", safe(query)));
+    public HardcoverSearchResult<HardcoverAuthorSearchResult> searchAuthors(String query) {
+        JsonNode root = executeQuery(HardcoverQueries.SEARCH_AUTHORS, Map.of("q", safe(query)));
         JsonNode searchResults = root.path("data").path("search").path("results");
         var targetType = objectMapper.getTypeFactory()
-                .constructParametricType(SearchResult.class, Author.class);
+                .constructParametricType(HardcoverSearchResult.class, HardcoverAuthorSearchResult.class);
         return objectMapper.convertValue(searchResults, targetType);
     }
 
     @RateLimiter(name = INSTANCE)
-    public SearchResult<Book> searchBooks(String query) {
-        JsonNode root = executeQuery(SEARCH_BOOKS, Map.of("q", safe(query)));
+    public HardcoverSearchResult<HardcoverBookSearchResult> searchBooks(String query) {
+        JsonNode root = executeQuery(HardcoverQueries.SEARCH_BOOKS, Map.of("q", safe(query)));
         JsonNode searchResults = root.path("data").path("search").path("results");
         var targetType = objectMapper.getTypeFactory()
-                .constructParametricType(SearchResult.class, Book.class);
+                .constructParametricType(HardcoverSearchResult.class, HardcoverBookSearchResult.class);
         return objectMapper.convertValue(searchResults, targetType);
+    }
+
+    @RateLimiter(name = INSTANCE)
+    public HardcoverBook getBook(Integer hardcoverBookId) {
+        JsonNode root = executeQuery(HardcoverQueries.GET_BOOK, Map.of("q", hardcoverBookId));
+        JsonNode searchResults = root.path("data").path("books_by_pk");
+        return objectMapper.convertValue(searchResults, HardcoverBook.class);
+    }
+
+    @RateLimiter(name = INSTANCE)
+    public HardcoverAuthor getAuthor(Integer hardcoverAuthorId) {
+        JsonNode root = executeQuery(HardcoverQueries.GET_AUTHOR, Map.of("q", hardcoverAuthorId));
+        JsonNode searchResults = root.path("data").path("authors_by_pk");
+        return objectMapper.convertValue(searchResults, HardcoverAuthor.class);
     }
 
     private static String safe(String s) {

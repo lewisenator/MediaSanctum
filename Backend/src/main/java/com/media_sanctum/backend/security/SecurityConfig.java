@@ -39,6 +39,7 @@ public class SecurityConfig {
             auth.requestMatchers("/api/auth/logout").permitAll();
             auth.requestMatchers("/api/auth/register").permitAll();
             auth.requestMatchers("/api/actuator/health").permitAll();
+            auth.requestMatchers("/public/**").permitAll();
             auth.anyRequest().authenticated();
         });
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
