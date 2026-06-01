@@ -1,0 +1,3 @@
+media-sanctum:
+  log:
+    path: "./logs"

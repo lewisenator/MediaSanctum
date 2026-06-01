@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 		properties = {
 				"ADMIN_EMAIL=admin@example.com",
 				"ADMIN_PASSWORD=password",
-				"SPRING_PROFILES_ACTIVE=local",
+				"SPRING_PROFILES_ACTIVE=local,test",
 				"spring.flyway.enabled=false",
 		})
 @Import(FlywayTestConfig.class)
