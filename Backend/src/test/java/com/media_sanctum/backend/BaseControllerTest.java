@@ -75,6 +75,7 @@ public abstract class BaseControllerTest {
 		var projectPath = "/tmp/media-sanctum-test" + UUID.randomUUID();
 		registry.add("media-sanctum.config-dir", () -> projectPath + "/config");
 		registry.add("media-sanctum.data-dir", () -> projectPath + "/data");
+		registry.add("media-sanctum.log.path", () -> projectPath + "/config/logs");
 		registry.add("media-sanctum.jwt.secret", () -> {
 			SecureRandom secureRandom = new SecureRandom();
 			byte[] secretBytes = new byte[32]; // 256 bits
