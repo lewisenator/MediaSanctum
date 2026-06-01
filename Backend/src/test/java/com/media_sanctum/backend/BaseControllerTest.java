@@ -26,6 +26,8 @@ import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import org.springframework.web.client.RestClient;
 
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 		properties = {
 				"ADMIN_EMAIL=admin@example.com",
 				"ADMIN_PASSWORD=password",
-				"JWT_SECRET=VUVnC7FxCBjGVgRrZdfLXD3GQjg/lkpptSAoQwibqGY=",
 				"SPRING_PROFILES_ACTIVE=local",
 				"spring.flyway.enabled=false",
 		})
@@ -74,6 +75,12 @@ public abstract class BaseControllerTest {
 		var projectPath = "/tmp/media-sanctum-test" + UUID.randomUUID();
 		registry.add("media-sanctum.config-dir", () -> projectPath + "/config");
 		registry.add("media-sanctum.data-dir", () -> projectPath + "/data");
+		registry.add("media-sanctum.jwt.secret", () -> {
+			SecureRandom secureRandom = new SecureRandom();
+			byte[] secretBytes = new byte[32]; // 256 bits
+			secureRandom.nextBytes(secretBytes);
+			return Base64.getEncoder().encodeToString(secretBytes);
+		});
 	}
 
 	@Test
