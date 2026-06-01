@@ -13,6 +13,7 @@ jobs:
     environment: ci
     permissions:
       contents: read
+      checks: write
 
     steps:
       - uses: actions/checkout@v4
@@ -32,6 +33,42 @@ jobs:
           HARDCOVER_API_KEY: ${{ secrets.HARDCOVER_API_KEY }}
           CONFIG: /tmp/media-sanctum-config
           DATA: /tmp/media-sanctum-data
+
+      - name: Test report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Backend Tests
+          path: Backend/build/test-results/test/*.xml
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Coverage summary
+        if: always()
+        run: |
+          REPORT=Backend/build/reports/jacoco/test/jacocoTestReport.xml
+          [ -f "$REPORT" ] || exit 0
+          python3 - "$REPORT" <<'EOF'
+          import sys, os, xml.etree.ElementTree as ET
+          root = ET.parse(sys.argv[1]).getroot()
+          counters = {}
+          for c in root.findall('counter'):
+              missed, covered = int(c.get('missed', 0)), int(c.get('covered', 0))
+              total = missed + covered
+              counters[c.get('type')] = (covered, total, covered / total * 100 if total else 0)
+          rows = []
+          for metric in ['INSTRUCTION', 'BRANCH', 'LINE', 'METHOD', 'CLASS']:
+              if metric not in counters: continue
+              covered, total, pct = counters[metric]
+              icon = '✅' if pct >= 80 else '⚠️' if pct >= 60 else '❌'
+              rows.append(f'| {metric.title()} | {icon} {pct:.1f}% | {covered:,} / {total:,} |')
+          summary = os.environ['GITHUB_STEP_SUMMARY']
+          with open(summary, 'a') as f:
+              f.write('## JaCoCo Coverage\n\n')
+              f.write('| Metric | Coverage | Covered / Total |\n')
+              f.write('|--------|----------|-----------------|\n')
+              f.write('\n'.join(rows) + '\n')
+          EOF
 
   frontend:
     name: Frontend
