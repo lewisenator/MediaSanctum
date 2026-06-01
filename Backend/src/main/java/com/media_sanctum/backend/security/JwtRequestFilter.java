@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.NonNull;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -43,10 +44,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 var userId = tokenDetails.getUserId();
                 var user = userService.getUserById(userId).orElseThrow();
                 var userDetails = userService.loadUserByUsername(user.getEmail());
-                var authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                var authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-            } catch (Exception _) {}
+            } catch (BadCredentialsException e) {
+                logger.info("Invalid token", e);
+            }
         }
         filterChain.doFilter(request, response);
     }

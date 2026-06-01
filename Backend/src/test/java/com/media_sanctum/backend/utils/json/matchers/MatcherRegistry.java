@@ -46,12 +46,13 @@ public class MatcherRegistry {
      * @param placeholder The placeholder string from the expected JSON
      * @return true if a matcher was found and validation passed, false otherwise
      */
-    public boolean validate(Object actual, String placeholder) {
+    public boolean validate(String path, Object actual, String placeholder) {
         var matcher = findMatcher(placeholder).orElse(null);
         if (matcher == null) {
             return false;
         }
-        return matcher.validate(actual, placeholder);
+        var parameters = MatcherParameters.from(placeholder);
+        return matcher.validateUnchecked(path, actual, parameters);
     }
 
     public MatcherRegistry clear() {
@@ -94,6 +95,11 @@ public class MatcherRegistry {
         register(new AnyBooleanMatcher());
         register(new AnyIntegerMatcher());
         register(new TimestampMatcher());
+        register(new AnyUUIDMatcher());
+        register(new AnyFloatMatcher());
+        register(new StringArrayMatcher());
+        register(new AnyObjectMatcher());
+        register(new ObjectArrayMatcher());
     }
 
     public static MatcherRegistry getInstance() {

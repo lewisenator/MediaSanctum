@@ -1,5 +1,6 @@
 package com.media_sanctum.backend.controller;
 
+import com.media_sanctum.backend.entity.Image;
 import com.media_sanctum.backend.service.ImageService;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
@@ -33,22 +34,37 @@ public class PublicController {
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Invalid image: " + imageName);
         }
+
         var imageId = matcher.group(1);
         var extension = matcher.group(2);
         var image = imageService.getById(imageId);
-        File file = Path.of(image.getDirectory(), image.getFilename()).toFile();
-        if (!file.exists()) {
+
+        String contentType = getContentTypeFromExtension(extension);
+        File file = getFileAndExtensionFromImageName(image);
+        if (file == null) {
             return ResponseEntity.notFound().build();
         }
-        String contentType = switch(extension) {
+        
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(new FileSystemResource(file));
+    }
+
+    private static File getFileAndExtensionFromImageName(Image image) {
+        File file = Path.of(image.getDirectory(), image.getFilename()).toFile();
+        if (!file.exists()) {
+            return null;
+        }
+        return file;
+    }
+
+    private static String getContentTypeFromExtension(String extension) {
+        return switch(extension) {
             case "jpg", "jpeg" -> MediaType.IMAGE_JPEG_VALUE;
             case "png" -> MediaType.IMAGE_PNG_VALUE;
             case "gif" -> MediaType.IMAGE_GIF_VALUE;
             case "webp" -> "image/webp";
             default -> throw new IllegalStateException("Unexpected value: " + extension);
         };
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .body(new FileSystemResource(file));
     }
 }

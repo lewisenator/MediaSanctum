@@ -23,7 +23,7 @@ function BookSearchPage() {
   });
 
   return (
-    <>
+    <div className="flex flex-col flex-1 overflow-y-hidden max-w-6xl mx-auto">
       <div className="w-full flex flex-row flex-wrap justify-between mb-6">
         <h1 className="font-display font-semibold text-3xl text-text">
           Book Search
@@ -59,8 +59,8 @@ function BookSearchPage() {
           )}
 
           { searchResults && searchResults.hits && searchResults.hits.length > 0 && (
-            <div className="flex flex-col rounded-md divide-y divide-surfaceAlt mt-3 border border-border bg-surface overflow-x-hidden max-h-screen">
-              <div className="grow-1 min-h-0 overflow-y-auto">
+            <div className="flex flex-col rounded-md  mt-3 border border-border bg-surface overflow-x-hidden max-h-screen">
+              <div className="grow-1 min-h-0 divide-y divide-surfaceAlt">
                 { searchResults.hits.map((book) => (
                   <BookSearchResult book={book} key={book.hardcoverId} />
                 ))}
@@ -69,6 +69,6 @@ function BookSearchPage() {
           )}
         </div>
       </div>
-    </>
+    </div>
   )
 }

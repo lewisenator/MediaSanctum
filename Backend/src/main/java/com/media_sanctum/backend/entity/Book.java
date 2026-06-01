@@ -1,5 +1,6 @@
 package com.media_sanctum.backend.entity;
 
+import com.media_sanctum.backend.client.hardcover.model.HardcoverFeaturedSeriesSearchResult;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,8 +15,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -69,11 +73,25 @@ public class Book {
     @JoinColumn(name = "audiobook_edition_id")
     private Edition audiobookEdition;
 
+    @Column(name = "rating")
+    private Float rating;
+
+    @Column(name = "ratings_count")
+    private Integer ratingsCount;
+
+    @Column(name = "tags", columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.JSON_ARRAY)
+    private List<String> tags;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "featured_series", columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private HardcoverFeaturedSeriesSearchResult featuredSeries;
 
     public void setAuthor(Author author) {
         this.author = author;

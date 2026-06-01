@@ -11,6 +11,7 @@ public record MediaSanctumConfig(
         @NotBlank String dataDir,
         @NotBlank String configDir,
         @NotNull Boolean cookiesSecure,
+        @NotNull Boolean logStackTraces,
         @NotNull MediaSanctumJwtConfig jwt
 ) {
 }

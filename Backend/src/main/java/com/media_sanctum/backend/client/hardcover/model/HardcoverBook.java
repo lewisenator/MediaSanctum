@@ -28,10 +28,13 @@ public class HardcoverBook {
     private Integer releaseYear;
     private Integer pages;
     private Integer audioSeconds;
+    private Float rating;
+    private Integer ratingsCount;
+    private List<HardcoverTagging> taggings;
     private HardcoverEdition defaultCoverEdition;
     private HardcoverEdition defaultAudioEdition;
     private List<HardcoverContribution> contributions;
-    private HardcoverFeaturedSeriesSearchResult featuredSeries;
+    private HardcoverFeaturedSeriesSearchResult featuredBookSeries;
 
     public boolean isNonCanonical() {
         return canonicalId != null && id != null && !canonicalId.equals(id);
@@ -42,5 +45,17 @@ public class HardcoverBook {
                 .map(List::getFirst)
                 .map(HardcoverContribution::getAuthor)
                 .map(HardcoverAuthorContribution::getId);
+    }
+
+    public List<String> getSimpleTags() {
+        return Optional.ofNullable(taggings)
+                .orElse(List.of())
+                .stream()
+                .map(HardcoverTagging::getTag)
+                .map(tag -> {
+                    var category = tag.getTagCategory().getCategory();
+                    var tagValue = tag.getTag();
+                    return String.format("%s:%s", category, tagValue);
+                }).toList();
     }
 }

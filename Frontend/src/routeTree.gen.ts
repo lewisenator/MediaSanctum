@@ -18,7 +18,9 @@ import { Route as authenticatedSeriesIndexRouteImport } from './routes/(authenti
 import { Route as authenticatedBooksIndexRouteImport } from './routes/(authenticated)/books/index'
 import { Route as authenticatedAuthorsIndexRouteImport } from './routes/(authenticated)/authors/index'
 import { Route as authenticatedBooksSearchRouteImport } from './routes/(authenticated)/books/search'
+import { Route as authenticatedBooksBookIdRouteImport } from './routes/(authenticated)/books/$bookId'
 import { Route as authenticatedAuthorsSearchRouteImport } from './routes/(authenticated)/authors/search'
+import { Route as authenticatedAuthorsAuthorIdRouteImport } from './routes/(authenticated)/authors/$authorId'
 
 const unauthenticatedRouteRoute = unauthenticatedRouteRouteImport.update({
   id: '/(unauthenticated)',
@@ -67,17 +69,31 @@ const authenticatedBooksSearchRoute =
     path: '/books/search',
     getParentRoute: () => authenticatedRouteRoute,
   } as any)
+const authenticatedBooksBookIdRoute =
+  authenticatedBooksBookIdRouteImport.update({
+    id: '/books/$bookId',
+    path: '/books/$bookId',
+    getParentRoute: () => authenticatedRouteRoute,
+  } as any)
 const authenticatedAuthorsSearchRoute =
   authenticatedAuthorsSearchRouteImport.update({
     id: '/authors/search',
     path: '/authors/search',
     getParentRoute: () => authenticatedRouteRoute,
   } as any)
+const authenticatedAuthorsAuthorIdRoute =
+  authenticatedAuthorsAuthorIdRouteImport.update({
+    id: '/authors/$authorId',
+    path: '/authors/$authorId',
+    getParentRoute: () => authenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof unauthenticatedLoginRoute
+  '/authors/$authorId': typeof authenticatedAuthorsAuthorIdRoute
   '/authors/search': typeof authenticatedAuthorsSearchRoute
+  '/books/$bookId': typeof authenticatedBooksBookIdRoute
   '/books/search': typeof authenticatedBooksSearchRoute
   '/authors/': typeof authenticatedAuthorsIndexRoute
   '/books/': typeof authenticatedBooksIndexRoute
@@ -87,7 +103,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof unauthenticatedLoginRoute
+  '/authors/$authorId': typeof authenticatedAuthorsAuthorIdRoute
   '/authors/search': typeof authenticatedAuthorsSearchRoute
+  '/books/$bookId': typeof authenticatedBooksBookIdRoute
   '/books/search': typeof authenticatedBooksSearchRoute
   '/authors': typeof authenticatedAuthorsIndexRoute
   '/books': typeof authenticatedBooksIndexRoute
@@ -100,7 +118,9 @@ export interface FileRoutesById {
   '/(authenticated)': typeof authenticatedRouteRouteWithChildren
   '/(unauthenticated)': typeof unauthenticatedRouteRouteWithChildren
   '/(unauthenticated)/login': typeof unauthenticatedLoginRoute
+  '/(authenticated)/authors/$authorId': typeof authenticatedAuthorsAuthorIdRoute
   '/(authenticated)/authors/search': typeof authenticatedAuthorsSearchRoute
+  '/(authenticated)/books/$bookId': typeof authenticatedBooksBookIdRoute
   '/(authenticated)/books/search': typeof authenticatedBooksSearchRoute
   '/(authenticated)/authors/': typeof authenticatedAuthorsIndexRoute
   '/(authenticated)/books/': typeof authenticatedBooksIndexRoute
@@ -112,7 +132,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/authors/$authorId'
     | '/authors/search'
+    | '/books/$bookId'
     | '/books/search'
     | '/authors/'
     | '/books/'
@@ -122,7 +144,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/authors/$authorId'
     | '/authors/search'
+    | '/books/$bookId'
     | '/books/search'
     | '/authors'
     | '/books'
@@ -134,7 +158,9 @@ export interface FileRouteTypes {
     | '/(authenticated)'
     | '/(unauthenticated)'
     | '/(unauthenticated)/login'
+    | '/(authenticated)/authors/$authorId'
     | '/(authenticated)/authors/search'
+    | '/(authenticated)/books/$bookId'
     | '/(authenticated)/books/search'
     | '/(authenticated)/authors/'
     | '/(authenticated)/books/'
@@ -213,6 +239,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedBooksSearchRouteImport
       parentRoute: typeof authenticatedRouteRoute
     }
+    '/(authenticated)/books/$bookId': {
+      id: '/(authenticated)/books/$bookId'
+      path: '/books/$bookId'
+      fullPath: '/books/$bookId'
+      preLoaderRoute: typeof authenticatedBooksBookIdRouteImport
+      parentRoute: typeof authenticatedRouteRoute
+    }
     '/(authenticated)/authors/search': {
       id: '/(authenticated)/authors/search'
       path: '/authors/search'
@@ -220,11 +253,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedAuthorsSearchRouteImport
       parentRoute: typeof authenticatedRouteRoute
     }
+    '/(authenticated)/authors/$authorId': {
+      id: '/(authenticated)/authors/$authorId'
+      path: '/authors/$authorId'
+      fullPath: '/authors/$authorId'
+      preLoaderRoute: typeof authenticatedAuthorsAuthorIdRouteImport
+      parentRoute: typeof authenticatedRouteRoute
+    }
   }
 }
 
 interface authenticatedRouteRouteChildren {
+  authenticatedAuthorsAuthorIdRoute: typeof authenticatedAuthorsAuthorIdRoute
   authenticatedAuthorsSearchRoute: typeof authenticatedAuthorsSearchRoute
+  authenticatedBooksBookIdRoute: typeof authenticatedBooksBookIdRoute
   authenticatedBooksSearchRoute: typeof authenticatedBooksSearchRoute
   authenticatedAuthorsIndexRoute: typeof authenticatedAuthorsIndexRoute
   authenticatedBooksIndexRoute: typeof authenticatedBooksIndexRoute
@@ -233,7 +275,9 @@ interface authenticatedRouteRouteChildren {
 }
 
 const authenticatedRouteRouteChildren: authenticatedRouteRouteChildren = {
+  authenticatedAuthorsAuthorIdRoute: authenticatedAuthorsAuthorIdRoute,
   authenticatedAuthorsSearchRoute: authenticatedAuthorsSearchRoute,
+  authenticatedBooksBookIdRoute: authenticatedBooksBookIdRoute,
   authenticatedBooksSearchRoute: authenticatedBooksSearchRoute,
   authenticatedAuthorsIndexRoute: authenticatedAuthorsIndexRoute,
   authenticatedBooksIndexRoute: authenticatedBooksIndexRoute,

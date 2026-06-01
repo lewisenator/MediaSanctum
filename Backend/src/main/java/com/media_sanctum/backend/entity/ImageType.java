@@ -5,7 +5,7 @@ public enum ImageType {
     AUDIOBOOK("audiobook"),
     EBOOK("cover");
 
-    private String fileName;
+    private final String fileName;
 
     ImageType(String fileName) {
         this.fileName = fileName;

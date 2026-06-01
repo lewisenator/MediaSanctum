@@ -17,6 +17,7 @@ media-sanctum:
   config-dir: ${CONFIG}
   data-dir: ${DATA}
   cookies-secure: true
+  log-stack-traces: false
   jwt:
     secret: ${JWT_SECRET}
     access-exp:
@@ -42,3 +43,10 @@ resilience4j:
         limit-for-period: 1
         limit-refresh-period: 1s
         timeout-duration: 1s
+  retry:
+    instances:
+      hardcover:
+        max-attempts: 3
+        wait-duration: 1s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2

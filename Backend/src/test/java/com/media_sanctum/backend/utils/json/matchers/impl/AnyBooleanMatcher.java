@@ -1,21 +1,24 @@
 package com.media_sanctum.backend.utils.json.matchers.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.media_sanctum.backend.utils.json.matchers.JsonValueMatcher;
+import com.media_sanctum.backend.utils.json.matchers.MatcherParameters;
 
-import java.util.Optional;
+public class AnyBooleanMatcher implements JsonValueMatcher<Boolean> {
 
-public class AnyBooleanMatcher implements JsonValueMatcher {
-
-    private static final String PLACEHOLDER = "{{ANY-BOOLEAN}}";
+    private static final String PLACEHOLDER = "BOOLEAN";
 
     @Override
-    public boolean matches(String placeholder) {
-        return PLACEHOLDER.equals(placeholder);
+    public String getName() {
+        return PLACEHOLDER;
     }
 
     @Override
-    public boolean validate(Object actual, String placeholder) {
-        return actual instanceof Boolean;
+    public Class<Boolean> supportedType() {
+        return Boolean.class;
+    }
+
+    @Override
+    public boolean validate(String path, Boolean actual, MatcherParameters parameters) {
+        return true;
     }
 }

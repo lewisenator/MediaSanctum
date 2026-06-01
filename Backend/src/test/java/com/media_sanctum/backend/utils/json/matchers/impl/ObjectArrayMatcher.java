@@ -1,13 +1,18 @@
 package com.media_sanctum.backend.utils.json.matchers.impl;
 
+import com.media_sanctum.backend.utils.json.JsonAssertionBuilder;
 import com.media_sanctum.backend.utils.json.matchers.JsonValueMatcher;
 import com.media_sanctum.backend.utils.json.matchers.MatcherParameters;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
-public class StringArrayMatcher implements JsonValueMatcher<JSONArray> {
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
-    private static final String PLACEHOLDER = "STRING-ARRAY";
+public class ObjectArrayMatcher implements JsonValueMatcher<JSONArray> {
+
+    private static final String PLACEHOLDER = "OBJECT-ARRAY";
     private static final Boolean DEFAULT_ALLOW_EMPTY = true;
 
     @Override
@@ -33,9 +38,17 @@ public class StringArrayMatcher implements JsonValueMatcher<JSONArray> {
         try {
             for (int i = 0; i < length; i++) {
                 var item = actual.get(i);
-                if (!(item instanceof String)) {
+                if (!(item instanceof JSONObject)) {
                     result = false;
                     break;
+                }
+                var maybeContract = parameters.getString(MatcherParameters.PARAM_CONTRACT);
+                if (maybeContract.isPresent()) {
+                    var contractValue = maybeContract.get();
+                    var contractJson = URLDecoder.decode(contractValue, StandardCharsets.UTF_8);
+                    JsonAssertionBuilder.assertThatJson(item.toString())
+                            .withBasePath(path + String.format("[%d]", i))
+                            .matchesContract(contractJson);
                 }
             }
         } catch (JSONException e) {

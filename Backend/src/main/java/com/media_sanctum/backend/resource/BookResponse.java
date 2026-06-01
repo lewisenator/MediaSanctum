@@ -1,9 +1,12 @@
 package com.media_sanctum.backend.resource;
 
+import com.media_sanctum.backend.client.hardcover.model.HardcoverFeaturedSeriesSearchResult;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -21,7 +24,11 @@ public class BookResponse {
     private Integer audioSeconds;
     private String createdAt;
     private String updatedAt;
+    private Float rating;
+    private Integer ratingsCount;
+    private List<String> tags;
     private AuthorResponse author;
     private EditionResponse ebookEdition;
     private EditionResponse audiobookEdition;
+    private HardcoverFeaturedSeriesSearchResult featuredSeries;
 }

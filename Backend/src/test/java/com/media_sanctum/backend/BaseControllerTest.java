@@ -19,6 +19,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import org.springframework.web.client.RestClient;
@@ -31,8 +33,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = {
-				"DATA=/tmp/media-sanctum-test-data",
-				"CONFIG=/tmp/media-sanctum-test-config",
 				"ADMIN_EMAIL=admin@example.com",
 				"ADMIN_PASSWORD=password",
 				"JWT_SECRET=VUVnC7FxCBjGVgRrZdfLXD3GQjg/lkpptSAoQwibqGY=",
@@ -41,6 +41,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 		})
 @Import(FlywayTestConfig.class)
 public abstract class BaseControllerTest {
+
+	public static final String DATA_CONTRACT = """
+            {
+                "data": %s,
+                "error": null
+            }
+            """;
 
 	@LocalServerPort
 	private int port;
@@ -53,12 +60,6 @@ public abstract class BaseControllerTest {
 
 	protected RestClient restClient;
 
-	protected String getAccessToken() {
-		var authResponse = login();
-		assertThat(authResponse).isNotNull();
-		return authResponse.getAccessToken();
-	}
-
 	@BeforeEach
 	public void setup() {
 		bootstrapService.bootstrap();
@@ -68,8 +69,21 @@ public abstract class BaseControllerTest {
 				.build();
 	}
 
+	@DynamicPropertySource
+	public static void configureDynamicProperties(DynamicPropertyRegistry registry) {
+		var projectPath = "/tmp/media-sanctum-test" + UUID.randomUUID();
+		registry.add("media-sanctum.config-dir", () -> projectPath + "/config");
+		registry.add("media-sanctum.data-dir", () -> projectPath + "/data");
+	}
+
 	@Test
 	public void contextLoads() {
+	}
+
+	protected String getAccessToken() {
+		var authResponse = login();
+		assertThat(authResponse).isNotNull();
+		return authResponse.getAccessToken();
 	}
 
 	public AuthResponse login() {

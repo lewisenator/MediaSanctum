@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 public class TimestampMatcherTest {
 
@@ -21,15 +22,15 @@ public class TimestampMatcherTest {
             {
                 "test": "%s"
             }
-        """.formatted(Instant.now().toString());
+        """.formatted(LocalDateTime.now().toString());
 
-        String expeted = """
+        String expected = """
             {
                 "test": "{{TIMESTAMP}}"
             }
         """;
 
-        JsonAssertionBuilder.assertThatJson(actual).matchesContract(expeted);
+        JsonAssertionBuilder.assertThatJson(actual).matchesContract(expected);
     }
 
     @Test
@@ -40,14 +41,14 @@ public class TimestampMatcherTest {
             }
         """;
 
-        String expeted = """
+        String expected = """
             {
                 "test": "{{TIMESTAMP}}"
             }
         """;
 
         try {
-            JsonAssertionBuilder.assertThatJson(actual).matchesContract(expeted);
+            JsonAssertionBuilder.assertThatJson(actual).matchesContract(expected);
         } catch (AssertionError e) {
             Assertions.assertThat(e.getMessage()).contains("JSON Contract Mismatch");
         }
@@ -59,11 +60,11 @@ public class TimestampMatcherTest {
             {
                 "test": "%s"
             }
-        """.formatted(Instant.now().toString());
+        """.formatted(LocalDateTime.now().toString());
 
-        String expeted = """
+        String expected = """
             {
-                "test": "{{TIMESTAMP:5:SECONDS}}"
+                "test": "{{TIMESTAMP?amount=5&unit=SECONDS}}"
             }
         """;
 
@@ -71,6 +72,23 @@ public class TimestampMatcherTest {
             Thread.sleep(1000);
         } catch (InterruptedException _) {}
 
-        JsonAssertionBuilder.assertThatJson(actual).matchesContract(expeted);
+        JsonAssertionBuilder.assertThatJson(actual).matchesContract(expected);
+    }
+
+    @Test
+    public void testMatch_formatServiceReturls_ok() {
+        String actual = """
+            {
+                "test": "2026-06-01T08:30:30.565763"
+            }
+        """;
+
+        String expected = """
+            {
+                "test": "{{TIMESTAMP}}"
+            }
+        """;
+
+        JsonAssertionBuilder.assertThatJson(actual).matchesContract(expected);
     }
 }

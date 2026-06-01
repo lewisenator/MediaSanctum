@@ -2,15 +2,10 @@ package com.media_sanctum.backend.utils.json.matchers.impl;
 
 
 import com.media_sanctum.backend.utils.json.JsonAssertionBuilder;
-import com.media_sanctum.backend.utils.json.matchers.JsonValueMatcher;
 import com.media_sanctum.backend.utils.json.matchers.MatcherRegistry;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-
-import java.util.List;
 
 public class AnyBooleanMatcherTest {
 
@@ -29,7 +24,7 @@ public class AnyBooleanMatcherTest {
 
         String expeted = """
             {
-                "test": "{{ANY-BOOLEAN}}"
+                "test": "{{BOOLEAN}}"
             }
         """;
 
@@ -46,7 +41,7 @@ public class AnyBooleanMatcherTest {
 
         String expeted = """
             {
-                "test": "{{ANY-BOOLEAN}}"
+                "test": "{{BOOLEAN}}"
             }
         """;
 
@@ -66,11 +61,73 @@ public class AnyBooleanMatcherTest {
         String expeted = """
             {
                 "data": {
-                    "test": "{{ANY-BOOLEAN}}"
+                    "test": "{{BOOLEAN}}"
                 }
             }
         """;
 
         JsonAssertionBuilder.assertThatJson(actual).matchesContract(expeted);
+    }
+
+    @Test
+    public void testMatch_null_fails() {
+        String actual = """
+            {
+                "test": null
+            }
+        """;
+
+        String expeted = """
+            {
+                "test": "{{BOOLEAN}}"
+            }
+        """;
+
+        try {
+            JsonAssertionBuilder.assertThatJson(actual).matchesContract(expeted);
+        } catch (AssertionError e) {
+            return;
+        }
+        Assertions.fail("Expect null to fail BOOLEAN matcher");
+    }
+
+    @Test
+    public void testMatch_null_nullable_succeeds() {
+        String actual = """
+            {
+                "test": null
+            }
+        """;
+
+        String expeted = """
+            {
+                "test": "{{BOOLEAN?nullable=true}}"
+            }
+        """;
+
+        JsonAssertionBuilder.assertThatJson(actual).matchesContract(expeted);
+    }
+
+
+    @Test
+    public void testMatch_string_fails() {
+        String actual = """
+            {
+                "test": "not a boolean"
+            }
+        """;
+
+        String expeted = """
+            {
+                "test": "{{BOOLEAN}}"
+            }
+        """;
+
+        try {
+            JsonAssertionBuilder.assertThatJson(actual).matchesContract(expeted);
+        } catch (AssertionError e) {
+            return;
+        }
+        Assertions.fail("Expect string to fail BOOLEAN matcher");
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+@SuppressWarnings("PMD.ImplicitFunctionalInterface")
 public interface BookRepository extends JpaRepository<Book, String> {
 
     Optional<Author> findByHardcoverId(Integer hardcoverId);

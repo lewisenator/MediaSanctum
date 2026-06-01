@@ -77,19 +77,30 @@ public class CatalogueManager {
                 .pages(hardcoverBook.getPages())
                 .audioSeconds(hardcoverBook.getAudioSeconds())
                 .author(upsertAuthor(hardcoverBook.getAuthorHardcoverId().orElseThrow()))
+                .featuredSeries(hardcoverBook.getFeaturedBookSeries())
+                .tags(hardcoverBook.getSimpleTags())
+                .rating(hardcoverBook.getRating())
+                .ratingsCount(hardcoverBook.getRatingsCount())
                 .build();
 
-        var bookDirectory = Path.of(book.getAuthor().getImage().getDirectory(), book.getTitle()).toString();
+        var bookDirectory = Path.of(authorDirectory(book.getAuthor()), book.getTitle()).toString();
         createDirectory(bookDirectory);
-        book.setEbookEdition(upsertEdition(bookDirectory, hardcoverBook.getDefaultCoverEdition(), EditionType.EBOOK, ImageType.EBOOK));
-        book.setAudiobookEdition(upsertEdition(bookDirectory, hardcoverBook.getDefaultAudioEdition(), EditionType.AUDIOBOOK, ImageType.AUDIOBOOK));
+        book.setEbookEdition(upsertEdition(bookDirectory, hardcoverBook.getDefaultCoverEdition(),
+                EditionType.EBOOK, ImageType.EBOOK));
+        book.setAudiobookEdition(upsertEdition(bookDirectory, hardcoverBook.getDefaultAudioEdition(),
+                EditionType.AUDIOBOOK, ImageType.AUDIOBOOK));
 
         var savedBook = bookService.saveBook(book);
 
         return BookService.toResponse(savedBook);
     }
 
-    public Edition upsertEdition(String bookDirectory, HardcoverEdition hardcoverEdition, EditionType editionType, ImageType imageType) {
+    public Edition upsertEdition(String bookDirectory, HardcoverEdition hardcoverEdition,
+                                 EditionType editionType, ImageType imageType) {
+        if (hardcoverEdition == null || hardcoverEdition.getId() == null) {
+            return null;
+        }
+
         var hardcoverId = hardcoverEdition.getId();
         var result = editionService.getEditionByHardcoverId(hardcoverId);
         if (result == null) {
@@ -144,14 +155,12 @@ public class CatalogueManager {
         var authorDirectory = createAuthorDirectory(author);
         author.setImage(upsertImage(authorDirectory, ImageType.MUGSHOT, hardcoverAuthor.getCachedImage()));
 
-        var savedAuthor = authorService.saveAuthor(author);
-
-        return savedAuthor;
+        return authorService.saveAuthor(author);
     }
 
     private Image upsertImage(String directory, ImageType imageType, HardcoverImage hardcoverImage) {
         var result = imageService.findByHardcoverId(hardcoverImage.getId()).orElse(null);
-        if (result == null) {
+        if (result == null && hardcoverImage.getUrl() != null) {
 
             var matcher = SAFE_IMAGE_PATTERN.matcher(hardcoverImage.getUrl());
             if (!matcher.matches()) {
@@ -189,10 +198,14 @@ public class CatalogueManager {
         return result;
     }
 
-    private String createAuthorDirectory(Author author) {
+    private String authorDirectory(Author author) {
         var dataDir = mediaSanctumConfig.dataDir();
-        var authorPath = Path.of(dataDir, author.getName()).toString();
-        return createDirectory(authorPath);
+        return Path.of(dataDir, "books", author.getName()).toString();
+    }
+
+    private String createAuthorDirectory(Author author) {
+        var directory = authorDirectory(author);
+        return createDirectory(directory);
     }
 
     private String createDirectory(String directory) {

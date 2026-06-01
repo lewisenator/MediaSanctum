@@ -38,7 +38,7 @@ public class AuthorService {
     }
 
     public Author getAuthor(String id) {
-        return authorRepository.findById(id).orElseThrow();
+        return authorRepository.findById(id).orElse(null);
     }
 
     public Optional<Author> getAuthorByHardcoverId(Integer hardcoverId) {
@@ -50,6 +50,9 @@ public class AuthorService {
     }
 
     public static AuthorResponse toResponse(Author author) {
+        if (author == null) {
+            return null;
+        }
         return AuthorResponse.builder()
                 .id(author.getId())
                 .name(author.getName())

@@ -52,6 +52,19 @@ public class HardcoverQueries {
                     release_year
                     pages
                     audio_seconds
+                    rating
+                    ratings_count
+                    taggings {
+                        id
+                        tag {
+                            id
+                            tag
+                            tag_category {
+                                id
+                                category
+                            }
+                        }
+                    }
                     default_cover_edition {
                       id
                       canonical_id

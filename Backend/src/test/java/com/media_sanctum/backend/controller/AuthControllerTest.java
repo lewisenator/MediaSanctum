@@ -63,11 +63,11 @@ class AuthControllerTest extends BaseControllerTest {
         assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(response.getHeaders().headerNames()).doesNotContain("set-cookie");
 
-        var expectedRespnse = """
+        var expectedResponse = """
             {
                 "data": null,
                 "error": {
-                "timestamp" : "{{TIMESTAMP:10:SECONDS}}",
+                "timestamp" : "{{TIMESTAMP?amount=10&unit=SECONDS}}",
                     "error" : "BadCredentialsException",
                     "message" : "Bad credentials"
                 }
@@ -75,7 +75,7 @@ class AuthControllerTest extends BaseControllerTest {
         """;
 
         JsonAssertionBuilder.assertThatJson(response.getBody())
-                .matchesContract(expectedRespnse);
+                .matchesContract(expectedResponse);
     }
 
     @Test
@@ -96,11 +96,11 @@ class AuthControllerTest extends BaseControllerTest {
         assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(response.getHeaders().headerNames()).doesNotContain("set-cookie");
 
-        var expectedRespnse = """
+        var expectedResponse = """
             {
                 "data": null,
                 "error": {
-                    "timestamp" : "{{TIMESTAMP:10:SECONDS}}",
+                    "timestamp" : "{{TIMESTAMP?amount=10&unit=SECONDS}}",
                     "error" : "BadCredentialsException",
                     "message" : "Bad credentials"
                 }
@@ -108,7 +108,7 @@ class AuthControllerTest extends BaseControllerTest {
         """;
 
         JsonAssertionBuilder.assertThatJson(response.getBody())
-                .matchesContract(expectedRespnse);
+                .matchesContract(expectedResponse);
     }
 
     @Test
@@ -128,7 +128,7 @@ class AuthControllerTest extends BaseControllerTest {
         assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(response.getHeaders().headerNames()).contains("set-cookie");
 
-        var expectedRespnse = String.format("""
+        var expectedResponse = String.format("""
             {
                 "data": {
                     "user": {
@@ -137,14 +137,14 @@ class AuthControllerTest extends BaseControllerTest {
                         "firstName": "Test",
                         "authorities": []
                     },
-                    "accessToken": "{{ANY-STRING}}"
+                    "accessToken": "{{STRING}}"
                 },
                 "error": null
             }
         """.formatted(email));
 
         JsonAssertionBuilder.assertThatJson(response.getBody())
-                .matchesContract(expectedRespnse);
+                .matchesContract(expectedResponse);
     }
 
     @Test
@@ -179,7 +179,7 @@ class AuthControllerTest extends BaseControllerTest {
                         "firstName": "Test",
                         "authorities": []
                     },
-                    "accessToken": "{{ANY-STRING}}"
+                    "accessToken": "{{STRING}}"
                 },
                 "error": null
             }
@@ -242,7 +242,7 @@ class AuthControllerTest extends BaseControllerTest {
         assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(response.getHeaders().headerNames()).contains("set-cookie");
 
-        var expectedRespnse = String.format("""
+        var expectedResponse = String.format("""
             {
                 "data": {
                     "user": {
@@ -251,14 +251,14 @@ class AuthControllerTest extends BaseControllerTest {
                         "firstName": "Test",
                         "authorities": []
                     },
-                    "accessToken": "{{ANY-STRING}}"
+                    "accessToken": "{{STRING}}"
                 },
                 "error": null
             }
         """.formatted(email));
 
         JsonAssertionBuilder.assertThatJson(response.getBody())
-                .matchesContract(expectedRespnse);
+                .matchesContract(expectedResponse);
 
         return response;
     }
@@ -279,9 +279,9 @@ class AuthControllerTest extends BaseControllerTest {
             {
                 "data": null,
                 "error": {
-                    "timestamp" : "{{TIMESTAMP:10:SECONDS}}",
+                    "timestamp" : "{{TIMESTAMP?amount=10&unit=SECONDS}}",
                     "error" : "BadCredentialsException",
-                    "message" : "{{ANY-STRING}}"
+                    "message" : "{{STRING}}"
                 }
             }
         """;

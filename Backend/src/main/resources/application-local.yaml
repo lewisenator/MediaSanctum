@@ -9,3 +9,4 @@ spring:
         format_sql: true
 media-sanctum:
   cookies-secure: false
+  log-stack-traces: true

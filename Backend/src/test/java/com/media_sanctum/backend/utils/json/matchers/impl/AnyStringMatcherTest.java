@@ -23,7 +23,7 @@ public class AnyStringMatcherTest {
 
         String expeted = """
             {
-                "test": "{{ANY-STRING}}"
+                "test": "{{STRING}}"
             }
         """;
 
@@ -44,7 +44,7 @@ public class AnyStringMatcherTest {
 
         String expeted = """
             {
-                "test": "{{ANY-STRING}}"
+                "test": "{{STRING}}"
             }
         """;
 
@@ -64,7 +64,7 @@ public class AnyStringMatcherTest {
         String expeted = """
             {
                 "data": {
-                    "test": "{{ANY-STRING}}"
+                    "test": "{{STRING}}"
                 }
             }
         """;

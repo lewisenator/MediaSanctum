@@ -27,8 +27,10 @@ public class EditionService {
     }
 
     public static EditionResponse toResponse(Edition edition) {
-        if (edition == null) return null;
-        
+        if (edition == null) {
+            return null;
+        }
+
         return EditionResponse.builder()
                 .id(edition.getId())
                 .asin(edition.getAsin())

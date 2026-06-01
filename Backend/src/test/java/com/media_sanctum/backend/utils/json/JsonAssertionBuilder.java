@@ -6,6 +6,7 @@ import com.media_sanctum.backend.utils.json.matchers.MatcherRegistry;
 import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.skyscreamer.jsonassert.ValueMatcher;
 import org.skyscreamer.jsonassert.comparator.CustomComparator;
 
 import java.util.ArrayList;
@@ -16,9 +17,10 @@ import java.util.regex.Pattern;
 public class JsonAssertionBuilder {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final Pattern placeholderPattern = Pattern.compile("(\\{\\{[A-Z0-9:-]+\\}\\})");
+    private static final Pattern placeholderPattern = Pattern.compile("(\\{\\{[A-Z0-9:-]+(\\?.*)?\\}\\})");
 
     private final String responseBody;
+    private String basePath = "";
 
     public JsonAssertionBuilder(String responseBody) {
         this.responseBody = responseBody;
@@ -26,6 +28,11 @@ public class JsonAssertionBuilder {
 
     public static JsonAssertionBuilder assertThatJson(String responseBody) {
         return new JsonAssertionBuilder(responseBody);
+    }
+
+    public JsonAssertionBuilder withBasePath(String basePath) {
+        this.basePath = basePath;
+        return this;
     }
 
     public void matchesContract(String contract) {
@@ -39,13 +46,13 @@ public class JsonAssertionBuilder {
             }
         } catch (Exception|AssertionError e) {
             String message = String.format("""
-                        JSON Contract Mismatch
+                        JSON Contract Mismatch at basePath: %s
                             Expected: \n\n%s
                             \nActual: \n\n%s
                             \nError: %s
-                        """, pretty(contract), pretty(responseBody), e.getMessage());
+                        """, basePath, pretty(contract), pretty(responseBody), e.getMessage());
 
-            throw new AssertionError(message);
+            throw new AssertionError(message, e);
         }
     }
 
@@ -61,7 +68,7 @@ public class JsonAssertionBuilder {
         return result;
     }
 
-    private static List<Customization> findCustomizations(String json) {
+    private List<Customization> findCustomizations(String json) {
         List<Customization> customizations = new ArrayList<>();
 
         try {
@@ -76,7 +83,7 @@ public class JsonAssertionBuilder {
         return customizations;
     }
 
-    private static List<Customization> findCustomizations(StringJoiner root, JsonNode json) {
+    private List<Customization> findCustomizations(StringJoiner root, JsonNode json) {
         List<Customization> customizations = new ArrayList<>();
         if (json.isObject()) {
             json.forEachEntry((key, value) -> {
@@ -85,10 +92,11 @@ public class JsonAssertionBuilder {
                     while (matcher.find()) {
                         String placeholder = matcher.group(1);
                         var path = new StringJoiner(".").merge(root).add(key).toString();
-                        customizations.add(new Customization(path, (a, b) -> {
+                        ValueMatcher<Object> comparator = (a, b) -> {
                             // Delegate to MatcherRegistry for validation
-                            return MatcherRegistry.getInstance().validate(a, placeholder);
-                        }));
+                            return MatcherRegistry.getInstance().validate(path, a, placeholder);
+                        };
+                        customizations.add(new Customization(path, comparator));
                     }
                 } else if (value.isObject()) {
                     customizations.addAll(findCustomizations(new StringJoiner(".").merge(root).add(key), value));

@@ -29,7 +29,9 @@ public class ImageService {
     }
 
     public static ImageResponse toResponse(Image image) {
-        if (image == null) return null;
+        if (image == null) {
+            return null;
+        }
 
         var url = "/public/images/" + image.getId() + "." + image.getExtension();
         return ImageResponse.builder()

@@ -10,6 +10,7 @@ import com.media_sanctum.backend.client.hardcover.model.HardcoverBook;
 import com.media_sanctum.backend.client.hardcover.model.HardcoverBookSearchResult;
 import com.media_sanctum.backend.client.hardcover.model.HardcoverSearchResult;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
@@ -21,9 +22,10 @@ public class HardcoverClient {
 
     static final String INSTANCE = "hardcover";
 
-    private static final String ERRORS_FIELD = "errors";
-
-
+    public static final String ERRORS_FIELD = "errors";
+    public static final String DATA = "data";
+    public static final String SEARCH = "search";
+    public static final String RESULTS = "results";
 
     private final String apiKey;
     private final RestClient restClient;
@@ -39,35 +41,39 @@ public class HardcoverClient {
         this.objectMapper = objectMapper;
     }
 
+    @Retry(name = INSTANCE)
     @RateLimiter(name = INSTANCE)
     public HardcoverSearchResult<HardcoverAuthorSearchResult> searchAuthors(String query) {
         JsonNode root = executeQuery(HardcoverQueries.SEARCH_AUTHORS, Map.of("q", safe(query)));
-        JsonNode searchResults = root.path("data").path("search").path("results");
+        JsonNode searchResults = root.path(DATA).path(SEARCH).path(RESULTS);
         var targetType = objectMapper.getTypeFactory()
                 .constructParametricType(HardcoverSearchResult.class, HardcoverAuthorSearchResult.class);
         return objectMapper.convertValue(searchResults, targetType);
     }
 
+    @Retry(name = INSTANCE)
     @RateLimiter(name = INSTANCE)
     public HardcoverSearchResult<HardcoverBookSearchResult> searchBooks(String query) {
         JsonNode root = executeQuery(HardcoverQueries.SEARCH_BOOKS, Map.of("q", safe(query)));
-        JsonNode searchResults = root.path("data").path("search").path("results");
+        JsonNode searchResults = root.path(DATA).path(SEARCH).path(RESULTS);
         var targetType = objectMapper.getTypeFactory()
                 .constructParametricType(HardcoverSearchResult.class, HardcoverBookSearchResult.class);
         return objectMapper.convertValue(searchResults, targetType);
     }
 
+    @Retry(name = INSTANCE)
     @RateLimiter(name = INSTANCE)
     public HardcoverBook getBook(Integer hardcoverBookId) {
         JsonNode root = executeQuery(HardcoverQueries.GET_BOOK, Map.of("q", hardcoverBookId));
-        JsonNode searchResults = root.path("data").path("books_by_pk");
+        JsonNode searchResults = root.path(DATA).path("books_by_pk");
         return objectMapper.convertValue(searchResults, HardcoverBook.class);
     }
 
+    @Retry(name = INSTANCE)
     @RateLimiter(name = INSTANCE)
     public HardcoverAuthor getAuthor(Integer hardcoverAuthorId) {
         JsonNode root = executeQuery(HardcoverQueries.GET_AUTHOR, Map.of("q", hardcoverAuthorId));
-        JsonNode searchResults = root.path("data").path("authors_by_pk");
+        JsonNode searchResults = root.path(DATA).path("authors_by_pk");
         return objectMapper.convertValue(searchResults, HardcoverAuthor.class);
     }
 

@@ -22,7 +22,7 @@ public class AnyIntegerMatcherTest {
 
         String expeted = """
             {
-                "test": "{{ANY-INTEGER}}"
+                "test": "{{INTEGER}}"
             }
         """;
 
@@ -39,7 +39,7 @@ public class AnyIntegerMatcherTest {
 
         String expeted = """
             {
-                "test": "{{ANY-INTEGER}}"
+                "test": "{{INTEGER}}"
             }
         """;
 
@@ -59,7 +59,7 @@ public class AnyIntegerMatcherTest {
         String expeted = """
             {
                 "data": {
-                    "test": "{{ANY-INTEGER}}"
+                    "test": "{{INTEGER}}"
                 }
             }
         """;

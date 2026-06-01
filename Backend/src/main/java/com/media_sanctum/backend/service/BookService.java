@@ -43,6 +43,9 @@ public class BookService {
     }
 
     public static BookResponse toResponse(Book book) {
+        if (book == null) {
+            return null;
+        }
         return BookResponse.builder()
                 .id(book.getId())
                 .headline(book.getHeadline())
@@ -53,11 +56,15 @@ public class BookService {
                 .releaseYear(book.getReleaseYear())
                 .pages(book.getPages())
                 .audioSeconds(book.getAudioSeconds())
+                .rating(book.getRating())
+                .ratingsCount(book.getRatingsCount())
+                .tags(book.getTags())
                 .createdAt(book.getCreatedAt().toString())
                 .updatedAt(book.getUpdatedAt().toString())
                 .author(AuthorService.toResponse(book.getAuthor()))
                 .ebookEdition(EditionService.toResponse(book.getEbookEdition()))
                 .audiobookEdition(EditionService.toResponse(book.getAudiobookEdition()))
+                .featuredSeries(book.getFeaturedSeries())
                 .build();
     }
 }

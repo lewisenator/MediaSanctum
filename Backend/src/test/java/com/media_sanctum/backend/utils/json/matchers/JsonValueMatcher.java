@@ -1,6 +1,12 @@
 package com.media_sanctum.backend.utils.json.matchers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.json.JSONObject;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Interface for custom JSON value matchers used in contract testing.
@@ -8,22 +14,34 @@ import com.fasterxml.jackson.databind.JsonNode;
  * Implementations can provide custom validation logic for dynamic values
  * in JSON responses (e.g., timestamps, UUIDs, generated IDs).
  */
-public interface JsonValueMatcher {
+public interface JsonValueMatcher<T> {
 
-    /**
-     * Determines if this matcher can handle the given placeholder.
-     *
-     * @param placeholder The placeholder string from the JSON contract
-     * @return true if this matcher can validate values for this placeholder
-     */
-    boolean matches(String placeholder);
+    String PREFIX = "{{";
+    String SUFFIX = "}}";
 
-    /**
-     * Validates that the actual value from the JSON response matches the expected criteria.
-     *
-     * @param actual The actual value from the JSON response
-     * @param placeholder The placeholder string from the expected JSON
-     * @return true if the actual value is valid for this placeholder, false otherwise
-     */
-    boolean validate(Object actual, String placeholder);
+    String getName();
+
+    default boolean matches(String placeholder) {
+        var result = false;
+        var name = getName();
+        if (placeholder != null) {
+            result = placeholder.startsWith(PREFIX + name + "?")
+                    || placeholder.startsWith(PREFIX + name + SUFFIX);
+        }
+        return result;
+    }
+
+    Class<T> supportedType();
+
+    boolean validate(String path, T actual, MatcherParameters parameters);
+
+    default boolean validateUnchecked(String path, Object actual, MatcherParameters parameters) {
+        if (JSONObject.NULL.equals(actual) && parameters.isNullable()) {
+            return true;
+        }
+        if (!supportedType().isInstance(actual)) {
+            return false;
+        }
+        return validate(path, supportedType().cast(actual), parameters);
+    }
 }

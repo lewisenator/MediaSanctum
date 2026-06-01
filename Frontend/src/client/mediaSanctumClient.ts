@@ -108,6 +108,21 @@ export type Edition = {
     image?: Image;
 }
 
+export type Series = {
+    id: number;
+    name: string;
+    booksCount: number;
+    primaryBooksCount: number;
+    slug: string;
+    isCompleted: boolean;
+};
+
+export type FeaturedSeries = {
+    id: string;
+    position: number;
+    series: Series;
+}
+
 export type Book = {
     id: string;
     hardcoverId: string;
@@ -123,6 +138,8 @@ export type Book = {
     updatedAt: string;
     ebookEdition?: Edition;
     audiobookEdition?: Edition;
+    author: Author;
+    featuredSeries: FeaturedSeries;
 };
 
 export const getBooks = async (): Promise<Array<Book>> => {
