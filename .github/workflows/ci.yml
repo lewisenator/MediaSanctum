@@ -30,6 +30,8 @@ jobs:
         run: ./gradlew :Backend:check
         env:
           HARDCOVER_API_KEY: ${{ secrets.HARDCOVER_API_KEY }}
+          CONFIG: /tmp/media-sanctum-config
+          DATA: /tmp/media-sanctum-data
 
   frontend:
     name: Frontend
