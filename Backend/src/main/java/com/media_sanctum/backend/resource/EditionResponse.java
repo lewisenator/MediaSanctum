@@ -17,5 +17,7 @@ public class EditionResponse {
     private String language;
     private String country;
     private String editionType;
+    private Integer pages;
+    private Integer audioSeconds;
     private ImageResponse image;
 }

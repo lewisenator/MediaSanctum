@@ -7,6 +7,8 @@ CREATE TABLE editions (
     isbn13           TEXT,
     language         TEXT,
     country          TEXT,
+    pages            INTEGER,
+    audio_seconds    INTEGER,
     edition_type     TEXT NOT NULL,
     created_at       TEXT NOT NULL,
     updated_at       TEXT NOT NULL,

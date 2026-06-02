@@ -24,4 +24,6 @@ public class HardcoverEdition {
     private String isbn13;
     private HardcoverLanguage language;
     private HardcoverCountry country;
+    private Integer pages;
+    private Integer audioSeconds;
 }

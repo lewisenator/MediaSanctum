@@ -42,6 +42,10 @@ public class BookService {
         return bookRepository.save(book);
     }
 
+    public boolean exists(String id) {
+        return bookRepository.existsById(id);
+    }
+
     public static BookResponse toResponse(Book book) {
         if (book == null) {
             return null;
@@ -65,6 +69,8 @@ public class BookService {
                 .ebookEdition(EditionService.toResponse(book.getEbookEdition()))
                 .audiobookEdition(EditionService.toResponse(book.getAudiobookEdition()))
                 .featuredSeries(book.getFeaturedSeries())
+                .ebookFile(BookFileService.toBookFileResponse(book.getEbookFile()))
+                .audiobookFile(BookFileService.toBookFileResponse(book.getAudiobookFile()))
                 .build();
     }
 }

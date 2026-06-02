@@ -44,8 +44,8 @@ api.interceptors.response.use((res) => res, async (error) => {
             return api(originalRequest);
         } catch (err) {
             console.error('Refresh token failed', err);
+            return Promise.reject(err);
         }
-        return Promise.reject(error);
     }
     return Promise.reject(error);
 });

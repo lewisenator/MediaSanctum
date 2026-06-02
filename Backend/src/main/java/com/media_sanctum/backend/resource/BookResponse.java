@@ -31,4 +31,6 @@ public class BookResponse {
     private EditionResponse ebookEdition;
     private EditionResponse audiobookEdition;
     private HardcoverFeaturedSeriesSearchResult featuredSeries;
+    private BookFileResponse ebookFile;
+    private BookFileResponse audiobookFile;
 }

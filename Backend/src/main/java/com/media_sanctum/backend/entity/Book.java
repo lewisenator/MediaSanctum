@@ -70,8 +70,16 @@ public class Book {
     private Edition ebookEdition;
 
     @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ebook_file_id")
+    private BookFile ebookFile;
+
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "audiobook_edition_id")
     private Edition audiobookEdition;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "audiobook_file_id")
+    private BookFile audiobookFile;
 
     @Column(name = "rating")
     private Float rating;

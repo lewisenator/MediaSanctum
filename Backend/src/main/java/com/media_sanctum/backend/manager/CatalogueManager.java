@@ -8,17 +8,20 @@ import com.media_sanctum.backend.client.hardcover.model.HardcoverLanguage;
 import com.media_sanctum.backend.config.MediaSanctumConfig;
 import com.media_sanctum.backend.entity.Author;
 import com.media_sanctum.backend.entity.Book;
+import com.media_sanctum.backend.entity.BookFile;
 import com.media_sanctum.backend.entity.Edition;
 import com.media_sanctum.backend.entity.EditionType;
 import com.media_sanctum.backend.entity.Image;
 import com.media_sanctum.backend.entity.ImageType;
 import com.media_sanctum.backend.resource.BookResponse;
 import com.media_sanctum.backend.service.AuthorService;
+import com.media_sanctum.backend.service.BookFileService;
 import com.media_sanctum.backend.service.BookService;
 import com.media_sanctum.backend.service.EditionService;
 import com.media_sanctum.backend.service.ImageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,8 +39,10 @@ import java.util.regex.Pattern;
 public class CatalogueManager {
 
     private static final Pattern SAFE_IMAGE_PATTERN = Pattern.compile("^.*(jpg|jpeg|png|gif|webp)$");
+    private static final Pattern SAVE_BOOK_FILE_PATTERN = Pattern.compile("^.*(pdf|epub|mobi)$");
 
     private final BookService bookService;
+    private final BookFileService bookFileService;
     private final AuthorService authorService;
     private final ImageService imageService;
     private final EditionService editionService;
@@ -46,6 +51,7 @@ public class CatalogueManager {
 
     public CatalogueManager(
             BookService bookService,
+            BookFileService bookFileService,
             AuthorService authorService,
             ImageService imageService,
             EditionService editionService,
@@ -53,11 +59,65 @@ public class CatalogueManager {
             MediaSanctumConfig mediaSanctumConfig
     ) {
         this.bookService = bookService;
+        this.bookFileService = bookFileService;
         this.authorService = authorService;
         this.imageService = imageService;
         this.editionService = editionService;
         this.hardcoverClient = hardcoverClient;
         this.mediaSanctumConfig = mediaSanctumConfig;
+    }
+
+    public BookResponse uploadBookFile(
+            String bookId,
+            EditionType editionType,
+            MultipartFile file
+    ) {
+        var book = bookService.getBook(bookId);
+        var uploadDirectory = switch (editionType) {
+            case EBOOK -> bookDirectory(book);
+            case AUDIOBOOK -> audiobookDirectory(book);
+        };
+
+        var fileName = file.getOriginalFilename();
+        var matcher = SAVE_BOOK_FILE_PATTERN.matcher(fileName);
+        if (!matcher.matches()) {
+            var message = String.format("Invalid book file extension: %s", fileName);
+            log.error(message);
+            throw new IllegalArgumentException(message);
+        }
+        var extension = matcher.group(1);
+        var desiredFilename = book.getTitle() + "." + extension;
+
+        try {
+            try (InputStream in = file.getInputStream()) {
+                Files.copy(in, Path.of(uploadDirectory, desiredFilename), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            log.error("Failed to upload {} file: {}", editionType, fileName, e);
+            return null;
+        }
+
+        var bookFile = BookFile.builder()
+                .size(file.getSize())
+                .hash("bob")
+                .directory(uploadDirectory)
+                .filename(desiredFilename)
+                .contentType(file.getContentType())
+                .extension(extension)
+                .editionType(editionType)
+                .book(book)
+                .build();
+
+        bookFile = bookFileService.saveBookFile(bookFile);
+
+        switch (editionType) {
+            case EBOOK -> book.setEbookFile(bookFile);
+            case AUDIOBOOK -> book.setAudiobookFile(bookFile);
+        }
+
+        book = bookService.saveBook(book);
+
+        return BookService.toResponse(book);
     }
 
     public BookResponse addBook(Integer hardcoverId) {
@@ -83,7 +143,7 @@ public class CatalogueManager {
                 .ratingsCount(hardcoverBook.getRatingsCount())
                 .build();
 
-        var bookDirectory = Path.of(authorDirectory(book.getAuthor()), book.getTitle()).toString();
+        var bookDirectory = bookDirectory(book);
         createDirectory(bookDirectory);
         book.setEbookEdition(upsertEdition(bookDirectory, hardcoverBook.getDefaultCoverEdition(),
                 EditionType.EBOOK, ImageType.EBOOK));
@@ -120,6 +180,13 @@ public class CatalogueManager {
 
             edition.setImage(upsertImage(bookDirectory, imageType, hardcoverEdition.getCachedImage()));
 
+            switch (editionType) {
+                case EBOOK:
+                    edition.setPages(hardcoverEdition.getPages());
+                case AUDIOBOOK:
+                    edition.setAudioSeconds(hardcoverEdition.getAudioSeconds());
+            }
+
             result = editionService.saveEdition(edition);
         }
         return result;
@@ -152,7 +219,7 @@ public class CatalogueManager {
                 .links(hardcoverAuthor.getLinks())
                 .build();
 
-        var authorDirectory = createAuthorDirectory(author);
+        var authorDirectory = authorDirectory(author);
         author.setImage(upsertImage(authorDirectory, ImageType.MUGSHOT, hardcoverAuthor.getCachedImage()));
 
         return authorService.saveAuthor(author);
@@ -198,14 +265,26 @@ public class CatalogueManager {
         return result;
     }
 
-    private String authorDirectory(Author author) {
+    public String audiobookDirectory(Book book) {
         var dataDir = mediaSanctumConfig.dataDir();
-        return Path.of(dataDir, "books", author.getName()).toString();
+        var audiobookDirectory = Path.of(dataDir, "audiobooks",
+                book.getAuthor().getName(), book.getTitle()).toString();
+        return createDirectory(audiobookDirectory);
     }
 
-    private String createAuthorDirectory(Author author) {
-        var directory = authorDirectory(author);
-        return createDirectory(directory);
+
+    private String bookDirectory(Book book) {
+        var author = book.getAuthor();
+        var authorDir = authorDirectory(author);
+        var bookDirectory = Path.of(authorDir, book.getTitle()).toString();
+        return createDirectory(bookDirectory);
+    }
+
+
+    private String authorDirectory(Author author) {
+        var dataDir = mediaSanctumConfig.dataDir();
+        var authorDirectory = Path.of(dataDir, "books", author.getName()).toString();
+        return createDirectory(authorDirectory);
     }
 
     private String createDirectory(String directory) {

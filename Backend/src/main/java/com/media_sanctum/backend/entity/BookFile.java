@@ -22,50 +22,43 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "editions")
-public class Edition {
+@Table(name = "book_files")
+public class BookFile {
 
     @Id
     @Column(name = "id", nullable = false, updatable = false)
     private String id;
 
-    @Column(name = "hardcover_id")
-    private Integer hardcoverId;
+    @Column(name = "size", nullable = false)
+    private Long size;
 
-    @Column(name = "asin")
-    private String asin;
+    @Column(name = "hash", nullable = false)
+    private String hash;
 
-    @Column(name = "isbn10")
-    private String isbn10;
+    @Column(name = "directory", nullable = false)
+    private String directory;
 
-    @Column(name = "isbn13")
-    private String isbn13;
+    @Column(name = "filename", nullable = false)
+    private String filename;
 
-    @Column(name = "language")
-    private String language;
+    @Column(name = "content_type", nullable = false)
+    private String contentType;
 
-    @Column(name = "country")
-    private String country;
+    @Column(name = "extension", nullable = false)
+    private String extension;
 
-    @Column(name = "pages")
-    private Integer pages;
-
-    @Column(name = "audio_seconds")
-    private Integer audioSeconds;
-
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "image_id")
-    private Image image;
-
-    @Column(name = "edition_type")
+    @Column(name = "edition_type", nullable = false)
     private EditionType editionType;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id")
+    private Book book;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
 
     @PrePersist
     private void prePersist() {

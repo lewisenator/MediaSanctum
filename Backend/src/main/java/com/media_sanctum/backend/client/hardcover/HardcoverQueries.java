@@ -69,6 +69,7 @@ public class HardcoverQueries {
                       id
                       canonical_id
                       book_id
+                      pages
                       asin
                       cached_image
                       isbn_10

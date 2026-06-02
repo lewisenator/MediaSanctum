@@ -1,8 +1,12 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { getBook } from '#/client/mediaSanctumClient.ts';
-import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
+import { type Book, getBook, uploadEbook } from '#/client/mediaSanctumClient.ts';
+import { queryOptions, useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { BsBook } from 'react-icons/bs';
 import { FiUpload } from "react-icons/fi";
+import TimeAgo from '#/components/TimeAgo.tsx';
+import { useCallback, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import BookFormat from '#/components/BookFormat.tsx';
 
 const bookQueryOptions = (bookId: string) => queryOptions({
   queryKey: ['book', bookId],
@@ -18,7 +22,8 @@ export const Route = createFileRoute('/(authenticated)/books/$bookId')({
 
 function BookDetailsPage() {
   const { bookId } = Route.useParams();
-  const { data: book } = useSuspenseQuery(bookQueryOptions(bookId));
+  const { data: queriedBook } = useSuspenseQuery(bookQueryOptions(bookId));
+  const [book, setBook] = useState<Book>(queriedBook);
 
   return (
     <div className="flex flex-col flex-1 overflow-y-hidden max-w-6xl mx-auto">
@@ -38,6 +43,11 @@ function BookDetailsPage() {
         <div className="flex flex-col ml-5">
           <span className="mb-2 text-[11px] uppercase tracking-[0.16em] font-mono text-accent">Book</span>
           <h1 className="font-display font-semibold text-4xl text-text">{book.title}</h1>
+          { book.subtitle && (
+            <p className="mt-3 text-sm text-textDim font-ui">
+              {book.subtitle}
+            </p>
+          )}
           <p className="mt-3 text-sm text-textDim font-ui">
             by
             <Link
@@ -62,27 +72,47 @@ function BookDetailsPage() {
               <span className="ml-1 tabular-nums">{book.releaseYear}</span>
             </span>
           )}
-          { book.description && (
-            <div className="mt-4 text-sm leading-relaxed max-w-none text-text font-ui">
-              {book.description}
-            </div>
+          { book.createdAt && (
+            <span className="mt-3 text-xs font-ui text-text">
+              Added
+              <span className="ml-1 tabular-nums"><TimeAgo date={new Date(book.createdAt)} /></span>
+            </span>
           )}
         </div>
+      </div>
+
+      <div>
+        { book.description && (
+          <div className="mt-4 text-sm leading-relaxed max-w-none text-text font-ui">
+            {book.description}
+          </div>
+        )}
       </div>
 
       <div className="mt-8">
         <h2 className="font-display font-semibold text-lg text-text tracking-tight">Formats</h2>
         <div className="card mt-3 divide-y divide-surfaceAlt">
+          <BookFormat
+            bookId={book.id}
+            setBook={setBook}
+            format={"ebook"}
+            metric={"Pages"}
+            amount={book.pages}
+            bookFile={book.ebookFile}
+          />
+
           <div className="py-4 px-5 flex flex-col">
             <div className="flex flex-row justify-between items-center flex-wrap">
               <div className="flex flex-row">
                 <p className="library-card-format">
-                  ebook
+                  Audiobook
                 </p>
-                <div className="ml-5 text-sm text-textDim gap-1 flex flex-row flex-wrap items-center">
-                  <span className="tabular-nums">305</span>
-                  Pages
-                </div>
+                { book.audiobookEdition?.audioSeconds && (
+                  <div className="ml-5 text-sm text-textDim gap-1 flex flex-row flex-wrap items-center">
+                    <span className="tabular-nums">{book.audiobookEdition.audioSeconds}</span>
+                    Pages
+                  </div>
+                )}
               </div>
               <div className="">
                 <button className="btn btn-secondary text-xs! px-3 py-2 font-ui">
@@ -94,15 +124,7 @@ function BookDetailsPage() {
               Files missing - drop a file anywhere on the page or use the buttons above.
             </div>
           </div>
-          <div className="p-6">
-            Audiobook
-          </div>
         </div>
-      </div>
-
-      <hr className="mt-5" />
-      <div>
-        {JSON.stringify(book)}
       </div>
     </div>
   )

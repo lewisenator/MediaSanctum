@@ -5,6 +5,7 @@ import com.media_sanctum.backend.config.MediaSanctumJwtConfig;
 import com.media_sanctum.backend.model.UserModel;
 import com.media_sanctum.backend.resource.AuthResponse;
 import com.media_sanctum.backend.resource.DataResponse;
+import com.media_sanctum.backend.resource.ErrorResponse;
 import com.media_sanctum.backend.resource.LoginRequest;
 import com.media_sanctum.backend.resource.UserResponse;
 import com.media_sanctum.backend.security.JwtService;
@@ -13,6 +14,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -86,7 +89,18 @@ public class AuthController {
             @CookieValue(name = REFRESH_COOKIE_NAME) String refreshToken) {
         var tokenPayload = jwtService.verifyJwtToken(refreshToken);
 
-        var user = userService.getUserById(tokenPayload.getUserId()).orElseThrow();
+        var maybeUser = userService.getUserById(tokenPayload.getUserId());
+        if (maybeUser.isEmpty()) {
+            var error = ErrorResponse.builder()
+                    .error("INVALID_REFRESH_TOKEN")
+                    .message("Invalid refresh token")
+                    .timestamp(LocalDateTime.now().toString())
+                    .build();
+            DataResponse<AuthResponse> response = DataResponse.error(error);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        var user = maybeUser.get();
         var userDetails = userService.loadUserByUsername(user.getEmail());
         var authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 

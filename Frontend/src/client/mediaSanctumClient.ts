@@ -105,6 +105,8 @@ export type Edition = {
     language: string;
     country: string;
     editionType: string;
+    pages?: number;
+    audioSeconds?: number;
     image?: Image;
 }
 
@@ -123,6 +125,16 @@ export type FeaturedSeries = {
     series: Series;
 }
 
+export type BookFile = {
+    id: string;
+    size: number;
+    filename: string;
+    contentType: string;
+    editionType: string;
+    createdAt: string;
+    updatedAt: string;
+};
+
 export type Book = {
     id: string;
     hardcoverId: string;
@@ -132,7 +144,7 @@ export type Book = {
     subtitle: string;
     description: string;
     releaseYear: number;
-    page: number;
+    pages: number;
     audioSeconds: number;
     createdAt: string;
     updatedAt: string;
@@ -140,6 +152,8 @@ export type Book = {
     audiobookEdition?: Edition;
     author: Author;
     featuredSeries: FeaturedSeries;
+    ebookFile: BookFile;
+    audiobookFile: BookFile;
 };
 
 export const getBooks = async (): Promise<Array<Book>> => {
@@ -159,6 +173,21 @@ export const getBook = async (id: string): Promise<Book> => {
         throw handleError(err, 'Failed to fetch book');
     }
 }
+
+export const uploadEbook = async (id: string, ebook: File): Promise<Book> => {
+    try {
+        const formData = new FormData();
+        formData.append('file', ebook);
+        const res: AxiosResponse<DataResponse<Book>> = await api.post(`/books/${id}/ebook/upload`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return res.data.data!;
+    } catch (err: any) {
+        throw handleError(err, 'Failed to fetch book');
+    }
+};
 
 export type AuthorLink = {
     url: string;
@@ -217,8 +246,22 @@ export const getAuthor = async (id: string): Promise<Author> => {
     }
 }
 
-const handleError = (err: any, defaultMessage: string): Error => {
+export class ApiError extends Error {
+    readonly status: number;
+    readonly url: string;
+
+    constructor(message: string, status: number, url: string) {
+        super(message);
+        this.name = 'ApiError';
+        this.status = status;
+        this.url = url;
+    }
+}
+
+const handleError = (err: any, defaultMessage: string): ApiError => {
+    if (err instanceof ApiError) return err;
     const { status, statusText, data } = err.response;
+    const url: string = err.config?.url ?? '';
     console.log(`Received a ${status} - ${statusText} - `, JSON.stringify(data));
-    return new Error(data?.error?.message || defaultMessage);
+    return new ApiError(data?.error?.message || defaultMessage, status, url);
 };

@@ -3,10 +3,14 @@ spring:
     activate:
       on-profile: local
   jpa:
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
 media-sanctum:
   cookies-secure: false
   log-stack-traces: true
+  jwt:
+    access-exp:
+      time-unit: SECONDS
+      value: 30
