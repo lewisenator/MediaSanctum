@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import Logo from '#/components/layout/Logo.tsx';
-import { IoBookOutline } from "react-icons/io5";
-import { PiListLight, PiSignOutLight } from "react-icons/pi";
-import { IoPersonOutline } from "react-icons/io5";
+import { IoBookOutline, IoPersonOutline } from 'react-icons/io5';
+import { PiListLight, PiSignOutLight } from 'react-icons/pi';
 import { logout } from '#/client/mediaSanctumClient.ts';
 import { useAuth } from '#/context/AuthContext.tsx';
-import { PiLessThan, PiGreaterThan } from "react-icons/pi";
+import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 
 type LeftHandMenuProps = {
   flyout?: Boolean;
@@ -79,7 +78,7 @@ const LeftHandMenu = (
         { !flyout && (
           <button onClick={toggleCollapse} className={`${styles.linkClass} w-full`} title={collapse ? 'Expand' : 'Collapse'}>
           <span className='shrink-0 opacity-50'>
-            { collapse ? <PiGreaterThan /> : <PiLessThan /> }
+            { collapse ? <IoIosArrowForward /> : <IoIosArrowBack />}
           </span>
             <span className={`pl-1 font-sans opacity-0 ${collapse ? 'md:opacity-0' : 'md:opacity-50'}`}>
             {collapse ? 'Expand' : 'Collapse'}
