@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import '@testing-library/jest-dom/vitest';
-import LeftHandMenu from './LeftHandMenu';
+import LeftHandMenu from './LeftHandMenu.tsx';
 import { renderWithRouter } from '#/test/renderWithRouter.tsx';
 import userEvent from '@testing-library/user-event/dist/cjs/index.js';
 import { screen, waitFor } from '@testing-library/react';

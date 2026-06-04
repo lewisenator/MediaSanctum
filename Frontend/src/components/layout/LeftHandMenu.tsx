@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
-import Logo from '#/components/Logo.tsx';
+import Logo from '#/components/layout/Logo.tsx';
 import { IoBookOutline } from "react-icons/io5";
 import { PiListLight, PiSignOutLight } from "react-icons/pi";
 import { IoPersonOutline } from "react-icons/io5";
@@ -9,7 +9,7 @@ import { useAuth } from '#/context/AuthContext.tsx';
 import { PiLessThan, PiGreaterThan } from "react-icons/pi";
 
 type LeftHandMenuProps = {
-  flyout: Boolean;
+  flyout?: Boolean;
 };
 
 const styles = {

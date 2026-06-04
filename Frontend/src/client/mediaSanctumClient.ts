@@ -87,11 +87,12 @@ export const searchBooks = async (query: string): Promise<SearchResults<BookResu
     }
 }
 
-export const addBook = async (hardcoverId: string): Promise<void> => {
+export const addBook = async (hardcoverId: string): Promise<Book> => {
     try {
-        await api.post('/books', {
+        const res: AxiosResponse<DataResponse<Book>> = await api.post('/books', {
             hardcoverId
         });
+        return res.data.data!;
     } catch (err: any) {
         throw handleError(err, 'Failed to add book');
     }
@@ -129,6 +130,7 @@ export type BookFile = {
     id: string;
     size: number;
     filename: string;
+    url: string;
     contentType: string;
     editionType: string;
     createdAt: string;

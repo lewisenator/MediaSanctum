@@ -7,7 +7,7 @@ const statusQueryOptions = () => queryOptions({
   queryFn: () => health()
 });
 
-export const Route = createFileRoute('/(authenticated)/status/')({
+export const Route = createFileRoute('/(authenticated)/_sidebar/status/')({
   component: StatusPage,
   loader: async ({context: {queryClient}}): Promise<HealthResponse> => {
     return queryClient.ensureQueryData(statusQueryOptions());

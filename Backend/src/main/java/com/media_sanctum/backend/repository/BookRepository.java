@@ -9,5 +9,5 @@ import java.util.Optional;
 @SuppressWarnings("PMD.ImplicitFunctionalInterface")
 public interface BookRepository extends JpaRepository<Book, String> {
 
-    Optional<Author> findByHardcoverId(Integer hardcoverId);
+    Optional<Book> findByHardcoverId(Integer hardcoverId);
 }

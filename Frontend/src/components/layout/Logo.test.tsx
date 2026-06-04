@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import '@testing-library/jest-dom/vitest';
-import Logo from './Logo';
+import Logo from './Logo.tsx';
 
 describe('Logo', () => {
   it('Renders at size 7 by default', () => {

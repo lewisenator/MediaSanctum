@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BookFileResponse {
     private String id;
+    private String url;
     private Long size;
     private String filename;
     private String contentType;

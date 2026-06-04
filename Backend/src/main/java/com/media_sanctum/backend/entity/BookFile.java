@@ -35,6 +35,9 @@ public class BookFile {
     @Column(name = "hash", nullable = false)
     private String hash;
 
+    @Column(name = "url", nullable = false)
+    private String url;
+
     @Column(name = "directory", nullable = false)
     private String directory;
 

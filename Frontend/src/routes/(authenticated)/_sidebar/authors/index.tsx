@@ -3,13 +3,14 @@ import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 import { getAuthors } from '#/client/mediaSanctumClient.ts';
 import { useState } from 'react';
 import { IoIosSearch } from 'react-icons/io';
+import Main from '#/components/layout/Main.tsx';
 
 const authorsQueryOptions = () => queryOptions({
   queryKey: ['authors'],
   queryFn: () => getAuthors()
 });
 
-export const Route = createFileRoute('/(authenticated)/authors/')({
+export const Route = createFileRoute('/(authenticated)/_sidebar/authors/')({
   component: AuthorsPage,
   loader: async ({ context: { queryClient } }) => {
     return queryClient.ensureQueryData(authorsQueryOptions());
@@ -21,7 +22,7 @@ function AuthorsPage() {
   const [query, setQuery] = useState('');
 
   return (
-    <>
+    <Main>
       <div className="w-full flex flex-row flex-wrap justify-between">
         <h1 className="font-display font-semibold text-3xl text-text">
           Authors
@@ -72,6 +73,6 @@ function AuthorsPage() {
       ) : (
         <div>No authors found.</div>
       )}
-    </>
+    </Main>
   )
 }

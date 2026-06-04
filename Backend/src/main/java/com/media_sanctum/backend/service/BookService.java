@@ -38,6 +38,10 @@ public class BookService {
         return bookRepository.findById(id).orElse(null);
     }
 
+    public Book getBookByHardcoverId(Integer id) {
+        return bookRepository.findByHardcoverId(id).orElse(null);
+    }
+
     public Book saveBook(Book book) {
         return bookRepository.save(book);
     }

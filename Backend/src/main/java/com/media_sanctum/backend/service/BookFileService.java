@@ -36,6 +36,7 @@ public class BookFileService {
         return BookFileResponse.builder()
                 .id(bookFile.getId())
                 .size(bookFile.getSize())
+                .url(bookFile.getUrl())
                 .filename(bookFile.getFilename())
                 .contentType(bookFile.getContentType())
                 .editionType(bookFile.getEditionType())

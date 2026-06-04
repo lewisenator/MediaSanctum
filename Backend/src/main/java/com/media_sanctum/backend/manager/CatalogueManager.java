@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -97,7 +98,11 @@ public class CatalogueManager {
             return null;
         }
 
+        var id = UUID.randomUUID().toString();
+        var url = ("/public/book-files/%s.%s").formatted(id, extension);
         var bookFile = BookFile.builder()
+                .id(id)
+                .url(url)
                 .size(file.getSize())
                 .hash("bob")
                 .directory(uploadDirectory)
@@ -142,6 +147,12 @@ public class CatalogueManager {
                 .rating(hardcoverBook.getRating())
                 .ratingsCount(hardcoverBook.getRatingsCount())
                 .build();
+
+        var existingBook = bookService.getBookByHardcoverId(hardcoverBook.getId());
+        if (existingBook != null) {
+            book.setId(existingBook.getId());
+            book.setCreatedAt(existingBook.getCreatedAt());
+        }
 
         var bookDirectory = bookDirectory(book);
         createDirectory(bookDirectory);

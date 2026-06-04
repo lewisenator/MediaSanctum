@@ -1,5 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import SidebarLayout from '#/layouts/SidebarLayout.tsx';
+import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router';
 import { useAuth } from '#/context/AuthContext.tsx';
 import { useEffect } from 'react';
 
@@ -24,7 +23,5 @@ function AuthenticatedRoute() {
     }
   }, [user, accessToken]);
 
-  return (
-    <SidebarLayout />
-  )
+  return <Outlet />;
 }

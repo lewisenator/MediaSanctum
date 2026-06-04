@@ -1,8 +1,8 @@
 import { Link } from '@tanstack/react-router';
-import Logo from '#/components/Logo.tsx';
+import Logo from '#/components/layout/Logo.tsx';
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useState } from 'react';
-import LeftHandMenu from '#/components/LeftHandMenu.tsx';
+import LeftHandMenu from '#/components/layout/LeftHandMenu.tsx';
 
 const TopBar = () => {
   const [isOpen, setIsOpen] = useState(false);
