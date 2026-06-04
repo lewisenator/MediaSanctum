@@ -9,7 +9,7 @@ type BookCardProps = {
 const BookCard = ({book}: BookCardProps) => {
 
   return (
-    <Link to="/books/$bookId" params={{ bookId: book.id }} className="library-card group flex flex-col">
+    <Link to="/books/$bookId" params={{ bookId: book.id }} className="library-card group flex flex-col" title={book.title}>
       <div className="library-card-cover min-h-2/4">
         {book.ebookEdition && book.ebookEdition.image ? (
           <img

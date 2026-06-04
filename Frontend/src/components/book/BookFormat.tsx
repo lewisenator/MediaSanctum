@@ -1,8 +1,12 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { FiUpload } from 'react-icons/fi';
 import { useDropzone } from 'react-dropzone';
 import { useMutation } from '@tanstack/react-query';
 import { type Book, type BookFile, uploadEbook } from '#/client/mediaSanctumClient.ts';
+import { Link } from '@tanstack/react-router';
+import { BsBook } from "react-icons/bs";
+import { IoCloudDownloadOutline } from "react-icons/io5";
+
 
 type BookFormatProps = {
   bookId: string;
@@ -16,11 +20,10 @@ type BookFormatProps = {
 const BookFormat = (
   { bookId, format, setBook, metric, amount, bookFile }: BookFormatProps
 ) => {
-  const { mutateAsync, isError, error, isPending, data } = useMutation({
+  const { mutateAsync, isError, error, isPending } = useMutation({
     mutationFn: (file: File) => uploadEbook(bookId, file),
-    onSuccess: () => {
-      console.log('Upload successful');
-      if (data !== undefined) {
+    onSuccess: async (data) => {
+      if (data) {
         setBook(data);
       }
     }
@@ -45,11 +48,36 @@ const BookFormat = (
       reader.readAsArrayBuffer(file);
     })
   }, []);
+
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop});
+
+  const [downloading, setDownloading] = useState<boolean>(false);
+  const downloadBook = async () => {
+    if (!bookFile) return;
+    setDownloading(true);
+    try {
+      const response = await fetch(bookFile.url);
+      const bookFileBlob: Blob = await response.blob();
+      const url = window.URL.createObjectURL(bookFileBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', bookFile.filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.log(error);
+    }
+    setDownloading(false);
+  }
+
+  console.log(`Rendering format for bookId: ${bookId} format: ${format} hasBook: ${bookFile !== null}`);
+  console.log(`bookFile: ${JSON.stringify(bookFile)}`);
 
   return (
     <div className="py-4 px-5 flex flex-col">
-      <div className="flex flex-row justify-between items-center flex-wrap">
+      <div className="flex flex-row justify-between items-center flex-wrap gap-3">
         <div className="flex flex-row">
           <p className="library-card-format">
             {format}
@@ -63,7 +91,22 @@ const BookFormat = (
           )}
         </div>
         { bookFile ? (
-          <p className="text-success">{bookFile.filename}</p>
+          <div className="flex flex-row gap-3 flex-wrap">
+            <Link
+              to='/books/reader/$bookId'
+              params={{ bookId: bookId }}
+              className="btn btn-secondary text-xs! px-3 py-2 font-ui shrink-0"
+            >
+              <BsBook /> Read
+            </Link>
+            <button
+              disabled={downloading}
+              onClick={downloadBook}
+              className="btn btn-secondary text-xs! px-3 py-2 font-ui shrink-0"
+            >
+              <IoCloudDownloadOutline /> {downloading ? 'Downloading...' : 'Download'}
+            </button>
+          </div>
         ) : (
           <div className="">
             { isError && (
@@ -86,7 +129,11 @@ const BookFormat = (
 
       </div>
       <div className="basis-full text-xs italic text-textMute">
-        Files missing - drop a file anywhere on the page or use the buttons above.
+        { bookFile
+          ? `Click to download or read ${bookFile.filename}`
+          : 'Files missing - drop a file anywhere on the page or use the buttons above.'
+        }
+
       </div>
     </div>
   );

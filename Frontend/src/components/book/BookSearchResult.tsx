@@ -3,6 +3,8 @@ import { FaPlus, FaHourglassHalf } from "react-icons/fa6";
 import { GoBook } from "react-icons/go";
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
+import { queryClient } from '#/router.tsx';
+
 
 export type BookSearchResultProps = {
   book: BookResult;
@@ -13,7 +15,10 @@ const BookSearchResult = ({ book }: BookSearchResultProps) => {
 
   const { mutateAsync, isError, error, isPending } = useMutation({
     mutationFn: (hardcoverId: string) => addBook(hardcoverId),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (data && data.id) {
+        queryClient.invalidateQueries({queryKey: ['book', data.id]});
+      }
       navigate({
         to: '/books'
       });
