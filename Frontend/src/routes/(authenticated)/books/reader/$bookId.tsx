@@ -112,6 +112,7 @@ function EbookReaderPage() {
           bookId={bookId}
           book={book}
           tocClicked={() => setShowToc(!showToc)}
+          toc={toc}
         />
 
         <div className="center-wrapper flex flex-row h-full w-full">

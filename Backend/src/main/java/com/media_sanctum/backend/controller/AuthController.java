@@ -13,6 +13,7 @@ import com.media_sanctum.backend.service.UserService;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.servlet.filter.ApplicationContextHeaderFilter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -86,7 +87,17 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<DataResponse<AuthResponse>> refresh(
-            @CookieValue(name = REFRESH_COOKIE_NAME) String refreshToken) {
+            @CookieValue(name = REFRESH_COOKIE_NAME, required = false) String refreshToken) {
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            var error = ErrorResponse.builder()
+                    .error("INVALID_REFRESH_TOKEN")
+                    .message("Invalid refresh token")
+                    .timestamp(LocalDateTime.now().toString())
+                    .build();
+            DataResponse<AuthResponse> response = DataResponse.error(error);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
         var tokenPayload = jwtService.verifyJwtToken(refreshToken);
 
         var maybeUser = userService.getUserById(tokenPayload.getUserId());
