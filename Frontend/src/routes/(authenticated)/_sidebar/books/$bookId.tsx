@@ -3,7 +3,7 @@ import { type Book, getBook } from '#/client/mediaSanctumClient.ts';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 import { BsBook } from 'react-icons/bs';
 import { FiUpload } from "react-icons/fi";
-import TimeAgo from '#/components/TimeAgo.tsx';
+import TimeAgo from '#/components/formatting/TimeAgo.tsx';
 import { useState } from 'react';
 import BookFormat from '#/components/book/BookFormat.tsx';
 import Main from '#/components/layout/Main.tsx';

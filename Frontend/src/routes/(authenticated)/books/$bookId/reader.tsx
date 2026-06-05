@@ -9,6 +9,7 @@ import ProgressBar from '#/components/reader/ProgressBar.tsx';
 import { readerStyles } from './readerStyles.ts';
 import TitleBar from '#/components/reader/TitleBar.tsx';
 import TOC from '#/components/reader/TOC.tsx';
+import ReaderSettings from '#/components/reader/ReaderSettings.tsx';
 
 const bookQueryOptions = (bookId: string) => queryOptions({
   queryKey: ['book', bookId],
@@ -20,7 +21,7 @@ const bookQueryOptions = (bookId: string) => queryOptions({
   }
 });
 
-export const Route = createFileRoute('/(authenticated)/books/reader/$bookId')({
+export const Route = createFileRoute('/(authenticated)/books/$bookId/reader')({
   component: EbookReaderPage,
   loader: async ({params: {bookId}, context: {queryClient}}) => {
     return queryClient.ensureQueryData(bookQueryOptions(bookId));
@@ -32,7 +33,23 @@ function EbookReaderPage() {
   const { data: book } = useSuspenseQuery(bookQueryOptions(bookId));
 
   const [progress, setProgress] = useState<number>(0);
-  const [showToc, setShowToc] = useState<boolean>(false);
+
+  const [showToc, setShowTocUnwrapped] = useState<boolean>(false);
+  const [showSettings, setShowSettingsUnwrapped] = useState<boolean>(false);
+
+  const setShowToc = (value: boolean) => {
+    if (value && showSettings) {
+      setShowSettingsUnwrapped(false);
+    }
+    setShowTocUnwrapped(value);
+  };
+  const setShowSettings = (value: boolean) => {
+    if (value && showToc) {
+      setShowTocUnwrapped(false);
+    }
+    setShowSettingsUnwrapped(value);
+  };
+
   const [toc, setToc] = useState<Array<NavItem>>([]);
 
   const localStorageKey = `epub-location-${bookId}`;
@@ -53,21 +70,38 @@ function EbookReaderPage() {
   const [currentChapter, setCurrentChapter] = useState(0);
   const [totalChapters, setTotalChapters] = useState(0);
 
-  const [fontSize, setFontSize] = useState<number>(100);
-  const [spread, setSpread] = useState<string>("none"); // "none" or "auto"
+
+  const [spread, setSpread] = useState<boolean>(true);
   const applyTheme = (rendition?: Rendition) => {
     if (!rendition) return;
     console.log('applying theme');
     rendition.themes.default({
       "body": {
-        "font-size": `${Math.round(fontSize * 16.0 / 100.0)}px !important`,
-        "margin-bottom": "25px",
+        "font-size": `${fontSize}em !important`,
+        "padding-top": `${pageMargins}em !important`,
+        "padding-bottom": `${pageMargins}em !important`,
+        "padding-left": `${pageMargins}em !important`,
+        "padding-right": `${pageMargins}em !important`,
+        "margin": "0 !important",
+      },
+      "p": {
+        "line-height": lineHeight,
+        "font-family": `${font}`,
+        "margin-top": `${paragraphSpacing}em !important`,
       }
     });
   };
+
+  const [brightness, setBrightness] = useState<number>(100);
+  const [fontSize, setFontSize] = useState<number>(1.0);
+  const [lineHeight, setLineHeight] = useState<number>(1.0);
+  const [font, setFont] = useState<string>("'Helvetica', sans-serif");
+  const [paragraphSpacing, setParagraphSpacing] = useState<number>(1.0);
+  const [pageMargins, setPageMargins] = useState<number>(1.0);
+
   useEffect(() => {
     applyTheme(rendition?.current);
-  }, [fontSize]);
+  }, [fontSize, lineHeight, font, paragraphSpacing, pageMargins]);
 
   const cacheLocations = (rendition: Rendition) => {
     const locKey = `epub-locations-${book.ebookFile.id}`;
@@ -90,7 +124,11 @@ function EbookReaderPage() {
     if (!rendition.current) return;
 
     const pct = rendition.current.book.locations.percentageFromCfi(epubcfi);
-    if (pct != null && !isNaN(pct)) setProgress(Math.round(pct * 100));
+    if (pct != null && !isNaN(pct)) {
+      setProgress(Math.round(pct * 100.0));
+    } else {
+      setProgress(0);
+    }
 
     const toc = rendition.current.book.navigation?.toc ?? [];
     const spineItem = rendition.current.book.spine.get(epubcfi);
@@ -108,10 +146,18 @@ function EbookReaderPage() {
   return (
     <div className="flex flex-col flex-1 overflow-hidden mx-auto w-full p-[-4] md:p-[-6] lg:p-[-8]">
       <div className="flex-1 flex flex-col w-full">
+        <div
+          id="brightness-filter"
+          className="pointer-events-none fixed inset-0 z-100 bg-black"
+          style={{ opacity: (100 - brightness) / 100 }}
+        >
+
+        </div>
         <TitleBar
           bookId={bookId}
           book={book}
           tocClicked={() => setShowToc(!showToc)}
+          settingsClicked={() => setShowSettings(!showSettings)}
           toc={toc}
         />
 
@@ -137,7 +183,7 @@ function EbookReaderPage() {
                 openAs: 'epub',
               }}
               epubOptions={{
-                spread,
+                spread: spread ? "auth" : "none",
               }}
               locationChanged={() => {}}
               getRendition={(_rendition: Rendition) => {
@@ -180,6 +226,24 @@ function EbookReaderPage() {
                 rendition.current?.next();
               }}
             />
+
+            {showSettings && (
+              <ReaderSettings
+                dismiss={() => setShowSettings(false)}
+                fontSize={fontSize}
+                setFontSize={setFontSize}
+                lineHeight={lineHeight}
+                setLineHeight={setLineHeight}
+                font={font}
+                setFont={setFont}
+                paragraphSpacing={paragraphSpacing}
+                setParagraphSpacing={setParagraphSpacing}
+                pageMargins={pageMargins}
+                setPageMargins={setPageMargins}
+                brightness={brightness}
+                setBrightness={setBrightness}
+              />
+            )}
           </div>
         </div>
         <ProgressBar

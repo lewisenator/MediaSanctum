@@ -93,7 +93,7 @@ const BookFormat = (
         { bookFile ? (
           <div className="flex flex-row gap-3 flex-wrap">
             <Link
-              to='/books/reader/$bookId'
+              to='/books/$bookId/reader'
               params={{ bookId: bookId }}
               className="btn btn-secondary text-xs! px-3 py-2 font-ui shrink-0"
             >
@@ -104,7 +104,7 @@ const BookFormat = (
               onClick={downloadBook}
               className="btn btn-secondary text-xs! px-3 py-2 font-ui shrink-0"
             >
-              <IoCloudDownloadOutline /> {downloading ? 'Downloading...' : 'Download'}
+              <IoCloudDownloadOutline />
             </button>
           </div>
         ) : (

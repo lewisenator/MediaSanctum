@@ -23,12 +23,18 @@ export const readerStyles: IReactReaderStyle = {
     ...ReactReaderStyle.reader,
     color: "var(--c-text)",
     background: "var(--c-bg)",
-    inset: "0"
+    inset: "0",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   readerArea: {
     ...ReactReaderStyle.readerArea,
     backgroundColor: "var(--c-surface)",
     transition: undefined,
+    margin: 0,
+    padding: 0,
   },
   tocArea: {
     ...ReactReaderStyle.tocArea,

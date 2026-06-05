@@ -63,8 +63,8 @@ const ProgressBar = (
         </div>
       </div>
       <div className="shrink-0">
-        { progress && (
-          <span className="tabular-nums whitespace-nowrap font-text text-textMute text-xs">{progress}%</span>
+        { !isNaN(progress) && (
+          <span className="tabular-nums whitespace-nowrap font-text text-textMute text-xs">{`${progress} %`}</span>
         )}
       </div>
     </div>
