@@ -59,6 +59,7 @@ type ThemeContextType = {
   theme: string;
   themes: Theme[];
   setTheme: (theme: string) => void;
+  themeObject: Theme;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -74,12 +75,18 @@ export const ThemeProvider = ({children}: { children: React.ReactNode }) => {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
+  const getThemeObject = (): Theme => {
+    return themes.filter((item) => item.id === theme)[0];
+  }
+
+  const themeObject = getThemeObject();
 
   return (
     <ThemeContext.Provider value={{
       theme,
       themes,
       setTheme,
+      themeObject
     }}>
       {children}
     </ThemeContext.Provider>

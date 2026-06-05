@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import Logo from '#/components/layout/Logo.tsx';
 import { IoBookOutline, IoPersonOutline } from 'react-icons/io5';
-import { PiListLight, PiSignOutLight } from 'react-icons/pi';
+import { PiListLight, PiSignOutLight, PiPaletteThin } from 'react-icons/pi';
 import { logout } from '#/client/mediaSanctumClient.ts';
 import { useAuth } from '#/context/AuthContext.tsx';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import { useTheme } from '#/context/ThemeContext.tsx';
+import ThemeModal from '#/components/layout/ThemeModal.tsx';
 
 type LeftHandMenuProps = {
   flyout?: Boolean;
@@ -21,6 +23,8 @@ const LeftHandMenu = (
   const navigate = useNavigate();
   const { setUser, setAccessToken } = useAuth();
   const [collapse, setCollapse] = useState(false);
+  const [themePickerOpen, setThemePickerOpen] = useState(false);
+  const { themeObject } = useTheme();
 
   const menuItems: {
     name: string;
@@ -69,18 +73,35 @@ const LeftHandMenu = (
         {menuItems.map((menuItem) => (
           <Link to={menuItem.route} className={styles.linkClass} key={menuItem.name} title={menuItem.name}>
             <span className='shrink-0'>{menuItem.icon}</span>
-            <span className={`pl-1 font-sans ${flyout ? 'opacity-100' : 'opacity-0'} ${collapse && !flyout ? 'md:opacity-0' : 'md:opacity-100'}`}>{menuItem.name}</span>
+            <span className={`pl-1 text-[15px] font-sans ${flyout ? 'opacity-100' : 'opacity-0'} ${collapse && !flyout ? 'md:opacity-0' : 'md:opacity-100'}`}>{menuItem.name}</span>
           </Link>
         ))}
       </nav>
 
       <div className='py-4 px-3 space-y-1 overflow-y-auto'>
+        <button onClick={() => setThemePickerOpen(!themePickerOpen)} className={`${styles.linkClass} w-full flex flex-row justify-between items-center flex-nowrap`} title="Theme">
+          <ThemeModal
+            isOpen={themePickerOpen}
+            setIsOpen={setThemePickerOpen}
+          />
+          <span className="flex flex-row items-center">
+            <span className="shrink-0 opacity-50">
+              <PiPaletteThin />
+            </span>
+            <span className={`pl-1 font-sans text-[15px] ${flyout ? 'opacity-50' : 'opacity-0'} ${collapse ? 'md:opacity-0' : 'md:opacity-50'}`}>Theme</span>
+          </span>
+
+          <span className={`pl-1 text-xs font-mono text-sidebarAccent ${flyout ? 'opacity-50' : 'opacity-0'} 
+            ${collapse ? 'md:opacity-0' : 'md:opacity-50'}`}>
+            {themeObject.name}
+          </span>
+        </button>
         { !flyout && (
           <button onClick={toggleCollapse} className={`${styles.linkClass} w-full`} title={collapse ? 'Expand' : 'Collapse'}>
           <span className='shrink-0 opacity-50'>
             { collapse ? <IoIosArrowForward /> : <IoIosArrowBack />}
           </span>
-            <span className={`pl-1 font-sans opacity-0 ${collapse ? 'md:opacity-0' : 'md:opacity-50'}`}>
+            <span className={`pl-1 font-sans text-[15px] opacity-0 ${collapse ? 'md:opacity-0' : 'md:opacity-50'}`}>
             {collapse ? 'Expand' : 'Collapse'}
           </span>
           </button>
@@ -89,7 +110,7 @@ const LeftHandMenu = (
           <span className='shrink-0 opacity-50'>
             <PiSignOutLight />
           </span>
-          <span className={`pl-1 font-sans ${flyout ? 'opacity-50' : 'opacity-0'} ${collapse ? 'md:opacity-0' : 'md:opacity-50'}`}>
+          <span className={`pl-1 font-sans text-[15px] ${flyout ? 'opacity-50' : 'opacity-0'} ${collapse ? 'md:opacity-0' : 'md:opacity-50'}`}>
             Sign Out
           </span>
         </button>
