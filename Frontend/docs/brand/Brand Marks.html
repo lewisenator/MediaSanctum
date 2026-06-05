@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MediaSanctum — Brand Marks</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{ --paper:#f5f1e8; --ink:#1a1410; --oxblood:#6b1f1a; --brass:#d4a55a; --line:rgba(60,42,20,0.14); }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Mono',monospace; -webkit-font-smoothing:antialiased; }
+  .wrap{ max-width:1040px; margin:0 auto; padding:72px 40px 96px; }
+  .kicker{ font-size:11px; letter-spacing:.28em; text-transform:uppercase; color:var(--oxblood); }
+  h1{ font-family:'Fraunces',serif; font-weight:500; font-size:46px; letter-spacing:-1px; margin:14px 0 6px; }
+  h1 em{ font-style:italic; font-weight:400; color:var(--oxblood); }
+  .sub{ color:#6a5c48; font-size:13px; max-width:60ch; line-height:1.7; }
+  h2{ font-family:'Fraunces',serif; font-weight:500; font-size:14px; letter-spacing:.04em; text-transform:uppercase; color:#8a7a62; margin:64px 0 20px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+  .grid{ display:grid; gap:20px; }
+  .icons{ grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); }
+  .card{ background:#fbf8f1; border:1px solid var(--line); border-radius:14px; padding:24px; display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center; }
+  .card img{ display:block; image-rendering:auto; }
+  .card .meta{ font-size:11px; color:#8a7a62; line-height:1.5; }
+  .card .meta b{ color:var(--ink); font-weight:500; display:block; font-size:12px; }
+  .checker{ background-image:linear-gradient(45deg,#e7e0d2 25%,transparent 25%),linear-gradient(-45deg,#e7e0d2 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e7e0d2 75%),linear-gradient(-45deg,transparent 75%,#e7e0d2 75%); background-size:14px 14px; background-position:0 0,0 7px,7px -7px,-7px 0; }
+  .lockups{ grid-template-columns:1fr 1fr; }
+  .lockup{ min-height:160px; justify-content:center; }
+  .lockup.dark{ background:#161009; border-color:#2a2014; }
+  .wm{ display:inline-flex; align-items:center; gap:14px; }
+  .wm svg{ display:block; }
+  .wm .txt{ font-family:'Fraunces',serif; font-weight:500; font-size:34px; letter-spacing:-1px; line-height:1; }
+  .wm .txt i{ font-style:italic; font-weight:400; color:var(--oxblood); }
+  .lockup.dark .wm .txt{ color:#f0e9da; }
+  .lockup.dark .wm .txt i{ color:var(--brass); }
+  .codeblock{ background:#161009; color:#e8ddc8; border-radius:12px; padding:22px 24px; font-size:12.5px; line-height:1.85; overflow:auto; white-space:pre; }
+  .codeblock .t{ color:#d4a55a; }
+  .codeblock .a{ color:#9bb87a; }
+  .files{ grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }
+  .file{ background:#fbf8f1; border:1px solid var(--line); border-radius:10px; padding:14px 16px; font-size:12px; display:flex; justify-content:space-between; gap:10px; }
+  .file b{ font-weight:500; }
+  .file span{ color:#8a7a62; }
+  @media(max-width:720px){ .lockups{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Identity Assets</div>
+  <h1>Media<em>Sanctum</em> marks</h1>
+  <p class="sub">Favicon and logo files generated from the primary Sanctum mark — the tower with its conical roof, lit arched window, and the keeper's silhouette within. Files live in the <b>brand/</b> folder.</p>
+
+  <h2>Favicon &amp; app icons</h2>
+  <div class="grid icons">
+    <div class="card"><img src="favicon.svg" width="96" height="96" alt="favicon svg"><div class="meta"><b>favicon.svg</b>scalable · primary</div></div>
+    <div class="card"><img src="favicon.ico" width="48" height="48" alt="favicon ico"><div class="meta"><b>favicon.ico</b>16 · 32 · 48</div></div>
+    <div class="card"><img src="favicon-32.png" width="32" height="32" alt="32"><div class="meta"><b>favicon-32.png</b>browser tab</div></div>
+    <div class="card"><img src="favicon-16.png" width="16" height="16" alt="16"><div class="meta"><b>favicon-16.png</b>smallest</div></div>
+    <div class="card"><img src="apple-touch-icon.png" width="90" height="90" alt="apple" style="border-radius:18px"><div class="meta"><b>apple-touch-icon</b>180×180</div></div>
+    <div class="card"><img src="icon-192.png" width="90" height="90" alt="192" style="border-radius:18px"><div class="meta"><b>icon-192.png</b>PWA</div></div>
+    <div class="card"><img src="icon-512.png" width="90" height="90" alt="512" style="border-radius:18px"><div class="meta"><b>icon-512.png</b>PWA / maskable</div></div>
+  </div>
+
+  <h2>Logo mark — transparent</h2>
+  <div class="grid icons">
+    <div class="card checker"><img src="logo-mark-512.png" width="120" height="120" alt="mark"><div class="meta"><b>logo-mark.svg</b>vector</div></div>
+    <div class="card checker"><img src="logo-mark-512.png" width="96" height="96" alt="mark 512"><div class="meta"><b>logo-mark-512.png</b>512×512</div></div>
+    <div class="card checker"><img src="logo-mark-256.png" width="64" height="64" alt="mark 256"><div class="meta"><b>logo-mark-256.png</b>256×256</div></div>
+  </div>
+
+  <h2>Wordmark lockup</h2>
+  <div class="grid lockups">
+    <div class="card lockup">
+      <span class="wm"><img src="logo-mark-512.png" width="52" height="52" alt=""><span class="txt">Media<i>Sanctum</i></span></span>
+    </div>
+    <div class="card lockup dark">
+      <span class="wm"><img src="logo-mark-dark-512.png" width="52" height="52" alt=""><span class="txt" style="color:#f0e9da;">Media<i style="color:#d4a55a;">Sanctum</i></span></span>
+    </div>
+  </div>
+  <p class="sub" style="margin-top:14px;">Vector lockup saved as <b>logo-wordmark.svg</b> (light) and <b>logo-wordmark-dark.svg</b> (dark) — always pair the mark variant with its background.</p>
+
+  <h2 style="color:#b89668;">Dark mode set</h2>
+  <p class="sub" style="margin-top:-8px;margin-bottom:24px;">Light parchment strokes on a deep tile, with a brightened oxblood roof so it reads on dark surfaces. The brass window &amp; finial carry over unchanged. Filenames mirror the light set with a <b>-dark</b> suffix.</p>
+  <div class="grid icons" style="--tile:#161009;">
+    <div class="card" style="background:#1d160d;border-color:#2c2114;"><img src="favicon-dark.svg" width="96" height="96" alt="favicon dark"><div class="meta" style="color:#a08a6a;"><b style="color:#f0e3cf;">favicon-dark.svg</b>scalable</div></div>
+    <div class="card" style="background:#1d160d;border-color:#2c2114;"><img src="favicon-dark.ico" width="48" height="48" alt="ico dark"><div class="meta" style="color:#a08a6a;"><b style="color:#f0e3cf;">favicon-dark.ico</b>16 · 32 · 48</div></div>
+    <div class="card" style="background:#1d160d;border-color:#2c2114;"><img src="favicon-dark-32.png" width="32" height="32" alt="32d"><div class="meta" style="color:#a08a6a;"><b style="color:#f0e3cf;">favicon-dark-32</b>tab</div></div>
+    <div class="card" style="background:#1d160d;border-color:#2c2114;"><img src="favicon-dark-16.png" width="16" height="16" alt="16d"><div class="meta" style="color:#a08a6a;"><b style="color:#f0e3cf;">favicon-dark-16</b>smallest</div></div>
+    <div class="card" style="background:#1d160d;border-color:#2c2114;"><img src="apple-touch-icon-dark.png" width="90" height="90" alt="apple d" style="border-radius:18px"><div class="meta" style="color:#a08a6a;"><b style="color:#f0e3cf;">apple-touch-dark</b>180²</div></div>
+    <div class="card" style="background:#1d160d;border-color:#2c2114;"><img src="icon-dark-192.png" width="90" height="90" alt="192d" style="border-radius:18px"><div class="meta" style="color:#a08a6a;"><b style="color:#f0e3cf;">icon-dark-192</b>PWA</div></div>
+    <div class="card" style="background:#1d160d;border-color:#2c2114;"><img src="icon-dark-512.png" width="90" height="90" alt="512d" style="border-radius:18px"><div class="meta" style="color:#a08a6a;"><b style="color:#f0e3cf;">icon-dark-512</b>PWA</div></div>
+  </div>
+  <div class="grid lockups" style="margin-top:20px;">
+    <div class="card lockup dark">
+      <span class="wm"><img src="logo-mark-dark-512.png" width="52" height="52" alt=""><span class="txt" style="color:#f0e9da;">Media<i style="color:#d4a55a;">Sanctum</i></span></span>
+    </div>
+    <div class="card lockup dark" style="background:#0a0c12;">
+      <span class="wm"><img src="logo-mark-dark-512.png" width="52" height="52" alt=""><span class="txt" style="color:#f0e9da;">Media<i style="color:#d4a55a;">Sanctum</i></span></span>
+    </div>
+  </div>
+
+  <h2>Drop-in &lt;head&gt; snippet</h2>
+  <div class="codeblock">&lt;<span class="t">link</span> <span class="a">rel</span>="icon" <span class="a">href</span>="/brand/favicon.ico" <span class="a">sizes</span>="any"&gt;
+&lt;<span class="t">link</span> <span class="a">rel</span>="icon" <span class="a">type</span>="image/svg+xml" <span class="a">href</span>="/brand/favicon.svg"&gt;
+&lt;<span class="t">link</span> <span class="a">rel</span>="apple-touch-icon" <span class="a">href</span>="/brand/apple-touch-icon.png"&gt;
+&lt;<span class="t">link</span> <span class="a">rel</span>="manifest" <span class="a">href</span>="/brand/site.webmanifest"&gt;
+
+<span style="color:#8a7a62;">&lt;!-- dark-mode tab icon: served when the OS is in dark mode --&gt;</span>
+&lt;<span class="t">link</span> <span class="a">rel</span>="icon" <span class="a">type</span>="image/svg+xml" <span class="a">href</span>="/brand/favicon-dark.svg" <span class="a">media</span>="(prefers-color-scheme: dark)"&gt;</div>
+
+  <h2>All files</h2>
+  <div class="grid files">
+    <div class="file"><b>favicon.svg</b><span>vector</span></div>
+    <div class="file"><b>favicon.ico</b><span>16/32/48</span></div>
+    <div class="file"><b>favicon-16.png</b><span>16²</span></div>
+    <div class="file"><b>favicon-32.png</b><span>32²</span></div>
+    <div class="file"><b>favicon-48.png</b><span>48²</span></div>
+    <div class="file"><b>favicon-64.png</b><span>64²</span></div>
+    <div class="file"><b>apple-touch-icon.png</b><span>180²</span></div>
+    <div class="file"><b>icon-192.png</b><span>192²</span></div>
+    <div class="file"><b>icon-512.png</b><span>512²</span></div>
+    <div class="file"><b>logo-mark.svg</b><span>vector</span></div>
+    <div class="file"><b>logo-mark-256.png</b><span>256²</span></div>
+    <div class="file"><b>logo-mark-512.png</b><span>512²</span></div>
+    <div class="file"><b>logo-wordmark.svg</b><span>vector</span></div>
+    <div class="file"><b>site.webmanifest</b><span>PWA</span></div>
+    <div class="file"><b>favicon-dark.svg</b><span>vector</span></div>
+    <div class="file"><b>favicon-dark.ico</b><span>16/32/48</span></div>
+    <div class="file"><b>favicon-dark-16…64.png</b><span>4 sizes</span></div>
+    <div class="file"><b>apple-touch-icon-dark.png</b><span>180²</span></div>
+    <div class="file"><b>icon-dark-192.png</b><span>192²</span></div>
+    <div class="file"><b>icon-dark-512.png</b><span>512²</span></div>
+    <div class="file"><b>logo-mark-dark.svg</b><span>vector</span></div>
+    <div class="file"><b>logo-mark-dark-256.png</b><span>256²</span></div>
+    <div class="file"><b>logo-mark-dark-512.png</b><span>512²</span></div>
+    <div class="file"><b>logo-wordmark-dark.svg</b><span>vector</span></div>
+  </div>
+</div>
+</body>
+</html>

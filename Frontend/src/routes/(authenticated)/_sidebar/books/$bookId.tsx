@@ -7,6 +7,7 @@ import TimeAgo from '#/components/formatting/TimeAgo.tsx';
 import { useState } from 'react';
 import BookFormat from '#/components/book/BookFormat.tsx';
 import Main from '#/components/layout/Main.tsx';
+import LessMore from '#/components/formatting/LessMore.tsx';
 
 const bookQueryOptions = (bookId: string) => queryOptions({
   queryKey: ['book', bookId],
@@ -85,13 +86,26 @@ function BookDetailsPage() {
                 <span className="ml-1 tabular-nums"><TimeAgo date={new Date(book.createdAt)} /></span>
               </span>
             )}
+            { book.ebookFile && (
+              <Link
+                to='/books/$bookId/reader'
+                params={{ bookId: bookId }}
+                className="btn btn-secondary text-xs! px-3 py-2 font-ui mt-3 w-20"
+              >
+                <BsBook /> Read
+              </Link>
+            )}
           </div>
         </div>
 
         <div>
           { book.description && (
-            <div className="mt-4 text-sm leading-relaxed max-w-none text-text font-ui">
-              {book.description}
+            <div className="mt-4 max-w-none">
+              <LessMore
+                className="text-sm leading-relaxed text-text font-ui"
+                text={book.description}
+                limit={350}
+              />
             </div>
           )}
         </div>

@@ -29,7 +29,7 @@ const TopBar = () => {
       <header
         className='flex h-14 shrink-0 items-center justify-between px-4 md:hidden bg-sidebar text-sidebarText shadow-md'
       >
-        <div>
+        <div className="min-w-10">
           {/* Left */}
           <button
             className="mr-3 rounded p-1.5 hover:bg-white/10 transition-colors"
@@ -52,7 +52,7 @@ const TopBar = () => {
             </h1>
           </Link>
         </div>
-        <div>
+        <div className="min-w-10">
           {/* Right */}
         </div>
       </header>
