@@ -32,6 +32,7 @@ export const readerStyles: IReactReaderStyle = {
   readerArea: {
     ...ReactReaderStyle.readerArea,
     backgroundColor: "var(--c-surface)",
+    color: "var(--c-text)",
     transition: undefined,
     margin: 0,
     padding: 0,

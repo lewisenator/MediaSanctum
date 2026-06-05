@@ -2,6 +2,8 @@ import { IoCloseOutline } from 'react-icons/io5';
 import Slider from '#/components/widgets/Slider.tsx';
 import Dropdown from "#/components/widgets/Dropdown.tsx";
 import { fontOptions } from './fontOptions.ts';
+import Checkbox from '#/components/widgets/Checkbox.tsx';
+import ThemePicker from '#/components/widgets/ThemePicker.tsx';
 
 type ReaderSettingsProps = {
   dismiss: () => void;
@@ -23,6 +25,9 @@ type ReaderSettingsProps = {
 
   brightness: number;
   setBrightness: (brightness: number) => void;
+
+  spread: boolean;
+  setSpread: (spread: boolean) => void;
 };
 
 const ReaderSettings = (
@@ -40,6 +45,8 @@ const ReaderSettings = (
     setPageMargins,
     brightness,
     setBrightness,
+    spread,
+    setSpread,
   }: ReaderSettingsProps
 ) => {
 
@@ -70,6 +77,9 @@ const ReaderSettings = (
           </div>
         </div>
         <div className="overflow-y-scroll">
+          <div className="py-2 px-4">
+            <ThemePicker />
+          </div>
           <div className="py-2 px-4">
             <Slider
               label="Brightness"
@@ -137,6 +147,13 @@ const ReaderSettings = (
               valueFormatter={(value) => `${value}em`}
               min={0.0}
               max={3.0}
+            />
+          </div>
+          <div className="py-3 px-4">
+            <Checkbox
+              label="2-page spread when wide"
+              value={spread}
+              setValue={setSpread}
             />
           </div>
         </div>

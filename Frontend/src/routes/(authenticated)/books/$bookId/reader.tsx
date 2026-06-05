@@ -4,6 +4,7 @@ import { ReactReader } from 'react-reader';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 import { getBook } from '#/client/mediaSanctumClient.ts';
 import { type NavItem, Rendition } from 'epubjs';
+import { useTheme } from '#/context/ThemeContext.tsx';
 
 import ProgressBar from '#/components/reader/ProgressBar.tsx';
 import { readerStyles } from './readerStyles.ts';
@@ -31,6 +32,8 @@ export const Route = createFileRoute('/(authenticated)/books/$bookId/reader')({
 function EbookReaderPage() {
   const { bookId } = Route.useParams();
   const { data: book } = useSuspenseQuery(bookQueryOptions(bookId));
+  const { theme, themes } = useTheme();
+  const currentTheme = themes.find(t => t.id === theme)!;
 
   const [progress, setProgress] = useState<number>(0);
 
@@ -70,19 +73,17 @@ function EbookReaderPage() {
   const [currentChapter, setCurrentChapter] = useState(0);
   const [totalChapters, setTotalChapters] = useState(0);
 
+  // Ref so the rendered event handler always sees the latest applyTheme closure.
+  const applyThemeRef = useRef<(r?: Rendition) => void>(() => {});
 
-  const [spread, setSpread] = useState<boolean>(true);
   const applyTheme = (rendition?: Rendition) => {
     if (!rendition) return;
-    console.log('applying theme');
     rendition.themes.default({
       "body": {
         "font-size": `${fontSize}em !important`,
-        "padding-top": `${pageMargins}em !important`,
-        "padding-bottom": `${pageMargins}em !important`,
-        "padding-left": `${pageMargins}em !important`,
-        "padding-right": `${pageMargins}em !important`,
         "margin": "0 !important",
+        "color": `${currentTheme.text} !important`,
+        "background": `${currentTheme.bg} !important`,
       },
       "p": {
         "line-height": lineHeight,
@@ -92,16 +93,55 @@ function EbookReaderPage() {
     });
   };
 
-  const [brightness, setBrightness] = useState<number>(100);
-  const [fontSize, setFontSize] = useState<number>(1.0);
-  const [lineHeight, setLineHeight] = useState<number>(1.0);
-  const [font, setFont] = useState<string>("'Helvetica', sans-serif");
-  const [paragraphSpacing, setParagraphSpacing] = useState<number>(1.0);
-  const [pageMargins, setPageMargins] = useState<number>(1.0);
+  applyThemeRef.current = applyTheme;
+
+
+  type ReaderSettings = {
+    fontSize?: number;
+    lineHeight?: number;
+    font?: string;
+    paragraphSpacing?: number;
+    pageMargins?: number;
+    spread?: string;
+    brightness?: number;
+  };
+
+  const getSettings = () => {
+    const storedSettings = localStorage.getItem('reader-settings');
+    const settings: ReaderSettings|null = storedSettings ? JSON.parse(storedSettings) : null;
+    return settings;
+  };
+
+  const [spread, setSpread] = useState<boolean>(() => {
+    const spreadString = getSettings()?.spread;
+    if (spreadString) {
+      return spreadString === "true";
+    }
+    return true;
+  });
+  const [brightness, setBrightness] = useState<number>(() => getSettings()?.brightness || 100);
+  const [fontSize, setFontSize] = useState<number>(() => getSettings()?.fontSize || 1.0);
+  const [lineHeight, setLineHeight] = useState<number>(() => getSettings()?.lineHeight || 1.0);
+  const [font, setFont] = useState<string>(() => getSettings()?.font || "'Helvetica', sans-serif");
+  const [paragraphSpacing, setParagraphSpacing] = useState<number>(() => getSettings()?.paragraphSpacing || 1.0);
+  const [pageMargins, setPageMargins] = useState<number>(() => getSettings()?.pageMargins || 1.0);
 
   useEffect(() => {
     applyTheme(rendition?.current);
-  }, [fontSize, lineHeight, font, paragraphSpacing, pageMargins]);
+    const settings: ReaderSettings = {
+      fontSize, lineHeight, font, paragraphSpacing, pageMargins, spread: `${spread}`, brightness
+    };
+    localStorage.setItem("reader-settings", JSON.stringify(settings));
+  }, [fontSize, lineHeight, font, paragraphSpacing, pageMargins, spread, brightness, theme]);
+
+  useEffect(() => {
+    rendition.current?.layout({ spread: spread ? "auto" : "none" });
+  }, [spread]);
+
+  useEffect(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, [pageMargins]);
+
 
   const cacheLocations = (rendition: Rendition) => {
     const locKey = `epub-locations-${book.ebookFile.id}`;
@@ -173,7 +213,7 @@ function EbookReaderPage() {
             />
           )}
 
-          <div ref={readerRef} className="flex-1">
+          <div ref={readerRef} className="flex-1" style={{ padding: `${pageMargins}em` }}>
             <ReactReader
               url={book.ebookFile.url}
               title={`${book.title} · <span>${book.author.name}</span>`}
@@ -183,7 +223,7 @@ function EbookReaderPage() {
                 openAs: 'epub',
               }}
               epubOptions={{
-                spread: spread ? "auth" : "none",
+                spread: spread ? "auto" : "none",
               }}
               locationChanged={() => {}}
               getRendition={(_rendition: Rendition) => {
@@ -191,6 +231,9 @@ function EbookReaderPage() {
                 applyTheme(rendition.current);
                 cacheLocations(rendition.current);
                 _rendition.on('relocated', (loc: any) => locationChanged(loc.start.cfi));
+                // rendered fires after layout.format() applies its inline padding, so our
+                // override lands last and wins the cascade.
+                _rendition.on('rendered', () => applyThemeRef.current(rendition.current));
               }}
               tocChanged={(chapters) => {
                 setToc(chapters);
@@ -242,6 +285,8 @@ function EbookReaderPage() {
                 setPageMargins={setPageMargins}
                 brightness={brightness}
                 setBrightness={setBrightness}
+                spread={spread}
+                setSpread={setSpread}
               />
             )}
           </div>
