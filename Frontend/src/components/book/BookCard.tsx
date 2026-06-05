@@ -34,7 +34,9 @@ const BookCard = ({book}: BookCardProps) => {
         </div>
         <div className="flex flex-row justify-between mt-2">
           <span className="library-card-format bg-surfaceAlt! text-accent!">Missing</span>
-          <span>{book.releaseYear}</span>
+          <span className="tabular-nums font-mono text-textMute text-xs">
+            {book.releaseYear}
+          </span>
         </div>
       </div>
     </Link>
