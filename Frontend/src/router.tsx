@@ -1,7 +1,7 @@
 import { createRouter as createTanStackRouter } from '@tanstack/react-router';
 import { routeTree } from './routeTree.gen';
 import { QueryClient, QueryCache } from '@tanstack/react-query';
-import { ApiError } from '#/client/mediaSanctumClient.ts';
+import { ApiError } from '#/client/shared.ts';
 
 // Forward reference populated by getRouter() — queryCache.onError only fires
 // at runtime so the router is guaranteed to exist by then.

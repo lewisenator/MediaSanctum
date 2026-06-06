@@ -1,4 +1,5 @@
-import { addBook, type BookResult } from '#/client/mediaSanctumClient.ts';
+import { addBook } from '#/client/bookClient.ts';
+import { type BookResult } from '#/client/searchClient.ts';
 import { FaPlus, FaHourglassHalf } from "react-icons/fa6";
 import { GoBook } from "react-icons/go";
 import { useMutation } from '@tanstack/react-query';

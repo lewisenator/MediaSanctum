@@ -31,21 +31,29 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<UserModel> getUsers() {
+    public List<UserModel> getUserModelss() {
         var sortByCreatedAt = Sort.by("createdAt").descending();
         var pageRequest = PageRequest.of(0, 10, sortByCreatedAt);
         var entities = userRepository.findAll(pageRequest);
-        return entities.stream().map(this::fromEntity).toList();
+        return entities.stream().map(UserService::toResponse).toList();
     }
 
-    public Optional<UserModel> getUserByEmail(String email) {
+    public Optional<UserModel> getUserModelByEmail(String email) {
         return userRepository.findByEmail(email)
-                .map(this::fromEntity);
+                .map(UserService::toResponse);
     }
 
-    public Optional<UserModel> getUserById(String id) {
+    public Optional<UserModel> getUserModelById(String id) {
         return userRepository.findById(id)
-                .map(this::fromEntity);
+                .map(UserService::toResponse);
+    }
+
+    public User getUserById(String id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     public UserModel createUser(CreateUserModel createUserModel) {
@@ -60,7 +68,7 @@ public class UserService implements UserDetailsService {
 
         var savedEntity = userRepository.save(userEntity);
 
-        return fromEntity(savedEntity);
+        return toResponse(savedEntity);
     }
 
     public UserModel updateUser(UpdateUserModel updateUserModel) {
@@ -84,7 +92,7 @@ public class UserService implements UserDetailsService {
         }
 
         var updatedEntity = userRepository.save(existingEntity);
-        return fromEntity(updatedEntity);
+        return toResponse(updatedEntity);
     }
 
     @Override
@@ -104,7 +112,7 @@ public class UserService implements UserDetailsService {
                 authorities);
     }
 
-    private UserModel fromEntity(User userEntity) {
+    public static UserModel toResponse(User userEntity) {
         var result = new UserModel();
         result.setId(userEntity.getId());
         result.setFirstName(userEntity.getFirstName());

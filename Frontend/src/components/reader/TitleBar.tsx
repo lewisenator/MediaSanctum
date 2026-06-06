@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { IoIosArrowBack } from "react-icons/io";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { CiSettings } from "react-icons/ci";
-import type { Book } from '#/client/mediaSanctumClient.ts';
+import type { Book } from '#/client/bookClient.ts';
 import type { NavItem } from 'epubjs';
 
 type TitleBarProps = {

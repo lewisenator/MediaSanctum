@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { type Book, getBook } from '#/client/mediaSanctumClient.ts';
+import { type Book, getBook } from '#/client/bookClient.ts';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 import { BsBook } from 'react-icons/bs';
 import { FiUpload } from "react-icons/fi";

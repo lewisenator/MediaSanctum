@@ -27,7 +27,7 @@ public class AdminUserBootstrapService {
     }
 
     public void bootstrap() {
-        var maybeAdmin = userService.getUserByEmail(adminEmail);
+        var maybeAdmin = userService.getUserModelByEmail(adminEmail);
         if (maybeAdmin.isPresent()) {
             // Ensure existing admin user has correct password
             var adminUser = maybeAdmin.get();

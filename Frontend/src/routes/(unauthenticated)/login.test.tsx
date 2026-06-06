@@ -4,7 +4,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route } from './login';
 import { renderWithRouter } from '#/test/renderWithRouter.tsx';
-import { login } from '#/client/mediaSanctumClient.ts';
+import { login } from '#/client/authClient.ts';
 
 const LoginPage = Route.options.component!;
 
@@ -18,7 +18,7 @@ vi.mock('#/context/AuthContext.tsx', () => ({
   }),
 }));
 
-vi.mock('#/client/mediaSanctumClient.ts', () => ({
+vi.mock('#/client/authClient.ts', () => ({
   login: vi.fn(),
 }));
 

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
-import { getAuthors } from '#/client/mediaSanctumClient.ts';
+import { getAuthors } from '#/client/authorClient.ts';
 import { useState } from 'react';
 import { IoIosSearch } from 'react-icons/io';
 import Main from '#/components/layout/Main.tsx';

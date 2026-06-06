@@ -1,4 +1,4 @@
-import { type Book } from '#/client/mediaSanctumClient.ts';
+import { type Book } from '#/client/bookClient.ts';
 import { BsBook } from "react-icons/bs";
 import { Link } from '@tanstack/react-router';
 

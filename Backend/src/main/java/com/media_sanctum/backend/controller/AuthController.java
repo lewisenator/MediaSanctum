@@ -13,7 +13,6 @@ import com.media_sanctum.backend.service.UserService;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.servlet.filter.ApplicationContextHeaderFilter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -66,7 +65,7 @@ public class AuthController {
 
         var userDetails = userService.loadUserByUsername(loginRequest.getEmail());
         var authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        var user = userService.getUserByEmail(userDetails.getUsername()).orElseThrow();
+        var user = userService.getUserModelByEmail(userDetails.getUsername()).orElseThrow();
 
         return buildAuthResponseEntity(user, authorities);
     }
@@ -100,7 +99,7 @@ public class AuthController {
 
         var tokenPayload = jwtService.verifyJwtToken(refreshToken);
 
-        var maybeUser = userService.getUserById(tokenPayload.getUserId());
+        var maybeUser = userService.getUserModelById(tokenPayload.getUserId());
         if (maybeUser.isEmpty()) {
             var error = ErrorResponse.builder()
                     .error("INVALID_REFRESH_TOKEN")

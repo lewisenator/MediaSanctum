@@ -4,7 +4,7 @@ import LeftHandMenu from './LeftHandMenu.tsx';
 import { renderWithRouter } from '#/test/renderWithRouter.tsx';
 import userEvent from '@testing-library/user-event/dist/cjs/index.js';
 import { screen, waitFor } from '@testing-library/react';
-import { logout } from '#/client/mediaSanctumClient.ts';
+import { logout } from '#/client/authClient.ts';
 
 const mockSetAccessToken = vi.fn();
 const mockSetUser = vi.fn();
@@ -16,7 +16,7 @@ vi.mock('#/context/AuthContext.tsx', () => ({
   }),
 }));
 
-vi.mock('#/client/mediaSanctumClient.ts', () => ({
+vi.mock('#/client/authClient.ts', () => ({
   logout: vi.fn().mockResolvedValue(undefined),
 }));
 

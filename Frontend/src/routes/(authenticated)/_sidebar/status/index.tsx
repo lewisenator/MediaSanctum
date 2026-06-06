@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { health, type HealthResponse } from '#/client/mediaSanctumClient.ts';
+import { health, type HealthResponse } from '#/client/healthClient.ts';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
 const statusQueryOptions = () => queryOptions({

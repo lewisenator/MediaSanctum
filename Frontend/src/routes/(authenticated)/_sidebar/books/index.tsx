@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
-import { getBooks } from '#/client/mediaSanctumClient.ts';
+import { getBooks } from '#/client/bookClient.ts';
 import { IoIosSearch } from 'react-icons/io';
 import { useState } from 'react';
 import { BsBook } from "react-icons/bs";

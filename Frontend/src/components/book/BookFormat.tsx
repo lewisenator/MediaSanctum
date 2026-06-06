@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { FiUpload } from 'react-icons/fi';
 import { useDropzone } from 'react-dropzone';
 import { useMutation } from '@tanstack/react-query';
-import { type Book, type BookFile, uploadEbook } from '#/client/mediaSanctumClient.ts';
+import { type Book, type BookFile, uploadEbook } from '#/client/bookClient.ts';
 import { Link } from '@tanstack/react-router';
 import { BsBook } from "react-icons/bs";
 import { IoCloudDownloadOutline } from "react-icons/io5";

@@ -33,4 +33,5 @@ public class BookResponse {
     private HardcoverFeaturedSeriesSearchResult featuredSeries;
     private BookFileResponse ebookFile;
     private BookFileResponse audiobookFile;
+    private ProgressResponse ebookProgress;
 }

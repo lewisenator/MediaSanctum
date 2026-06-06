@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { refresh } from "#/client/mediaSanctumClient.ts";
+import { refresh } from "#/client/authClient.ts";
 import { setStoredAccessToken } from "#/config/axios.ts";
 
 type AuthContextType = {

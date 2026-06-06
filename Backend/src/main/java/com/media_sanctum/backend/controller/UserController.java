@@ -22,7 +22,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<DataResponse<List<UserResponse>>> getUsers() {
-        var users = userService.getUsers();
+        var users = userService.getUserModelss();
         var usersForResponse = users.stream().map(user ->
                 UserResponse.builder()
                     .email(user.getEmail())

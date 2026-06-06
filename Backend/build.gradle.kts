@@ -49,6 +49,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.apache.commons:commons-lang3:3.20.0")
     implementation("io.github.resilience4j:resilience4j-spring-boot4:2.4.0")
+    implementation("commons-codec:commons-codec:1.22.0")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 

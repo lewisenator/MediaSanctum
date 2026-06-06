@@ -1,5 +1,6 @@
 package com.media_sanctum.backend.security;
 
+import com.media_sanctum.backend.config.RequestContext;
 import com.media_sanctum.backend.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,16 +16,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserService userService;
+    private final RequestContext requestContext;
 
-    public JwtRequestFilter(JwtService jwtService, UserService userService) {
+    public JwtRequestFilter(JwtService jwtService, UserService userService, RequestContext requestContext) {
         this.jwtService = jwtService;
         this.userService = userService;
+        this.requestContext = requestContext;
     }
 
     @Override
@@ -42,7 +46,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 var tokenDetails = jwtService.verifyJwtToken(token);
                 var userId = tokenDetails.getUserId();
-                var user = userService.getUserById(userId).orElseThrow();
+                var userEntity = Optional.ofNullable(userService.getUserById(userId)).orElseThrow();
+                var user = UserService.toResponse(userEntity);
+                requestContext.setUser(userEntity);
                 var userDetails = userService.loadUserByUsername(user.getEmail());
                 var authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,

@@ -3,7 +3,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import Logo from '#/components/layout/Logo.tsx';
 import { IoBookOutline, IoPersonOutline } from 'react-icons/io5';
 import { PiListLight, PiSignOutLight, PiPaletteThin } from 'react-icons/pi';
-import { logout } from '#/client/mediaSanctumClient.ts';
+import { logout } from '#/client/authClient.ts';
 import { useAuth } from '#/context/AuthContext.tsx';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { useTheme } from '#/context/ThemeContext.tsx';

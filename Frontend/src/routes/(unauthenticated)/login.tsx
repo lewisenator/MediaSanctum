@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useAuth } from '#/context/AuthContext.tsx';
 import { useMutation } from '@tanstack/react-query';
-import { login } from '#/client/mediaSanctumClient.ts';
+import { login } from '#/client/authClient.ts';
 
 export const Route = createFileRoute('/(unauthenticated)/login')({
   component: LoginPage,

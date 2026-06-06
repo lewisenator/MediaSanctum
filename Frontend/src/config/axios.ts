@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axios';
-import { refresh } from "#/client/mediaSanctumClient.ts";
+import { refresh } from "#/client/authClient.ts";
 
 const api: AxiosInstance = axios.create({
     baseURL: '/api',

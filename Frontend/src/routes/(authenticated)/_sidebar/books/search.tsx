@@ -3,7 +3,7 @@ import { FaLongArrowAltLeft } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
 import { useDebounce } from 'use-debounce';
 import { useState } from 'react';
-import { searchBooks } from '#/client/mediaSanctumClient.ts';
+import { searchBooks } from '#/client/searchClient.ts';
 import BookSearchResult from '#/components/book/BookSearchResult.tsx';
 import { useQuery } from '@tanstack/react-query';
 import Main from '#/components/layout/Main.tsx';

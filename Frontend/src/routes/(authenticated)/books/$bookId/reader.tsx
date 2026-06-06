@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { ReactReader } from 'react-reader';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
-import { getBook } from '#/client/mediaSanctumClient.ts';
+import { getBook } from '#/client/bookClient.ts';
 import { type NavItem, Rendition } from 'epubjs';
 import { useTheme } from '#/context/ThemeContext.tsx';
 

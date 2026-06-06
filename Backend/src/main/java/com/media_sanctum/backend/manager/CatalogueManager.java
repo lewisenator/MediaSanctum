@@ -6,6 +6,7 @@ import com.media_sanctum.backend.client.hardcover.model.HardcoverEdition;
 import com.media_sanctum.backend.client.hardcover.model.HardcoverImage;
 import com.media_sanctum.backend.client.hardcover.model.HardcoverLanguage;
 import com.media_sanctum.backend.config.MediaSanctumConfig;
+import com.media_sanctum.backend.config.RequestContext;
 import com.media_sanctum.backend.entity.Author;
 import com.media_sanctum.backend.entity.Book;
 import com.media_sanctum.backend.entity.BookFile;
@@ -13,16 +14,24 @@ import com.media_sanctum.backend.entity.Edition;
 import com.media_sanctum.backend.entity.EditionType;
 import com.media_sanctum.backend.entity.Image;
 import com.media_sanctum.backend.entity.ImageType;
+import com.media_sanctum.backend.entity.Progress;
+import com.media_sanctum.backend.entity.User;
+import com.media_sanctum.backend.repository.ProgressRepository;
 import com.media_sanctum.backend.resource.BookResponse;
+import com.media_sanctum.backend.resource.ProgressResponse;
+import com.media_sanctum.backend.resource.UpsertProgressRequest;
 import com.media_sanctum.backend.service.AuthorService;
 import com.media_sanctum.backend.service.BookFileService;
 import com.media_sanctum.backend.service.BookService;
 import com.media_sanctum.backend.service.EditionService;
 import com.media_sanctum.backend.service.ImageService;
+import com.media_sanctum.backend.service.ProgressService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -47,8 +56,10 @@ public class CatalogueManager {
     private final AuthorService authorService;
     private final ImageService imageService;
     private final EditionService editionService;
+    private final ProgressService progressService;
     private final HardcoverClient hardcoverClient;
     private final MediaSanctumConfig mediaSanctumConfig;
+    private final RequestContext requestContext;
 
     public CatalogueManager(
             BookService bookService,
@@ -56,16 +67,38 @@ public class CatalogueManager {
             AuthorService authorService,
             ImageService imageService,
             EditionService editionService,
+            ProgressService progressService,
             HardcoverClient hardcoverClient,
-            MediaSanctumConfig mediaSanctumConfig
+            MediaSanctumConfig mediaSanctumConfig,
+            RequestContext requestContext
     ) {
         this.bookService = bookService;
         this.bookFileService = bookFileService;
         this.authorService = authorService;
         this.imageService = imageService;
         this.editionService = editionService;
+        this.progressService = progressService;
         this.hardcoverClient = hardcoverClient;
         this.mediaSanctumConfig = mediaSanctumConfig;
+        this.requestContext = requestContext;
+    }
+
+    public ProgressResponse upsertProgress(Book book, UpsertProgressRequest body) {
+        var user = requestContext.getUser();
+        var progressBuilder = Optional.ofNullable(progressService.findByBookIdAndUserId(book.getId(), user.getId()))
+                .map(Progress::toBuilder)
+                .orElse(null);
+        if (progressBuilder == null) {
+            progressBuilder = Progress.builder()
+                    .user(user)
+                    .book(book);
+        }
+        var progress = progressBuilder.epubcfi(body.getEpubcfi())
+                .percent(body.getPercent())
+                .currentChapter(body.getCurrentChapter())
+                .build();
+        progress = progressService.save(progress);
+        return ProgressService.toResponse(progress);
     }
 
     public BookResponse uploadBookFile(
@@ -89,9 +122,10 @@ public class CatalogueManager {
         var extension = matcher.group(1);
         var desiredFilename = book.getTitle() + "." + extension;
 
+        var filePath = Path.of(uploadDirectory, desiredFilename);
         try {
             try (InputStream in = file.getInputStream()) {
-                Files.copy(in, Path.of(uploadDirectory, desiredFilename), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
             log.error("Failed to upload {} file: {}", editionType, fileName, e);
@@ -104,7 +138,7 @@ public class CatalogueManager {
                 .id(id)
                 .url(url)
                 .size(file.getSize())
-                .hash("bob")
+                .hash(getFileMD5(filePath.toString()))
                 .directory(uploadDirectory)
                 .filename(desiredFilename)
                 .contentType(file.getContentType())
@@ -122,7 +156,9 @@ public class CatalogueManager {
 
         book = bookService.saveBook(book);
 
-        return BookService.toResponse(book);
+        var response = BookService.toResponse(book);
+        response.setEbookProgress(getProgressResponseForBook(response.getId()));
+        return response;
     }
 
     public BookResponse addBook(Integer hardcoverId) {
@@ -163,7 +199,16 @@ public class CatalogueManager {
 
         var savedBook = bookService.saveBook(book);
 
-        return BookService.toResponse(savedBook);
+        var response = BookService.toResponse(savedBook);
+        response.setEbookProgress(getProgressResponseForBook(response.getId()));
+        return response;
+    }
+
+    private ProgressResponse getProgressResponseForBook(String bookId) {
+        var userId = requestContext.getUser().getId();
+        return Optional.of(progressService.findByBookIdAndUserId(bookId, userId))
+                .map(ProgressService::toResponse)
+                .orElse(null);
     }
 
     public Edition upsertEdition(String bookDirectory, HardcoverEdition hardcoverEdition,
@@ -306,5 +351,13 @@ public class CatalogueManager {
             log.error("Failed to create directory: {}", directory, e);
             throw new UncheckedIOException(e);
         }
+    }
+
+    public static String getFileMD5(String filePath) {
+        String result = null;
+        try (FileInputStream fis = new FileInputStream(filePath)) {
+            result = DigestUtils.md5Hex(fis);
+        } catch (IOException _) {}
+        return result;
     }
 }
