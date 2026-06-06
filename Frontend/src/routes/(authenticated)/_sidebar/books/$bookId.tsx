@@ -8,6 +8,7 @@ import { useState } from 'react';
 import BookFormat from '#/components/book/BookFormat.tsx';
 import Main from '#/components/layout/Main.tsx';
 import LessMore from '#/components/formatting/LessMore.tsx';
+import Breadcrumbs, { breadcrumbClassName } from '#/components/layout/Breadcrumbs.tsx';
 
 const bookQueryOptions = (bookId: string) => queryOptions({
   queryKey: ['book', bookId],
@@ -34,16 +35,23 @@ function BookDetailsPage() {
 
   return (
     <Main>
-      <div className="flex flex-col flex-1 overflow-y-scroll max-w-6xl mx-auto">
+      <div className="flex flex-col flex-1 max-w-6xl mx-auto">
+        <Breadcrumbs
+          className="mb-4"
+          items={[
+            <Link to="/books" className={breadcrumbClassName}>Books</Link>,
+            <Link to="/books/$bookId" className={breadcrumbClassName} params={{bookId: bookId}}>{book.title}</Link>
+          ]}
+        />
         <div className="flex flex-row">
           { book.ebookEdition && book.ebookEdition.image && book.ebookEdition.image.url ? (
             <img
               src={book.ebookEdition?.image?.url}
               alt={book.title}
-              className="max-w-40 rounded-md h-55 w-45 object-contain rounded-md"
+              className="max-w-40 h-55 w-45 object-cover drop-shadow"
             />
           ) : (
-            <div className="shrink-0 grow-0 rounded-md border border-border bg-surfaceAlt flex items-center justify-center h-50 w-40 text-center text-4xl">
+            <div className="shrink-0 grow-0 rounded-md border border-border bg-surfaceAlt flex items-center justify-center h-50 w-40 text-center text-4xl drop-shadow">
               <BsBook />
             </div>
           )}

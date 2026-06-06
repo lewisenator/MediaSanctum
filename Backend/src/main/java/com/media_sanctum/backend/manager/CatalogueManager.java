@@ -206,7 +206,7 @@ public class CatalogueManager {
 
     private ProgressResponse getProgressResponseForBook(String bookId) {
         var userId = requestContext.getUser().getId();
-        return Optional.of(progressService.findByBookIdAndUserId(bookId, userId))
+        return Optional.ofNullable(progressService.findByBookIdAndUserId(bookId, userId))
                 .map(ProgressService::toResponse)
                 .orElse(null);
     }
