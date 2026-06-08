@@ -19,7 +19,7 @@
     "@tanstack/react-router": "latest",
     "@tanstack/react-router-devtools": "latest",
     "@tanstack/router-plugin": "^1.168.13",
-    "axios": "^1.16.1",
+    "axios": "^1.17.0",
     "date-fns": "^4.4.0",
     "lucide-react": "^1.17.0",
     "react": "^19.2.0",
