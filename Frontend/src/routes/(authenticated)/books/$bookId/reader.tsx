@@ -1,16 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { ReactReader } from 'react-reader';
-import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
+import { queryOptions, useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { getBook } from '#/client/bookClient.ts';
 import { type NavItem, Rendition } from 'epubjs';
 import { useTheme } from '#/context/ThemeContext.tsx';
-
 import ProgressBar from '#/components/reader/ProgressBar.tsx';
 import { readerStyles } from './readerStyles.ts';
 import TitleBar from '#/components/reader/TitleBar.tsx';
 import TOC from '#/components/reader/TOC.tsx';
 import ReaderSettings from '#/components/reader/ReaderSettings.tsx';
+import { reportEbookProgress, type Progress } from '#/client/bookClient.ts';
 
 const bookQueryOptions = (bookId: string) => queryOptions({
   queryKey: ['book', bookId],
@@ -46,6 +46,7 @@ function EbookReaderPage() {
     }
     setShowTocUnwrapped(value);
   };
+
   const setShowSettings = (value: boolean) => {
     if (value && showToc) {
       setShowTocUnwrapped(false);
@@ -72,6 +73,8 @@ function EbookReaderPage() {
 
   const [currentChapter, setCurrentChapter] = useState(0);
   const [totalChapters, setTotalChapters] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   // Ref so the rendered event handler always sees the latest applyTheme closure.
   const applyThemeRef = useRef<(r?: Rendition) => void>(() => {});
@@ -153,34 +156,61 @@ function EbookReaderPage() {
     } else {
       renditionBook.locations.generate(1024).then(() => {
         localStorage.setItem(locKey, renditionBook.locations.save());
-        if (lastCfiRef.current) locationChanged(lastCfiRef.current);
+        if (lastCfiRef.current) {
+          locationChanged(lastCfiRef.current);
+        }
       });
     }
   };
 
-  const locationChanged = (epubcfi: string) => {
+  const { mutateAsync: reportProgressMutation } = useMutation({
+    mutationFn: (progress: Progress) => reportEbookProgress(bookId, progress)
+  });
+
+  const locationChanged = async (epubcfi: string) => {
     lastCfiRef.current = epubcfi;
     setLocation(epubcfi);
     if (!rendition.current) return;
 
-    const pct = rendition.current.book.locations.percentageFromCfi(epubcfi);
-    if (pct != null && !isNaN(pct)) {
-      setProgress(Math.round(pct * 100.0));
-    } else {
-      setProgress(0);
+    // epub.js types incorrectly declare locationFromCfi as returning Location; it actually returns number
+    const locs = rendition.current.book.locations as any;
+    const currentPageCalc = locs.locationFromCfi(epubcfi) as number;
+    const totalPagesCalc = locs.total as number ?? 0;
+    // locationFromCfi returns -1 before locations are generated; skip update until then
+    if (currentPageCalc >= 0 && totalPagesCalc > 0) {
+      setCurrentPage(currentPageCalc);
+      setTotalPages(totalPagesCalc);
     }
 
-    const toc = rendition.current.book.navigation?.toc ?? [];
+    const pct = rendition.current.book.locations.percentageFromCfi(epubcfi);
+    const progressPct = (pct != null && !isNaN(pct)) ? Math.round(pct * 100.0) : 0;
+    setProgress(progressPct);
+
+    const bookToc = rendition.current.book.navigation?.toc ?? [];
     const spineItem = rendition.current.book.spine.get(epubcfi);
-    if (spineItem && toc.length > 0) {
+    let currentChapterCalc = currentChapter;
+    if (spineItem && bookToc.length > 0) {
       const spineFile = spineItem.href.split('/').pop()?.split('#')[0] ?? '';
-      for (let i = toc.length - 1; i >= 0; i--) {
-        if (toc[i].href.split('/').pop()?.split('#')[0] === spineFile) {
-          setCurrentChapter(i + 1);
+      for (let i = bookToc.length - 1; i >= 0; i--) {
+        if (bookToc[i].href.split('/').pop()?.split('#')[0] === spineFile) {
+          currentChapterCalc = i + 1;
+          setCurrentChapter(currentChapterCalc);
           break;
         }
       }
     }
+
+    try {
+      const progressInput: Progress = {
+        epubcfi,
+        percent: progressPct,
+        currentChapter: currentChapterCalc,
+        totalChapters,
+        currentPage: currentPageCalc >= 0 ? currentPageCalc : currentPage,
+        totalPages: totalPagesCalc > 0 ? totalPagesCalc : totalPages,
+      };
+      await reportProgressMutation(progressInput);
+    } catch (_) {}
   };
 
   return (

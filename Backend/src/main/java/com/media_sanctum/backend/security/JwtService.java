@@ -89,7 +89,6 @@ public class JwtService {
             if (tokenPayload.getExp().isBefore(Instant.now())) {
                 var message = String.format("Expired token for user: %s", tokenPayload.getUserId());
                 log.warn(message);
-                throw new BadCredentialsException(message);
             }
             return tokenPayload;
         } catch (JOSEException | JsonProcessingException | ParseException e) {

@@ -22,6 +22,13 @@ export type Book = {
   featuredSeries: FeaturedSeries;
   ebookFile: BookFile;
   audiobookFile: BookFile;
+  tags: Tag[];
+};
+
+export type Tag = {
+  tag: string;
+  count: number;
+  category: string;
 };
 
 export type Edition = {
@@ -104,5 +111,39 @@ export const uploadEbook = async (id: string, ebook: File): Promise<Book> => {
     return res.data.data!;
   } catch (err: any) {
     throw handleError(err, 'Failed to fetch book');
+  }
+};
+
+export type Progress = {
+  epubcfi: string;
+  percent: number;
+  currentChapter: number;
+  totalChapters: number;
+  currentPage: number;
+  totalPages: number;
+};
+
+export type BookProgress = {
+  id: string;
+  editionType: string;
+  epubcfi: string;
+  percent: number;
+  currentChapter: number;
+  totalChapters: number;
+  currentPage: number;
+  totalPages: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const reportEbookProgress = async (
+  bookId: string,
+  progress: Progress
+): Promise<BookProgress> => {
+  try {
+    const res: AxiosResponse<DataResponse<BookProgress>> = await api.post(`/progress/${bookId}/ebook`, progress);
+    return res.data.data!;
+  } catch (err: any) {
+    throw handleError(err, `Failed to upsert book progress ${bookId}`);
   }
 };

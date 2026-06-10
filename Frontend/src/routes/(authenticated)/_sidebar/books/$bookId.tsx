@@ -2,13 +2,14 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { type Book, getBook } from '#/client/bookClient.ts';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 import { BsBook } from 'react-icons/bs';
-import { FiUpload } from "react-icons/fi";
 import TimeAgo from '#/components/formatting/TimeAgo.tsx';
 import { useState } from 'react';
 import BookFormat from '#/components/book/BookFormat.tsx';
 import Main from '#/components/layout/Main.tsx';
 import LessMore from '#/components/formatting/LessMore.tsx';
 import Breadcrumbs, { breadcrumbClassName } from '#/components/layout/Breadcrumbs.tsx';
+import { CiHeadphones } from "react-icons/ci";
+import { PiBookLight } from "react-icons/pi";
 
 const bookQueryOptions = (bookId: string) => queryOptions({
   queryKey: ['book', bookId],
@@ -27,11 +28,19 @@ function BookDetailsPage() {
   const { bookId } = Route.useParams();
   const { data: queriedBook } = useSuspenseQuery(bookQueryOptions(bookId));
   const [book, setBookUnwrapped] = useState<Book>(queriedBook);
+  const [selectedFormat, setSelectedFormat] = useState<string>("ebook");
 
   const setBook = async (newBook: Book) => {
     setBookUnwrapped(newBook);
     await queryClient.invalidateQueries({ queryKey: ['book', bookId] });
   };
+
+  const genres = [...(new Set(book.tags
+    ?.filter((tag) => tag.category === 'Genre' )
+    ?.sort((a, b) => b.count - a.count)
+    ?.map((tag) => tag.tag)) || [])]
+    .slice(0, 5)
+    .join(', ') || '';
 
   return (
     <Main>
@@ -57,53 +66,63 @@ function BookDetailsPage() {
           )}
 
           <div className="flex flex-col ml-5">
-            <span className="mb-2 text-[11px] uppercase tracking-[0.16em] font-mono text-accent">Book</span>
-            <h1 className="font-display font-semibold text-4xl text-text">{book.title}</h1>
-            { book.subtitle && (
-              <p className="mt-3 text-sm text-textDim font-ui">
-                {book.subtitle}
-              </p>
-            )}
-            <p className="mt-3 text-sm text-textDim font-ui">
+            <h1 id="book-title" className="font-display font-semibold text-4xl text-text">{book.title}</h1>
+            <p id="book-author" className="mt-1 text-md text-textDim font- italic">
               by
               <Link
                 to="/authors/$authorId"
                 params={{authorId: book.author.id}}
-                className="hover:underline ml-1 text-text"
+                className="hover:underline ml-1"
               >
                 {book.author.name}
               </Link>
             </p>
-            { book.featuredSeries && book.featuredSeries.series && book.featuredSeries.series.name && (
-              <p className="mt-1 text-xs text-textDim font-ui tracking-wide">
-                <Link to="/books/$bookId" params={{bookId: book.id}} className="hover:underline text-text">
-                  {book.featuredSeries.series.name}
-                </Link>
-                <span className="ml-1 tabular-nums font-mono">#{book.featuredSeries.position}</span>
-              </p>
-            )}
-            { book.releaseYear && (
-              <span className="mt-1 text-xs font-mono text-textMute">
-                Released
-                <span className="ml-1 tabular-nums">{book.releaseYear}</span>
-              </span>
-            )}
-            { book.createdAt && (
-              <span className="mt-3 text-xs font-ui text-text">
-                Added
-                <span className="ml-1 tabular-nums"><TimeAgo date={new Date(book.createdAt)} /></span>
-              </span>
-            )}
-            { book.ebookFile && (
-              <Link
-                to='/books/$bookId/reader'
-                params={{ bookId: bookId }}
-                className="btn btn-secondary text-xs! px-3 py-2 font-ui mt-3 w-20"
-              >
-                <BsBook /> Read
-              </Link>
-            )}
+
+            <div
+              className="flex flex-row flex-wrap gap-6 mt-3"
+            >
+              {/* Metadata */}
+              { book.releaseYear && (
+                <div className="">
+                  <div className="uppercase text-xs text-textMute font-ui">Year</div>
+                  <div className="text-sm tabular-nums">{book.releaseYear}</div>
+                </div>
+              )}
+
+              { book.createdAt && (
+                <div className="">
+                  <div className="uppercase text-xs text-textMute font-ui">Added</div>
+                  <div className="text-sm"><TimeAgo date={new Date(book.createdAt)} /></div>
+                </div>
+              )}
+
+              { book.featuredSeries && book.featuredSeries.series &&
+                book.featuredSeries.series.name && (
+                <div className="">
+                  <div className="uppercase text-xs text-textMute font-ui">Series</div>
+                  <div className="text-sm">
+                    <Link to="/books/$bookId" params={{bookId: book.id}} className="hover:underline text-text">
+                      {book.featuredSeries.series.name}
+                    </Link>
+                    <span className="ml-1 tabular-nums font-mono">#{book.featuredSeries.position}</span>
+                  </div>
+                </div>
+              )}
+
+              { genres.length > 0 && (
+                <div className="">
+                  <div className="uppercase text-xs text-textMute font-ui">Genres</div>
+                  <div className="text-sm">{ genres }</div>
+                </div>
+              )}
+            </div>
           </div>
+        </div>
+
+        <div
+          className="uppercase text-xs font-ui text-textMute mt-8"
+        >
+          About
         </div>
 
         <div>
@@ -118,43 +137,51 @@ function BookDetailsPage() {
           )}
         </div>
 
-        <div className="mt-8">
-          <h2 className="font-display font-semibold text-lg text-text tracking-tight">Formats</h2>
-          <div className="card mt-3 divide-y divide-surfaceAlt">
-            <BookFormat
-              bookId={book.id}
-              setBook={setBook}
-              format={"ebook"}
-              metric={"Pages"}
-              amount={book.pages}
-              bookFile={book.ebookFile}
-            />
-
-            <div className="py-4 px-5 flex flex-col">
-              <div className="flex flex-row justify-between items-center flex-wrap">
-                <div className="flex flex-row">
-                  <p className="library-card-format">
-                    Audiobook
-                  </p>
-                  { book.audiobookEdition?.audioSeconds && (
-                    <div className="ml-5 text-sm text-textDim gap-1 flex flex-row flex-wrap items-center">
-                      <span className="tabular-nums">{book.audiobookEdition.audioSeconds}</span>
-                      Pages
-                    </div>
-                  )}
-                </div>
-                <div className="">
-                  <button className="btn btn-secondary text-xs! px-3 py-2 font-ui">
-                    <FiUpload /> Upload
-                  </button>
-                </div>
-              </div>
-              <div className="basis-full text-xs italic text-textMute">
-                Files missing - drop a file anywhere on the page or use the buttons above.
-              </div>
-            </div>
-          </div>
+        <div
+          className="flex flex-row mt-8 bg-surfaceAlt border border-border p-1 rounded-lg max-w-53"
+        >
+          <span
+            onClick={() => setSelectedFormat("ebook")}
+            className={`inline-flex justify-center items-center py-2 px-3 m-0 text-sm hover:bg-surface rounded-md cursor-pointer text-textDim ${selectedFormat === 'ebook' && 'drop-shadow-sm text-text!'}`}
+            style={{
+              backgroundColor: selectedFormat === 'ebook' ? 'var(--c-surface)' : 'var(--c-surfaceAlt)',
+            }}
+          >
+            <PiBookLight className={`mr-1 ${selectedFormat === 'ebook' && 'text-accent'}`} /> Ebook
+          </span>
+          <span
+            onClick={() => setSelectedFormat("audiobook")}
+            className={`inline-flex justify-center items-center py-2 px-3 m-0 text-sm hover:bg-surface rounded-md cursor-pointer text-textDim ${selectedFormat === 'audiobook' && 'drop-shadow-sm text-text!'}`}
+            style={{
+              backgroundColor: selectedFormat === 'audiobook' ? 'var(--c-surface)' : 'var(--c-surfaceAlt)',
+            }}
+          >
+            <CiHeadphones className={`mr-1 ${selectedFormat === 'audiobook' && 'text-accent'}`} /> Audiobook
+          </span>
         </div>
+
+        { selectedFormat === 'ebook' && (
+          <BookFormat
+            bookId={book.id}
+            setBook={setBook}
+            format={"ebook"}
+            metric={"Pages"}
+            amount={book.pages}
+            bookFile={book.ebookFile}
+          />
+        )}
+
+        { selectedFormat === 'audiobook' && (
+          <BookFormat
+            bookId={book.id}
+            setBook={setBook}
+            format={"audiobook"}
+            metric={"Seconds"}
+            amount={book.ebookEdition?.audioSeconds}
+            bookFile={book.audiobookFile}
+          />
+        )}
+
       </div>
     </Main>
   )

@@ -1,6 +1,7 @@
 package com.media_sanctum.backend.resource;
 
 import com.media_sanctum.backend.client.hardcover.model.HardcoverFeaturedSeriesSearchResult;
+import com.media_sanctum.backend.client.hardcover.model.HardcoverTag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class BookResponse {
     private String updatedAt;
     private Float rating;
     private Integer ratingsCount;
-    private List<String> tags;
+    private List<TagResponse> tags;
     private AuthorResponse author;
     private EditionResponse ebookEdition;
     private EditionResponse audiobookEdition;

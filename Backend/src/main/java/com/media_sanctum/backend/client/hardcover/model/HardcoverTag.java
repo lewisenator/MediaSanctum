@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HardcoverTag {
     private Integer id;
+    private Integer count;
     private String tag;
     private HardcoverTagCategory tagCategory;
 }

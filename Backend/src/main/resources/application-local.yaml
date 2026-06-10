@@ -12,5 +12,5 @@ media-sanctum:
   log-stack-traces: true
   jwt:
     access-exp:
-      time-unit: SECONDS
-      value: 30
+      time-unit: HOURS
+      value: 1

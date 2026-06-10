@@ -233,3 +233,7 @@ button {
 .drop-shadow {
   @apply shadow-[0_2px_0_rgba(0,0,0,0.06),0_16px_40px_rgba(0,0,0,0.18)];
 }
+
+.drop-shadow-sm {
+  @apply shadow-[0_2px_0_rgba(0,0,0,0.06),0_8px_20px_rgba(0,0,0,0.05)];
+}

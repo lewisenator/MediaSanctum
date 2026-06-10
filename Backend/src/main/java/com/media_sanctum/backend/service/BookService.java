@@ -3,11 +3,13 @@ package com.media_sanctum.backend.service;
 import com.media_sanctum.backend.entity.Book;
 import com.media_sanctum.backend.repository.BookRepository;
 import com.media_sanctum.backend.resource.BookResponse;
+import com.media_sanctum.backend.resource.TagResponse;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookService {
@@ -66,7 +68,15 @@ public class BookService {
                 .audioSeconds(book.getAudioSeconds())
                 .rating(book.getRating())
                 .ratingsCount(book.getRatingsCount())
-                .tags(book.getTags())
+                .tags(Optional.ofNullable(book.getTags())
+                        .orElse(List.of())
+                        .stream()
+                        .map(item -> TagResponse.builder()
+                            .tag(item.getTag())
+                            .count(item.getCount())
+                            .category(item.getTagCategory().getCategory())
+                            .build())
+                        .toList())
                 .createdAt(book.getCreatedAt().toString())
                 .updatedAt(book.getUpdatedAt().toString())
                 .author(AuthorService.toResponse(book.getAuthor()))

@@ -59,6 +59,7 @@ public class HardcoverQueries {
                         tag {
                             id
                             tag
+                            count
                             tag_category {
                                 id
                                 category

@@ -7,7 +7,6 @@ import { Link } from '@tanstack/react-router';
 import { BsBook } from "react-icons/bs";
 import { IoCloudDownloadOutline } from "react-icons/io5";
 
-
 type BookFormatProps = {
   bookId: string;
   format: string;
@@ -133,7 +132,6 @@ const BookFormat = (
           ? `Click to download or read ${bookFile.filename}`
           : 'Files missing - drop a file anywhere on the page or use the buttons above.'
         }
-
       </div>
     </div>
   );

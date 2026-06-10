@@ -1,6 +1,8 @@
 package com.media_sanctum.backend.entity;
 
 import com.media_sanctum.backend.client.hardcover.model.HardcoverFeaturedSeriesSearchResult;
+import com.media_sanctum.backend.client.hardcover.model.HardcoverLink;
+import com.media_sanctum.backend.client.hardcover.model.HardcoverTag;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -88,8 +90,8 @@ public class Book {
     private Integer ratingsCount;
 
     @Column(name = "tags", columnDefinition = "TEXT")
-    @JdbcTypeCode(SqlTypes.JSON_ARRAY)
-    private List<String> tags;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<HardcoverTag> tags;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

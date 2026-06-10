@@ -55,7 +55,7 @@ public class BooksController {
     public ResponseEntity<DataResponse<BookResponse>> getBook(
             @PathVariable String id
     ) {
-        var book = bookService.getBookResponse(id);
+        var book = catalogueManager.getBookResponse(id);
         if (book == null) {
             var error = ErrorResponse.builder()
                     .error("BOOK_NOT_FOUND")

@@ -47,15 +47,11 @@ public class HardcoverBook {
                 .map(HardcoverAuthorContribution::getId);
     }
 
-    public List<String> getSimpleTags() {
+    public List<HardcoverTag> getSimpleTags() {
         return Optional.ofNullable(taggings)
                 .orElse(List.of())
                 .stream()
                 .map(HardcoverTagging::getTag)
-                .map(tag -> {
-                    var category = tag.getTagCategory().getCategory();
-                    var tagValue = tag.getTag();
-                    return String.format("%s:%s", category, tagValue);
-                }).toList();
+                .toList();
     }
 }

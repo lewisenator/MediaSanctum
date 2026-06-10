@@ -83,6 +83,15 @@ public class CatalogueManager {
         this.requestContext = requestContext;
     }
 
+    public BookResponse getBookResponse(String id) {
+        var result = bookService.getBookResponse(id);
+        var progress = progressService.findByBookIdAndUserId(id, requestContext.getUser().getId());
+        if (progress != null) {
+            result.setEbookProgress(ProgressService.toResponse(progress));
+        }
+        return result;
+    }
+
     public ProgressResponse upsertProgress(Book book, UpsertProgressRequest body) {
         var user = requestContext.getUser();
         var progressBuilder = Optional.ofNullable(progressService.findByBookIdAndUserId(book.getId(), user.getId()))
@@ -95,7 +104,12 @@ public class CatalogueManager {
         }
         var progress = progressBuilder.epubcfi(body.getEpubcfi())
                 .percent(body.getPercent())
+                .currentPage(body.getCurrentPage())
+                .totalPages(body.getTotalPages())
                 .currentChapter(body.getCurrentChapter())
+                .totalChapters(body.getTotalChapters())
+                .epubcfi(body.getEpubcfi())
+                .editionType(EditionType.EBOOK)
                 .build();
         progress = progressService.save(progress);
         return ProgressService.toResponse(progress);
