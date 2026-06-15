@@ -57,7 +57,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
 
     compileOnly("org.projectlombok:lombok")
-    compileOnly("com.github.spotbugs:spotbugs-annotations:4.9.8")
+    compileOnly("com.github.spotbugs:spotbugs-annotations:4.10.2")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-security")
