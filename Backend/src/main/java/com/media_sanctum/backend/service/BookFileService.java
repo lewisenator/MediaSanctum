@@ -40,6 +40,7 @@ public class BookFileService {
                 .filename(bookFile.getFilename())
                 .contentType(bookFile.getContentType())
                 .editionType(bookFile.getEditionType())
+                .ffProbe(bookFile.getFfprobe())
                 .createdAt(bookFile.getCreatedAt().toString())
                 .updatedAt(bookFile.getUpdatedAt().toString())
                 .build();

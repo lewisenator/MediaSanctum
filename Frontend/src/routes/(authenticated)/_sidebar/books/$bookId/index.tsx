@@ -11,13 +11,15 @@ import Breadcrumbs, { breadcrumbClassName } from '#/components/layout/Breadcrumb
 import MissingEbook from '#/components/book/MissingEbook.tsx';
 import AvailableEbook from '#/components/book/AvailableEbook.tsx';
 import FormatSelect from '#/components/book/FormatSelect.tsx';
+import AvailableAudiobook from '#/components/book/AvailableAudiobook.tsx';
+import MissingAudiobook from '#/components/book/MissingAudiobook.tsx';
 
 const bookQueryOptions = (bookId: string) => queryOptions({
   queryKey: ['book', bookId],
   queryFn: () => getBook(bookId),
 });
 
-export const Route = createFileRoute('/(authenticated)/_sidebar/books/$bookId')({
+export const Route = createFileRoute('/(authenticated)/_sidebar/books/$bookId/')({
   component: BookDetailsPage,
   loader: async ({params: {bookId}, context: {queryClient}}) => {
     return queryClient.ensureQueryData(bookQueryOptions(bookId));
@@ -154,6 +156,21 @@ function BookDetailsPage() {
               />
             ) : (
               <MissingEbook
+                book={book}
+                setBook={setBook}
+              />
+            )}
+          </>
+        )}
+
+        { selectedFormat === 'audiobook' && (
+          <>
+            { book.audiobookFile ? (
+              <AvailableAudiobook
+                book={book}
+              />
+            ) : (
+              <MissingAudiobook
                 book={book}
                 setBook={setBook}
               />

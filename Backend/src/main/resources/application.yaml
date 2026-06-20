@@ -7,6 +7,10 @@ spring:
   flyway:
       locations: classpath:db/migration
       baseline-on-migrate: false
+  servlet:
+    multipart:
+      max-file-size: 10GB
+      max-request-size: 10GB
 server:
   port: 8000
 management:

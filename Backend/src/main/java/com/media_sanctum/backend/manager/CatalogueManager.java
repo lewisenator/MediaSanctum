@@ -15,8 +15,7 @@ import com.media_sanctum.backend.entity.EditionType;
 import com.media_sanctum.backend.entity.Image;
 import com.media_sanctum.backend.entity.ImageType;
 import com.media_sanctum.backend.entity.Progress;
-import com.media_sanctum.backend.entity.User;
-import com.media_sanctum.backend.repository.ProgressRepository;
+import com.media_sanctum.backend.entity.audio.FFProbe;
 import com.media_sanctum.backend.resource.BookResponse;
 import com.media_sanctum.backend.resource.ProgressResponse;
 import com.media_sanctum.backend.resource.UpsertProgressRequest;
@@ -26,6 +25,7 @@ import com.media_sanctum.backend.service.BookService;
 import com.media_sanctum.backend.service.EditionService;
 import com.media_sanctum.backend.service.ImageService;
 import com.media_sanctum.backend.service.ProgressService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,8 @@ import java.util.regex.Pattern;
 public class CatalogueManager {
 
     private static final Pattern SAFE_IMAGE_PATTERN = Pattern.compile("^.*(jpg|jpeg|png|gif|webp)$");
-    private static final Pattern SAVE_BOOK_FILE_PATTERN = Pattern.compile("^.*(pdf|epub|mobi)$");
+    private static final Pattern SAFE_EBOOK_FILE_PATTERN = Pattern.compile("^.*(pdf|epub|mobi)$");
+    private static final Pattern SAFE_AUDIOBOOK_FILE_PATTERN = Pattern.compile("^.*(m4b)$");
 
     private final BookService bookService;
     private final BookFileService bookFileService;
@@ -60,6 +61,7 @@ public class CatalogueManager {
     private final HardcoverClient hardcoverClient;
     private final MediaSanctumConfig mediaSanctumConfig;
     private final RequestContext requestContext;
+    private final ObjectMapper objectMapper;
 
     public CatalogueManager(
             BookService bookService,
@@ -70,7 +72,8 @@ public class CatalogueManager {
             ProgressService progressService,
             HardcoverClient hardcoverClient,
             MediaSanctumConfig mediaSanctumConfig,
-            RequestContext requestContext
+            RequestContext requestContext,
+            ObjectMapper objectMapper
     ) {
         this.bookService = bookService;
         this.bookFileService = bookFileService;
@@ -81,6 +84,7 @@ public class CatalogueManager {
         this.hardcoverClient = hardcoverClient;
         this.mediaSanctumConfig = mediaSanctumConfig;
         this.requestContext = requestContext;
+        this.objectMapper = objectMapper;
     }
 
     public BookResponse getBookResponse(String id) {
@@ -127,9 +131,12 @@ public class CatalogueManager {
         };
 
         var fileName = file.getOriginalFilename();
-        var matcher = SAVE_BOOK_FILE_PATTERN.matcher(fileName);
+        var matcher = switch(editionType) {
+            case EBOOK -> SAFE_EBOOK_FILE_PATTERN.matcher(fileName);
+            case AUDIOBOOK -> SAFE_AUDIOBOOK_FILE_PATTERN.matcher(fileName);
+        };
         if (!matcher.matches()) {
-            var message = String.format("Invalid book file extension: %s", fileName);
+            var message = String.format("Invalid %s file extension: %s", editionType, fileName);
             log.error(message);
             throw new IllegalArgumentException(message);
         }
@@ -137,17 +144,15 @@ public class CatalogueManager {
         var desiredFilename = book.getTitle() + "." + extension;
 
         var filePath = Path.of(uploadDirectory, desiredFilename);
-        try {
-            try (InputStream in = file.getInputStream()) {
-                Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
-            }
+        try (InputStream in = file.getInputStream()) {
+            Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             log.error("Failed to upload {} file: {}", editionType, fileName, e);
             return null;
         }
 
         var id = UUID.randomUUID().toString();
-        var url = ("/public/book-files/%s.%s").formatted(id, extension);
+        var url = ("/public/%s-files/%s.%s").formatted(editionType.getPathValue(), id, extension);
         var bookFile = BookFile.builder()
                 .id(id)
                 .url(url)
@@ -161,6 +166,10 @@ public class CatalogueManager {
                 .book(book)
                 .build();
 
+        if (editionType == EditionType.AUDIOBOOK) {
+            bookFile.setFfprobe(ffProbe(filePath.toString()));
+        }
+
         bookFile = bookFileService.saveBookFile(bookFile);
 
         switch (editionType) {
@@ -173,6 +182,21 @@ public class CatalogueManager {
         var response = BookService.toResponse(book);
         response.setEbookProgress(getProgressResponseForBook(response.getId()));
         return response;
+    }
+
+    private FFProbe ffProbe(String filePath) {
+        try {
+            var process = new ProcessBuilder(
+                    "ffprobe", "-v", "quiet", "-print_format", "json",
+                    "-show_chapters", "-show_format", "-show_streams", filePath
+            ).start();
+            var output = process.getInputStream().readAllBytes();
+            process.waitFor();
+            return objectMapper.readValue(output, FFProbe.class);
+        } catch (IOException | InterruptedException e) {
+            log.error("ffprobe failed for: {}", filePath, e);
+            return null;
+        }
     }
 
     public BookResponse addBook(Integer hardcoverId) {
@@ -353,7 +377,7 @@ public class CatalogueManager {
 
     private String authorDirectory(Author author) {
         var dataDir = mediaSanctumConfig.dataDir();
-        var authorDirectory = Path.of(dataDir, "books", author.getName()).toString();
+        var authorDirectory = Path.of(dataDir, "ebooks", author.getName()).toString();
         return createDirectory(authorDirectory);
     }
 

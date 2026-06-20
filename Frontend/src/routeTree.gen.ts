@@ -14,16 +14,17 @@ import { Route as authenticatedRouteRouteImport } from './routes/(authenticated)
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as unauthenticatedLoginRouteImport } from './routes/(unauthenticated)/login'
 import { Route as authenticatedSidebarRouteRouteImport } from './routes/(authenticated)/_sidebar/route'
-import { Route as authenticatedBooksBookIdRouteRouteImport } from './routes/(authenticated)/books/$bookId/route'
 import { Route as authenticatedSidebarStatusIndexRouteImport } from './routes/(authenticated)/_sidebar/status/index'
 import { Route as authenticatedSidebarSeriesIndexRouteImport } from './routes/(authenticated)/_sidebar/series/index'
 import { Route as authenticatedSidebarBooksIndexRouteImport } from './routes/(authenticated)/_sidebar/books/index'
 import { Route as authenticatedSidebarAuthorsIndexRouteImport } from './routes/(authenticated)/_sidebar/authors/index'
-import { Route as authenticatedBooksBookIdReaderRouteImport } from './routes/(authenticated)/books/$bookId/reader'
 import { Route as authenticatedSidebarBooksSearchRouteImport } from './routes/(authenticated)/_sidebar/books/search'
-import { Route as authenticatedSidebarBooksBookIdRouteImport } from './routes/(authenticated)/_sidebar/books/$bookId'
 import { Route as authenticatedSidebarAuthorsSearchRouteImport } from './routes/(authenticated)/_sidebar/authors/search'
 import { Route as authenticatedSidebarAuthorsAuthorIdRouteImport } from './routes/(authenticated)/_sidebar/authors/$authorId'
+import { Route as authenticatedFullpageBooksBookIdRouteRouteImport } from './routes/(authenticated)/_fullpage/books/$bookId/route'
+import { Route as authenticatedSidebarBooksBookIdIndexRouteImport } from './routes/(authenticated)/_sidebar/books/$bookId/index'
+import { Route as authenticatedSidebarBooksBookIdListenerRouteImport } from './routes/(authenticated)/_sidebar/books/$bookId/listener'
+import { Route as authenticatedFullpageBooksBookIdReaderRouteImport } from './routes/(authenticated)/_fullpage/books/$bookId/reader'
 
 const unauthenticatedRouteRoute = unauthenticatedRouteRouteImport.update({
   id: '/(unauthenticated)',
@@ -46,12 +47,6 @@ const unauthenticatedLoginRoute = unauthenticatedLoginRouteImport.update({
 const authenticatedSidebarRouteRoute =
   authenticatedSidebarRouteRouteImport.update({
     id: '/_sidebar',
-    getParentRoute: () => authenticatedRouteRoute,
-  } as any)
-const authenticatedBooksBookIdRouteRoute =
-  authenticatedBooksBookIdRouteRouteImport.update({
-    id: '/books/$bookId',
-    path: '/books/$bookId',
     getParentRoute: () => authenticatedRouteRoute,
   } as any)
 const authenticatedSidebarStatusIndexRoute =
@@ -78,22 +73,10 @@ const authenticatedSidebarAuthorsIndexRoute =
     path: '/authors/',
     getParentRoute: () => authenticatedSidebarRouteRoute,
   } as any)
-const authenticatedBooksBookIdReaderRoute =
-  authenticatedBooksBookIdReaderRouteImport.update({
-    id: '/reader',
-    path: '/reader',
-    getParentRoute: () => authenticatedBooksBookIdRouteRoute,
-  } as any)
 const authenticatedSidebarBooksSearchRoute =
   authenticatedSidebarBooksSearchRouteImport.update({
     id: '/books/search',
     path: '/books/search',
-    getParentRoute: () => authenticatedSidebarRouteRoute,
-  } as any)
-const authenticatedSidebarBooksBookIdRoute =
-  authenticatedSidebarBooksBookIdRouteImport.update({
-    id: '/books/$bookId',
-    path: '/books/$bookId',
     getParentRoute: () => authenticatedSidebarRouteRoute,
   } as any)
 const authenticatedSidebarAuthorsSearchRoute =
@@ -108,32 +91,59 @@ const authenticatedSidebarAuthorsAuthorIdRoute =
     path: '/authors/$authorId',
     getParentRoute: () => authenticatedSidebarRouteRoute,
   } as any)
+const authenticatedFullpageBooksBookIdRouteRoute =
+  authenticatedFullpageBooksBookIdRouteRouteImport.update({
+    id: '/_fullpage/books/$bookId',
+    path: '/books/$bookId',
+    getParentRoute: () => authenticatedRouteRoute,
+  } as any)
+const authenticatedSidebarBooksBookIdIndexRoute =
+  authenticatedSidebarBooksBookIdIndexRouteImport.update({
+    id: '/books/$bookId/',
+    path: '/books/$bookId/',
+    getParentRoute: () => authenticatedSidebarRouteRoute,
+  } as any)
+const authenticatedSidebarBooksBookIdListenerRoute =
+  authenticatedSidebarBooksBookIdListenerRouteImport.update({
+    id: '/books/$bookId/listener',
+    path: '/books/$bookId/listener',
+    getParentRoute: () => authenticatedSidebarRouteRoute,
+  } as any)
+const authenticatedFullpageBooksBookIdReaderRoute =
+  authenticatedFullpageBooksBookIdReaderRouteImport.update({
+    id: '/reader',
+    path: '/reader',
+    getParentRoute: () => authenticatedFullpageBooksBookIdRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof unauthenticatedLoginRoute
-  '/books/$bookId': typeof authenticatedSidebarBooksBookIdRoute
+  '/books/$bookId': typeof authenticatedFullpageBooksBookIdRouteRouteWithChildren
   '/authors/$authorId': typeof authenticatedSidebarAuthorsAuthorIdRoute
   '/authors/search': typeof authenticatedSidebarAuthorsSearchRoute
   '/books/search': typeof authenticatedSidebarBooksSearchRoute
-  '/books/$bookId/reader': typeof authenticatedBooksBookIdReaderRoute
   '/authors/': typeof authenticatedSidebarAuthorsIndexRoute
   '/books/': typeof authenticatedSidebarBooksIndexRoute
   '/series/': typeof authenticatedSidebarSeriesIndexRoute
   '/status/': typeof authenticatedSidebarStatusIndexRoute
+  '/books/$bookId/reader': typeof authenticatedFullpageBooksBookIdReaderRoute
+  '/books/$bookId/listener': typeof authenticatedSidebarBooksBookIdListenerRoute
+  '/books/$bookId/': typeof authenticatedSidebarBooksBookIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof unauthenticatedLoginRoute
-  '/books/$bookId': typeof authenticatedSidebarBooksBookIdRoute
+  '/books/$bookId': typeof authenticatedSidebarBooksBookIdIndexRoute
   '/authors/$authorId': typeof authenticatedSidebarAuthorsAuthorIdRoute
   '/authors/search': typeof authenticatedSidebarAuthorsSearchRoute
   '/books/search': typeof authenticatedSidebarBooksSearchRoute
-  '/books/$bookId/reader': typeof authenticatedBooksBookIdReaderRoute
   '/authors': typeof authenticatedSidebarAuthorsIndexRoute
   '/books': typeof authenticatedSidebarBooksIndexRoute
   '/series': typeof authenticatedSidebarSeriesIndexRoute
   '/status': typeof authenticatedSidebarStatusIndexRoute
+  '/books/$bookId/reader': typeof authenticatedFullpageBooksBookIdReaderRoute
+  '/books/$bookId/listener': typeof authenticatedSidebarBooksBookIdListenerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -142,16 +152,17 @@ export interface FileRoutesById {
   '/(unauthenticated)': typeof unauthenticatedRouteRouteWithChildren
   '/(authenticated)/_sidebar': typeof authenticatedSidebarRouteRouteWithChildren
   '/(unauthenticated)/login': typeof unauthenticatedLoginRoute
-  '/(authenticated)/books/$bookId': typeof authenticatedBooksBookIdRouteRouteWithChildren
+  '/(authenticated)/_fullpage/books/$bookId': typeof authenticatedFullpageBooksBookIdRouteRouteWithChildren
   '/(authenticated)/_sidebar/authors/$authorId': typeof authenticatedSidebarAuthorsAuthorIdRoute
   '/(authenticated)/_sidebar/authors/search': typeof authenticatedSidebarAuthorsSearchRoute
-  '/(authenticated)/_sidebar/books/$bookId': typeof authenticatedSidebarBooksBookIdRoute
   '/(authenticated)/_sidebar/books/search': typeof authenticatedSidebarBooksSearchRoute
-  '/(authenticated)/books/$bookId/reader': typeof authenticatedBooksBookIdReaderRoute
   '/(authenticated)/_sidebar/authors/': typeof authenticatedSidebarAuthorsIndexRoute
   '/(authenticated)/_sidebar/books/': typeof authenticatedSidebarBooksIndexRoute
   '/(authenticated)/_sidebar/series/': typeof authenticatedSidebarSeriesIndexRoute
   '/(authenticated)/_sidebar/status/': typeof authenticatedSidebarStatusIndexRoute
+  '/(authenticated)/_fullpage/books/$bookId/reader': typeof authenticatedFullpageBooksBookIdReaderRoute
+  '/(authenticated)/_sidebar/books/$bookId/listener': typeof authenticatedSidebarBooksBookIdListenerRoute
+  '/(authenticated)/_sidebar/books/$bookId/': typeof authenticatedSidebarBooksBookIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -162,11 +173,13 @@ export interface FileRouteTypes {
     | '/authors/$authorId'
     | '/authors/search'
     | '/books/search'
-    | '/books/$bookId/reader'
     | '/authors/'
     | '/books/'
     | '/series/'
     | '/status/'
+    | '/books/$bookId/reader'
+    | '/books/$bookId/listener'
+    | '/books/$bookId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -175,11 +188,12 @@ export interface FileRouteTypes {
     | '/authors/$authorId'
     | '/authors/search'
     | '/books/search'
-    | '/books/$bookId/reader'
     | '/authors'
     | '/books'
     | '/series'
     | '/status'
+    | '/books/$bookId/reader'
+    | '/books/$bookId/listener'
   id:
     | '__root__'
     | '/'
@@ -187,16 +201,17 @@ export interface FileRouteTypes {
     | '/(unauthenticated)'
     | '/(authenticated)/_sidebar'
     | '/(unauthenticated)/login'
-    | '/(authenticated)/books/$bookId'
+    | '/(authenticated)/_fullpage/books/$bookId'
     | '/(authenticated)/_sidebar/authors/$authorId'
     | '/(authenticated)/_sidebar/authors/search'
-    | '/(authenticated)/_sidebar/books/$bookId'
     | '/(authenticated)/_sidebar/books/search'
-    | '/(authenticated)/books/$bookId/reader'
     | '/(authenticated)/_sidebar/authors/'
     | '/(authenticated)/_sidebar/books/'
     | '/(authenticated)/_sidebar/series/'
     | '/(authenticated)/_sidebar/status/'
+    | '/(authenticated)/_fullpage/books/$bookId/reader'
+    | '/(authenticated)/_sidebar/books/$bookId/listener'
+    | '/(authenticated)/_sidebar/books/$bookId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -242,13 +257,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedSidebarRouteRouteImport
       parentRoute: typeof authenticatedRouteRoute
     }
-    '/(authenticated)/books/$bookId': {
-      id: '/(authenticated)/books/$bookId'
-      path: '/books/$bookId'
-      fullPath: '/books/$bookId'
-      preLoaderRoute: typeof authenticatedBooksBookIdRouteRouteImport
-      parentRoute: typeof authenticatedRouteRoute
-    }
     '/(authenticated)/_sidebar/status/': {
       id: '/(authenticated)/_sidebar/status/'
       path: '/status'
@@ -277,25 +285,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedSidebarAuthorsIndexRouteImport
       parentRoute: typeof authenticatedSidebarRouteRoute
     }
-    '/(authenticated)/books/$bookId/reader': {
-      id: '/(authenticated)/books/$bookId/reader'
-      path: '/reader'
-      fullPath: '/books/$bookId/reader'
-      preLoaderRoute: typeof authenticatedBooksBookIdReaderRouteImport
-      parentRoute: typeof authenticatedBooksBookIdRouteRoute
-    }
     '/(authenticated)/_sidebar/books/search': {
       id: '/(authenticated)/_sidebar/books/search'
       path: '/books/search'
       fullPath: '/books/search'
       preLoaderRoute: typeof authenticatedSidebarBooksSearchRouteImport
-      parentRoute: typeof authenticatedSidebarRouteRoute
-    }
-    '/(authenticated)/_sidebar/books/$bookId': {
-      id: '/(authenticated)/_sidebar/books/$bookId'
-      path: '/books/$bookId'
-      fullPath: '/books/$bookId'
-      preLoaderRoute: typeof authenticatedSidebarBooksBookIdRouteImport
       parentRoute: typeof authenticatedSidebarRouteRoute
     }
     '/(authenticated)/_sidebar/authors/search': {
@@ -312,18 +306,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedSidebarAuthorsAuthorIdRouteImport
       parentRoute: typeof authenticatedSidebarRouteRoute
     }
+    '/(authenticated)/_fullpage/books/$bookId': {
+      id: '/(authenticated)/_fullpage/books/$bookId'
+      path: '/books/$bookId'
+      fullPath: '/books/$bookId'
+      preLoaderRoute: typeof authenticatedFullpageBooksBookIdRouteRouteImport
+      parentRoute: typeof authenticatedRouteRoute
+    }
+    '/(authenticated)/_sidebar/books/$bookId/': {
+      id: '/(authenticated)/_sidebar/books/$bookId/'
+      path: '/books/$bookId'
+      fullPath: '/books/$bookId/'
+      preLoaderRoute: typeof authenticatedSidebarBooksBookIdIndexRouteImport
+      parentRoute: typeof authenticatedSidebarRouteRoute
+    }
+    '/(authenticated)/_sidebar/books/$bookId/listener': {
+      id: '/(authenticated)/_sidebar/books/$bookId/listener'
+      path: '/books/$bookId/listener'
+      fullPath: '/books/$bookId/listener'
+      preLoaderRoute: typeof authenticatedSidebarBooksBookIdListenerRouteImport
+      parentRoute: typeof authenticatedSidebarRouteRoute
+    }
+    '/(authenticated)/_fullpage/books/$bookId/reader': {
+      id: '/(authenticated)/_fullpage/books/$bookId/reader'
+      path: '/reader'
+      fullPath: '/books/$bookId/reader'
+      preLoaderRoute: typeof authenticatedFullpageBooksBookIdReaderRouteImport
+      parentRoute: typeof authenticatedFullpageBooksBookIdRouteRoute
+    }
   }
 }
 
 interface authenticatedSidebarRouteRouteChildren {
   authenticatedSidebarAuthorsAuthorIdRoute: typeof authenticatedSidebarAuthorsAuthorIdRoute
   authenticatedSidebarAuthorsSearchRoute: typeof authenticatedSidebarAuthorsSearchRoute
-  authenticatedSidebarBooksBookIdRoute: typeof authenticatedSidebarBooksBookIdRoute
   authenticatedSidebarBooksSearchRoute: typeof authenticatedSidebarBooksSearchRoute
   authenticatedSidebarAuthorsIndexRoute: typeof authenticatedSidebarAuthorsIndexRoute
   authenticatedSidebarBooksIndexRoute: typeof authenticatedSidebarBooksIndexRoute
   authenticatedSidebarSeriesIndexRoute: typeof authenticatedSidebarSeriesIndexRoute
   authenticatedSidebarStatusIndexRoute: typeof authenticatedSidebarStatusIndexRoute
+  authenticatedSidebarBooksBookIdListenerRoute: typeof authenticatedSidebarBooksBookIdListenerRoute
+  authenticatedSidebarBooksBookIdIndexRoute: typeof authenticatedSidebarBooksBookIdIndexRoute
 }
 
 const authenticatedSidebarRouteRouteChildren: authenticatedSidebarRouteRouteChildren =
@@ -332,13 +355,16 @@ const authenticatedSidebarRouteRouteChildren: authenticatedSidebarRouteRouteChil
       authenticatedSidebarAuthorsAuthorIdRoute,
     authenticatedSidebarAuthorsSearchRoute:
       authenticatedSidebarAuthorsSearchRoute,
-    authenticatedSidebarBooksBookIdRoute: authenticatedSidebarBooksBookIdRoute,
     authenticatedSidebarBooksSearchRoute: authenticatedSidebarBooksSearchRoute,
     authenticatedSidebarAuthorsIndexRoute:
       authenticatedSidebarAuthorsIndexRoute,
     authenticatedSidebarBooksIndexRoute: authenticatedSidebarBooksIndexRoute,
     authenticatedSidebarSeriesIndexRoute: authenticatedSidebarSeriesIndexRoute,
     authenticatedSidebarStatusIndexRoute: authenticatedSidebarStatusIndexRoute,
+    authenticatedSidebarBooksBookIdListenerRoute:
+      authenticatedSidebarBooksBookIdListenerRoute,
+    authenticatedSidebarBooksBookIdIndexRoute:
+      authenticatedSidebarBooksBookIdIndexRoute,
   }
 
 const authenticatedSidebarRouteRouteWithChildren =
@@ -346,29 +372,30 @@ const authenticatedSidebarRouteRouteWithChildren =
     authenticatedSidebarRouteRouteChildren,
   )
 
-interface authenticatedBooksBookIdRouteRouteChildren {
-  authenticatedBooksBookIdReaderRoute: typeof authenticatedBooksBookIdReaderRoute
+interface authenticatedFullpageBooksBookIdRouteRouteChildren {
+  authenticatedFullpageBooksBookIdReaderRoute: typeof authenticatedFullpageBooksBookIdReaderRoute
 }
 
-const authenticatedBooksBookIdRouteRouteChildren: authenticatedBooksBookIdRouteRouteChildren =
+const authenticatedFullpageBooksBookIdRouteRouteChildren: authenticatedFullpageBooksBookIdRouteRouteChildren =
   {
-    authenticatedBooksBookIdReaderRoute: authenticatedBooksBookIdReaderRoute,
+    authenticatedFullpageBooksBookIdReaderRoute:
+      authenticatedFullpageBooksBookIdReaderRoute,
   }
 
-const authenticatedBooksBookIdRouteRouteWithChildren =
-  authenticatedBooksBookIdRouteRoute._addFileChildren(
-    authenticatedBooksBookIdRouteRouteChildren,
+const authenticatedFullpageBooksBookIdRouteRouteWithChildren =
+  authenticatedFullpageBooksBookIdRouteRoute._addFileChildren(
+    authenticatedFullpageBooksBookIdRouteRouteChildren,
   )
 
 interface authenticatedRouteRouteChildren {
   authenticatedSidebarRouteRoute: typeof authenticatedSidebarRouteRouteWithChildren
-  authenticatedBooksBookIdRouteRoute: typeof authenticatedBooksBookIdRouteRouteWithChildren
+  authenticatedFullpageBooksBookIdRouteRoute: typeof authenticatedFullpageBooksBookIdRouteRouteWithChildren
 }
 
 const authenticatedRouteRouteChildren: authenticatedRouteRouteChildren = {
   authenticatedSidebarRouteRoute: authenticatedSidebarRouteRouteWithChildren,
-  authenticatedBooksBookIdRouteRoute:
-    authenticatedBooksBookIdRouteRouteWithChildren,
+  authenticatedFullpageBooksBookIdRouteRoute:
+    authenticatedFullpageBooksBookIdRouteRouteWithChildren,
 }
 
 const authenticatedRouteRouteWithChildren =

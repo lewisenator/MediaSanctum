@@ -23,7 +23,7 @@ const bookQueryOptions = (bookId: string) => queryOptions({
   }
 });
 
-export const Route = createFileRoute('/(authenticated)/books/$bookId/reader')({
+export const Route = createFileRoute('/(authenticated)/_fullpage/books/$bookId/reader')({
   component: EbookReaderPage,
   loader: async ({params: {bookId}, context: {queryClient}}) => {
     return queryClient.ensureQueryData(bookQueryOptions(bookId));

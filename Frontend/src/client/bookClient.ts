@@ -80,9 +80,44 @@ export type BookFile = {
   url: string;
   contentType: string;
   editionType: string;
+  ffProbe?: FFProbe;
   createdAt: string;
   updatedAt: string;
 };
+
+export type FFProbe = {
+  streams: AudiobookStream[];
+  chapters: Chapter[];
+  format: Format;
+};
+
+export type AudiobookStream = {
+  index: number;
+  codecName: string;
+  codecLongName: string;
+  codecType: string;
+  sampleRate: string;
+  channels: number;
+  channelLayout: string;
+};
+
+export type Chapter = {
+  id: number;
+  timeBase: string;
+  start: number;
+  startTime: string;
+  end: number;
+  endTime: string;
+  tags: Map<string, string>;
+};
+
+export type Format = {
+  duration: string;
+  bitRate: string;
+  size: string;
+  tags: Map<string, string>;
+};
+
 
 export const addBook = async (hardcoverId: string): Promise<Book> => {
   try {
@@ -118,6 +153,21 @@ export const uploadEbook = async (id: string, ebook: File): Promise<Book> => {
     const formData = new FormData();
     formData.append('file', ebook);
     const res: AxiosResponse<DataResponse<Book>> = await api.post(`/books/${id}/ebook/upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return res.data.data!;
+  } catch (err: any) {
+    throw handleError(err, 'Failed to fetch book');
+  }
+};
+
+export const uploadAudiobook = async (id: string, audiobook: File): Promise<Book> => {
+  try {
+    const formData = new FormData();
+    formData.append('file', audiobook);
+    const res: AxiosResponse<DataResponse<Book>> = await api.post(`/books/${id}/audiobook/upload`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

@@ -1,5 +1,6 @@
 package com.media_sanctum.backend.entity;
 
+import com.media_sanctum.backend.entity.audio.FFProbe;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -56,6 +59,10 @@ public class BookFile {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private Book book;
+
+    @Column(name = "ffprobe", columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private FFProbe ffprobe;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
