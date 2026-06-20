@@ -30,11 +30,9 @@ const ProgressBar = (
   return (
     <div className="flex flex-row items-center justify-between w-full gap-3 px-8 py-2 bg-surface border-t border-border z-20">
       <div className="shrink-0">
-        { currentChapter && totalChapters && (
-          <span className="tabular-nums whitespace-nowrap font-text text-textMute text-xs">
-            {currentChapter > 0 && totalChapters > 0 ? `Chapter ${currentChapter} / ${totalChapters}` : '—'}
-          </span>
-        )}
+        <span className="tabular-nums whitespace-nowrap font-text text-textMute text-xs">
+          {currentChapter >= 0 && totalChapters > 0 ? `Chapter ${currentChapter} / ${totalChapters}` : '—'}
+        </span>
       </div>
       <div
         ref={barRef}

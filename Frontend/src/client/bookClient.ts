@@ -20,9 +20,23 @@ export type Book = {
   audiobookEdition?: Edition;
   author: Author;
   featuredSeries: FeaturedSeries;
-  ebookFile: BookFile;
-  audiobookFile: BookFile;
+  ebookFile?: BookFile;
+  audiobookFile?: BookFile;
+  ebookProgress?: EbookProgress;
   tags: Tag[];
+};
+
+export type EbookProgress = {
+  id: string;
+  editionType: string;
+  epubcfi: string;
+  percent: number;
+  currentChapter: number;
+  totalChapters: number;
+  currentPage: number;
+  totalPages: number;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Tag = {

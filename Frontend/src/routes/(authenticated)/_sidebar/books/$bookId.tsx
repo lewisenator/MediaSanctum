@@ -4,12 +4,13 @@ import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 import { BsBook } from 'react-icons/bs';
 import TimeAgo from '#/components/formatting/TimeAgo.tsx';
 import { useState } from 'react';
-import BookFormat from '#/components/book/BookFormat.tsx';
 import Main from '#/components/layout/Main.tsx';
 import LessMore from '#/components/formatting/LessMore.tsx';
 import Breadcrumbs, { breadcrumbClassName } from '#/components/layout/Breadcrumbs.tsx';
-import { CiHeadphones } from "react-icons/ci";
-import { PiBookLight } from "react-icons/pi";
+
+import MissingEbook from '#/components/book/MissingEbook.tsx';
+import AvailableEbook from '#/components/book/AvailableEbook.tsx';
+import FormatSelect from '#/components/book/FormatSelect.tsx';
 
 const bookQueryOptions = (bookId: string) => queryOptions({
   queryKey: ['book', bookId],
@@ -30,9 +31,12 @@ function BookDetailsPage() {
   const [book, setBookUnwrapped] = useState<Book>(queriedBook);
   const [selectedFormat, setSelectedFormat] = useState<string>("ebook");
 
+
   const setBook = async (newBook: Book) => {
     setBookUnwrapped(newBook);
-    await queryClient.invalidateQueries({ queryKey: ['book', bookId] });
+    await queryClient.invalidateQueries({
+      queryKey: ['book', bookId]
+    });
   };
 
   const genres = [...(new Set(book.tags
@@ -46,7 +50,7 @@ function BookDetailsPage() {
     <Main>
       <div className="flex flex-col flex-1 max-w-6xl mx-auto">
         <Breadcrumbs
-          className="mb-4"
+          className="mb-2 md:mb-4 lg:mb-6"
           items={[
             <Link to="/books" className={breadcrumbClassName}>Books</Link>,
             <Link to="/books/$bookId" className={breadcrumbClassName} params={{bookId: bookId}}>{book.title}</Link>
@@ -137,51 +141,25 @@ function BookDetailsPage() {
           )}
         </div>
 
-        <div
-          className="flex flex-row mt-8 bg-surfaceAlt border border-border p-1 rounded-lg max-w-53"
-        >
-          <span
-            onClick={() => setSelectedFormat("ebook")}
-            className={`inline-flex justify-center items-center py-2 px-3 m-0 text-sm hover:bg-surface rounded-md cursor-pointer text-textDim ${selectedFormat === 'ebook' && 'drop-shadow-sm text-text!'}`}
-            style={{
-              backgroundColor: selectedFormat === 'ebook' ? 'var(--c-surface)' : 'var(--c-surfaceAlt)',
-            }}
-          >
-            <PiBookLight className={`mr-1 ${selectedFormat === 'ebook' && 'text-accent'}`} /> Ebook
-          </span>
-          <span
-            onClick={() => setSelectedFormat("audiobook")}
-            className={`inline-flex justify-center items-center py-2 px-3 m-0 text-sm hover:bg-surface rounded-md cursor-pointer text-textDim ${selectedFormat === 'audiobook' && 'drop-shadow-sm text-text!'}`}
-            style={{
-              backgroundColor: selectedFormat === 'audiobook' ? 'var(--c-surface)' : 'var(--c-surfaceAlt)',
-            }}
-          >
-            <CiHeadphones className={`mr-1 ${selectedFormat === 'audiobook' && 'text-accent'}`} /> Audiobook
-          </span>
-        </div>
+        <FormatSelect
+          selectedFormat={selectedFormat}
+          setSelectedFormat={setSelectedFormat}
+        />
 
         { selectedFormat === 'ebook' && (
-          <BookFormat
-            bookId={book.id}
-            setBook={setBook}
-            format={"ebook"}
-            metric={"Pages"}
-            amount={book.pages}
-            bookFile={book.ebookFile}
-          />
+          <>
+            { book.ebookFile ? (
+              <AvailableEbook
+                book={book}
+              />
+            ) : (
+              <MissingEbook
+                book={book}
+                setBook={setBook}
+              />
+            )}
+          </>
         )}
-
-        { selectedFormat === 'audiobook' && (
-          <BookFormat
-            bookId={book.id}
-            setBook={setBook}
-            format={"audiobook"}
-            metric={"Seconds"}
-            amount={book.ebookEdition?.audioSeconds}
-            bookFile={book.audiobookFile}
-          />
-        )}
-
       </div>
     </Main>
   )

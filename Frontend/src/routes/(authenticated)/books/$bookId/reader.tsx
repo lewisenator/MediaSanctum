@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { ReactReader } from 'react-reader';
 import { queryOptions, useMutation, useSuspenseQuery } from '@tanstack/react-query';
@@ -11,6 +11,7 @@ import TitleBar from '#/components/reader/TitleBar.tsx';
 import TOC from '#/components/reader/TOC.tsx';
 import ReaderSettings from '#/components/reader/ReaderSettings.tsx';
 import { reportEbookProgress, type Progress } from '#/client/bookClient.ts';
+import { queryClient } from '#/router.tsx';
 
 const bookQueryOptions = (bookId: string) => queryOptions({
   queryKey: ['book', bookId],
@@ -147,7 +148,7 @@ function EbookReaderPage() {
 
 
   const cacheLocations = (rendition: Rendition) => {
-    const locKey = `epub-locations-${book.ebookFile.id}`;
+    const locKey = `epub-locations-${book.ebookFile!.id}`;
     const renditionBook = rendition.book;
     const saved = localStorage.getItem(locKey);
 
@@ -213,6 +214,20 @@ function EbookReaderPage() {
     } catch (_) {}
   };
 
+  const navigate = useNavigate();
+
+  const bookDetailsPageClicked = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ['book', bookId]
+    });
+    navigate({
+      to: "/books/$bookId",
+      params: {
+        bookId: bookId
+      }
+    });
+  };
+
   return (
     <div className="flex flex-col flex-1 overflow-hidden mx-auto w-full p-[-4] md:p-[-6] lg:p-[-8]">
       <div className="flex-1 flex flex-col w-full">
@@ -224,11 +239,11 @@ function EbookReaderPage() {
 
         </div>
         <TitleBar
-          bookId={bookId}
           book={book}
           tocClicked={() => setShowToc(!showToc)}
           settingsClicked={() => setShowSettings(!showSettings)}
           toc={toc}
+          backClicked={() => bookDetailsPageClicked()}
         />
 
         <div className="center-wrapper flex flex-row h-full w-full">
@@ -245,7 +260,7 @@ function EbookReaderPage() {
 
           <div ref={readerRef} className="flex-1" style={{ padding: `${pageMargins}em` }}>
             <ReactReader
-              url={book.ebookFile.url}
+              url={book.ebookFile!.url}
               title={`${book.title} · <span>${book.author.name}</span>`}
               location={location}
               readerStyles={readerStyles}

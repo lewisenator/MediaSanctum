@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router';
 import { IoIosArrowBack } from "react-icons/io";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { CiSettings } from "react-icons/ci";
@@ -6,20 +5,20 @@ import type { Book } from '#/client/bookClient.ts';
 import type { NavItem } from 'epubjs';
 
 type TitleBarProps = {
-  bookId: string;
   book: Book;
   tocClicked: () => void;
   settingsClicked: () => void;
+  backClicked: () => void;
   toc: NavItem[];
 };
 
 const TitleBar = (
   {
-    bookId,
     book,
     tocClicked,
     settingsClicked,
     toc,
+    backClicked,
   }: TitleBarProps
 ) => {
   return (
@@ -28,10 +27,10 @@ const TitleBar = (
       className="flex flex-row items-center justify-between w-full gap-3 px-3 py-2 bg-surface border-b border-border"
     >
       <div className="flex flex-row items-center">
-        <Link to="/books/$bookId" params={{bookId}} className="flex flex-row font-ui items-center gap-2 rounded-md text-sm transition-colors
+        <a onClick={() => backClicked()} className="flex flex-row font-ui items-center gap-2 rounded-md text-sm transition-colors
             hover:bg-surfaceAlt hover:text-text px-2.5 py-1 text-textDim border border-transparent hover:cursor-pointer">
           <IoIosArrowBack /> Back
-        </Link>
+        </a>
         { toc && toc.length > 0 && (
           <a onClick={() => {
             tocClicked();
