@@ -40,9 +40,11 @@ public class PublicController {
     private static final Pattern BOOK_FILE_NAME = Pattern.compile("^([^.]*).(mobi|epub)$");
     private static final Pattern AUDIO_FILE_NAME = Pattern.compile("^([^.]*).(m4b)$");
 
+    private final ImageService imageService;
     private final BookFileService bookFileService;
 
-    public PublicController(BookFileService bookFileService) {
+    public PublicController(ImageService imageService, BookFileService bookFileService) {
+        this.imageService = imageService;
         this.bookFileService = bookFileService;
     }
 
@@ -106,16 +108,19 @@ public class PublicController {
             throw new IllegalArgumentException("Invalid image: " + imageName);
         }
 
-        var maybeFile = loadFile(matcher);
-        if (maybeFile.isEmpty()) {
+        var imageId = matcher.group(1);
+        var extension = matcher.group(2);
+        var image = imageService.getById(imageId);
+
+        String contentType = getContentTypeFromExtension(extension);
+        File file = getImageFile(image);
+        if (file == null) {
             return ResponseEntity.notFound().build();
         }
-        var file = maybeFile.get();
 
-        
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(file.getContentType()))
-                .body(new FileSystemResource(file.getFile()));
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(new FileSystemResource(file));
     }
 
     private static File getBookFile(BookFile bookFile) {
