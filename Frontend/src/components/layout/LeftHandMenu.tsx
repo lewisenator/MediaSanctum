@@ -31,9 +31,9 @@ const LeftHandMenu = (
     route: string;
     icon: React.ReactNode;
   }[] = [
-    {name: 'Books', route: '/books/', icon: <IoBookOutline />},
-    {name: 'Series', route: '/series/', icon: <PiListLight />},
-    {name: 'Authors', route: '/authors/', icon: <IoPersonOutline />},
+    {name: 'Books', route: '/books', icon: <IoBookOutline />},
+    {name: 'Series', route: '/series', icon: <PiListLight />},
+    {name: 'Authors', route: '/authors', icon: <IoPersonOutline />},
   ];
 
   const handleLogout = async () => {
@@ -78,7 +78,7 @@ const LeftHandMenu = (
         ))}
       </nav>
 
-      <div className='py-4 px-3 space-y-1 overflow-y-auto'>
+      <div className='pb-10 px-3 space-y-1 overflow-y-auto'>
         <button onClick={() => setThemePickerOpen(!themePickerOpen)} className={`${styles.linkClass} w-full flex flex-row justify-between items-center flex-nowrap`} title="Theme">
           <ThemeModal
             isOpen={themePickerOpen}

@@ -16,9 +16,7 @@ const REPORT_PROGRESS_EVERY_SECONDS = 30;
 const bookQueryOptions = (bookId: string) => queryOptions({
   queryKey: ['book', bookId],
   queryFn: async () => {
-    console.log('Fetching book ', bookId);
     const res = await getBook(bookId)
-    console.log('Fetched book book ', bookId);
     return res;
   }
 });
@@ -73,16 +71,16 @@ function ListenerPage() {
     }
   };
 
-  const fastForward = () => {
+  const fastForward = (secs = 15) => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.currentTime = audio.currentTime + 15;
+    audio.currentTime = audio.currentTime + secs;
   };
 
-  const rewind = () => {
+  const rewind = (secs = 15) => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.currentTime = audio.currentTime - 15;
+    audio.currentTime = audio.currentTime - secs;
   };
 
   const nextChapter = () => {
@@ -104,6 +102,27 @@ function ListenerPage() {
     setCurrentChapter(newChapter);
     audio.currentTime = (newChapter?.start || 0) / 1000;
   };
+
+  useEffect(() => {
+    if (!('mediaSession' in navigator)) return;
+    const coverUrl = book.audiobookEdition?.image?.url;
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: book.title,
+      artist: book.author.name,
+      album: book.title,
+      artwork: coverUrl ? [{ src: coverUrl, sizes: '512x512', type: 'image/jpeg' }] : [],
+    });
+    navigator.mediaSession.setActionHandler('play', () => setPlaying(true));
+    navigator.mediaSession.setActionHandler('pause', () => setPlaying(false));
+    navigator.mediaSession.setActionHandler('seekbackward', (d) => rewind(d.seekOffset ?? 15));
+    navigator.mediaSession.setActionHandler('seekforward', (d) => fastForward(d.seekOffset ?? 15));
+    navigator.mediaSession.setActionHandler('previoustrack', () => previousChapter());
+    navigator.mediaSession.setActionHandler('nexttrack', () => nextChapter());
+    return () => {
+      (['play', 'pause', 'seekbackward', 'seekforward', 'previoustrack', 'nexttrack'] as MediaSessionAction[])
+        .forEach(a => navigator.mediaSession.setActionHandler(a, null));
+    };
+  }, [book]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -169,13 +188,13 @@ function ListenerPage() {
           <Breadcrumbs
             className="self-start mb-5 ml-4 md:ml-6 lg:ml-8"
             items={[
-              <Link to="/books/" className={breadcrumbClassName}>Books</Link>,
-              <Link to="/books/$bookId/" className={breadcrumbClassName} params={{bookId: bookId}}>{book.title}</Link>,
-              <Link to="/books/$bookId/listener" className={breadcrumbClassName} params={{bookId: bookId}}>Audiobook</Link>
+              <Link to="/books" className={breadcrumbClassName}>Books</Link>,
+              <Link to="/books/$bookId" className={breadcrumbClassName} params={{bookId}}>{book.title}</Link>,
+              <Link to="/books/$bookId/listener" className={breadcrumbClassName} params={{bookId}}>Audiobook</Link>
             ]}
           />
           <div
-            className="uppercase text-accent font-ui text-xs tracking-[0.2em]"
+            className="mt-10 uppercase text-accent font-ui text-xs tracking-[0.2em]"
           >
             Now Playing · Audiobook
           </div>
@@ -252,7 +271,7 @@ function ListenerPage() {
             </button>
             <button
               className="w-13 h-13 btn btn-rounded border-2 border-border hover:bg-surfaceAlt"
-              onClick={rewind}
+              onClick={() => rewind()}
             >
               <PiRewindFill />
             </button>
@@ -264,7 +283,7 @@ function ListenerPage() {
             </button>
             <button
               className="w-13 h-13 btn btn-rounded border-2 border-border hover:bg-surfaceAlt"
-              onClick={fastForward}
+              onClick={() => fastForward()}
             >
               <PiFastForwardFill />
             </button>

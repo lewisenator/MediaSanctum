@@ -12,6 +12,8 @@ const router = getRouter();
 // Non-passive so we can call preventDefault(); CSS overscroll-behavior covers iOS 16+ but
 // this handles older versions too.
 document.addEventListener('touchmove', (e: TouchEvent) => {
+  // Range inputs need touchmove to update their value on drag.
+  if ((e.target as Element)?.closest('input[type="range"]')) return;
   let target = e.target as Element | null;
   while (target && target !== document.documentElement) {
     const { overflowY, overflowX } = window.getComputedStyle(target);

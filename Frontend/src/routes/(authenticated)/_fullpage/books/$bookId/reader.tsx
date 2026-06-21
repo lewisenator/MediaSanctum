@@ -248,7 +248,7 @@ function EbookReaderPage() {
           backClicked={() => bookDetailsPageClicked()}
         />
 
-        <div className="center-wrapper flex flex-row h-full w-full">
+        <div className="center-wrapper flex flex-row flex-1 min-h-0 overflow-hidden w-full">
           {showToc && (
             <TOC
               toc={toc}
@@ -260,7 +260,7 @@ function EbookReaderPage() {
             />
           )}
 
-          <div ref={readerRef} className="flex-1" style={{ padding: `${pageMargins}em` }}>
+          <div ref={readerRef} className="relative flex-1 overflow-hidden" style={{ padding: `${pageMargins}em` }}>
             <ReactReader
               url={book.ebookFile!.url}
               title={`${book.title} · <span>${book.author.name}</span>`}
@@ -292,7 +292,7 @@ function EbookReaderPage() {
             {/* Full-width overlay: swipe left/right to turn pages, tap left/right half to turn pages.
                 Yields to epub links via elementFromPoint. Swipes suppress the subsequent click. */}
             <div
-              className="absolute top-11.75 inset-y-0 inset-x-0 z-10 cursor-pointer touch-pan-x"
+              className={`absolute top-11.75 inset-y-0 inset-x-0 z-10 cursor-pointer touch-pan-x ${showSettings || showToc ? 'pointer-events-none' : ''}`}
               onTouchStart={(e) => { swipeTouchStartX.current = e.touches[0].clientX; }}
               onTouchEnd={(e) => {
                 const startX = swipeTouchStartX.current;

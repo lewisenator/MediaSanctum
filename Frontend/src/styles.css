@@ -42,6 +42,14 @@ body,
   min-height: 100%;
 }
 
+#full-page-layout {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+aside {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 body {
   margin: 0;
   font-family: var(--font-text);

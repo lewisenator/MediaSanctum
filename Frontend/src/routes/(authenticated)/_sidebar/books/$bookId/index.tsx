@@ -68,8 +68,8 @@ function BookDetailsPage() {
         <Breadcrumbs
           className="mb-5 lg:mb-6"
           items={[
-            <Link to="/books/" className={breadcrumbClassName}>Books</Link>,
-            <Link to="/books/$bookId/" className={breadcrumbClassName} params={{bookId: bookId}}>{book.title}</Link>
+            <Link to="/books" className={breadcrumbClassName}>Books</Link>,
+            <Link to="/books/$bookId" className={breadcrumbClassName} params={{bookId}}>{book.title}</Link>
           ]}
         />
         <div className="flex flex-row">
