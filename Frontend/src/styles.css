@@ -109,6 +109,10 @@ button {
   @apply bg-surfaceAlt text-text font-ui border-border;
 }
 
+.btn-rounded {
+  border-radius: 8rem;
+}
+
 .card {
   @apply rounded-xl shadow-sm bg-surface border border-border text-text;
 }

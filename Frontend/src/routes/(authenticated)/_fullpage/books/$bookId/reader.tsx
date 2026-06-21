@@ -10,7 +10,7 @@ import { readerStyles } from './readerStyles.ts';
 import TitleBar from '#/components/reader/TitleBar.tsx';
 import TOC from '#/components/reader/TOC.tsx';
 import ReaderSettings from '#/components/reader/ReaderSettings.tsx';
-import { reportEbookProgress, type Progress } from '#/client/bookClient.ts';
+import { reportEbookProgress, type EbookProgressRequest } from '#/client/bookClient.ts';
 import { queryClient } from '#/router.tsx';
 
 const bookQueryOptions = (bookId: string) => queryOptions({
@@ -59,8 +59,9 @@ function EbookReaderPage() {
 
   const localStorageKey = `epub-location-${bookId}`;
   const [location, setLocation] = useState<string|number>(() => {
+    const epubcfi = book.ebookProgress?.epubcfi;
     const storage = localStorage.getItem(localStorageKey);
-    return storage ? JSON.parse(storage) : 0;
+    return epubcfi ? epubcfi : (storage ? JSON.parse(storage) : 0);
   });
   useEffect(() => {
     localStorage.setItem(localStorageKey, JSON.stringify(location));
@@ -165,7 +166,7 @@ function EbookReaderPage() {
   };
 
   const { mutateAsync: reportProgressMutation } = useMutation({
-    mutationFn: (progress: Progress) => reportEbookProgress(bookId, progress)
+    mutationFn: (progress: EbookProgressRequest) => reportEbookProgress(bookId, progress)
   });
 
   const locationChanged = async (epubcfi: string) => {
@@ -202,7 +203,7 @@ function EbookReaderPage() {
     }
 
     try {
-      const progressInput: Progress = {
+      const progressInput: EbookProgressRequest = {
         epubcfi,
         percent: progressPct,
         currentChapter: currentChapterCalc,

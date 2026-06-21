@@ -34,7 +34,6 @@ const AudioDuration = (
         <span className="mr-2">{minutes}m</span>
       )}
       <span>{Math.floor(seconds)}s</span>
-
     </span>
   );
 };

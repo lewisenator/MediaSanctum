@@ -1,7 +1,6 @@
 package com.media_sanctum.backend.resource;
 
 import com.media_sanctum.backend.client.hardcover.model.HardcoverFeaturedSeriesSearchResult;
-import com.media_sanctum.backend.client.hardcover.model.HardcoverTag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,5 +33,6 @@ public class BookResponse {
     private HardcoverFeaturedSeriesSearchResult featuredSeries;
     private BookFileResponse ebookFile;
     private BookFileResponse audiobookFile;
-    private ProgressResponse ebookProgress;
+    private EbookProgressResponse ebookProgress;
+    private AudiobookProgressResponse audiobookProgress;
 }

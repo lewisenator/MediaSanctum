@@ -73,7 +73,7 @@ function BookDetailsPage() {
 
           <div className="flex flex-col ml-5">
             <h1 id="book-title" className="font-display font-semibold text-4xl text-text">{book.title}</h1>
-            <p id="book-author" className="mt-1 text-md text-textDim font- italic">
+            <p id="book-author" className="mt-1 text-md text-textDim italic">
               by
               <Link
                 to="/authors/$authorId"
@@ -146,6 +146,7 @@ function BookDetailsPage() {
         <FormatSelect
           selectedFormat={selectedFormat}
           setSelectedFormat={setSelectedFormat}
+          className="mx-auto sm:mx-0"
         />
 
         { selectedFormat === 'ebook' && (

@@ -7,24 +7,28 @@ import com.media_sanctum.backend.client.hardcover.model.HardcoverImage;
 import com.media_sanctum.backend.client.hardcover.model.HardcoverLanguage;
 import com.media_sanctum.backend.config.MediaSanctumConfig;
 import com.media_sanctum.backend.config.RequestContext;
+import com.media_sanctum.backend.entity.AudiobookProgress;
 import com.media_sanctum.backend.entity.Author;
 import com.media_sanctum.backend.entity.Book;
 import com.media_sanctum.backend.entity.BookFile;
+import com.media_sanctum.backend.entity.EbookProgress;
 import com.media_sanctum.backend.entity.Edition;
 import com.media_sanctum.backend.entity.EditionType;
 import com.media_sanctum.backend.entity.Image;
 import com.media_sanctum.backend.entity.ImageType;
-import com.media_sanctum.backend.entity.Progress;
 import com.media_sanctum.backend.entity.audio.FFProbe;
+import com.media_sanctum.backend.resource.AudiobookProgressResponse;
 import com.media_sanctum.backend.resource.BookResponse;
-import com.media_sanctum.backend.resource.ProgressResponse;
-import com.media_sanctum.backend.resource.UpsertProgressRequest;
+import com.media_sanctum.backend.resource.EbookProgressResponse;
+import com.media_sanctum.backend.resource.UpsertAudiobookProgressRequest;
+import com.media_sanctum.backend.resource.UpsertEbookProgressRequest;
+import com.media_sanctum.backend.service.AudiobookProgressService;
 import com.media_sanctum.backend.service.AuthorService;
 import com.media_sanctum.backend.service.BookFileService;
 import com.media_sanctum.backend.service.BookService;
 import com.media_sanctum.backend.service.EditionService;
 import com.media_sanctum.backend.service.ImageService;
-import com.media_sanctum.backend.service.ProgressService;
+import com.media_sanctum.backend.service.EbookProgressService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -57,7 +61,8 @@ public class CatalogueManager {
     private final AuthorService authorService;
     private final ImageService imageService;
     private final EditionService editionService;
-    private final ProgressService progressService;
+    private final EbookProgressService ebookProgressService;
+    private final AudiobookProgressService audiobookProgressService;
     private final HardcoverClient hardcoverClient;
     private final MediaSanctumConfig mediaSanctumConfig;
     private final RequestContext requestContext;
@@ -69,7 +74,8 @@ public class CatalogueManager {
             AuthorService authorService,
             ImageService imageService,
             EditionService editionService,
-            ProgressService progressService,
+            EbookProgressService ebookProgressService,
+            AudiobookProgressService audiobookProgressService,
             HardcoverClient hardcoverClient,
             MediaSanctumConfig mediaSanctumConfig,
             RequestContext requestContext,
@@ -80,7 +86,8 @@ public class CatalogueManager {
         this.authorService = authorService;
         this.imageService = imageService;
         this.editionService = editionService;
-        this.progressService = progressService;
+        this.ebookProgressService = ebookProgressService;
+        this.audiobookProgressService = audiobookProgressService;
         this.hardcoverClient = hardcoverClient;
         this.mediaSanctumConfig = mediaSanctumConfig;
         this.requestContext = requestContext;
@@ -89,20 +96,27 @@ public class CatalogueManager {
 
     public BookResponse getBookResponse(String id) {
         var result = bookService.getBookResponse(id);
-        var progress = progressService.findByBookIdAndUserId(id, requestContext.getUser().getId());
-        if (progress != null) {
-            result.setEbookProgress(ProgressService.toResponse(progress));
+
+        var ebookProgress = ebookProgressService.findByBookIdAndUserId(id, requestContext.getUser().getId());
+        if (ebookProgress != null) {
+            result.setEbookProgress(EbookProgressService.toResponse(ebookProgress));
         }
+
+        var audiobookProgress = audiobookProgressService.findByBookIdAndUserId(id, requestContext.getUser().getId());
+        if (audiobookProgress != null) {
+            result.setAudiobookProgress(AudiobookProgressService.toResponse(audiobookProgress));
+        }
+
         return result;
     }
 
-    public ProgressResponse upsertProgress(Book book, UpsertProgressRequest body) {
+    public EbookProgressResponse upsertEbookProgress(Book book, UpsertEbookProgressRequest body) {
         var user = requestContext.getUser();
-        var progressBuilder = Optional.ofNullable(progressService.findByBookIdAndUserId(book.getId(), user.getId()))
-                .map(Progress::toBuilder)
+        var progressBuilder = Optional.ofNullable(ebookProgressService.findByBookIdAndUserId(book.getId(), user.getId()))
+                .map(EbookProgress::toBuilder)
                 .orElse(null);
         if (progressBuilder == null) {
-            progressBuilder = Progress.builder()
+            progressBuilder = EbookProgress.builder()
                     .user(user)
                     .book(book);
         }
@@ -113,10 +127,30 @@ public class CatalogueManager {
                 .currentChapter(body.getCurrentChapter())
                 .totalChapters(body.getTotalChapters())
                 .epubcfi(body.getEpubcfi())
-                .editionType(EditionType.EBOOK)
                 .build();
-        progress = progressService.save(progress);
-        return ProgressService.toResponse(progress);
+        progress = ebookProgressService.save(progress);
+        return EbookProgressService.toResponse(progress);
+    }
+
+    public AudiobookProgressResponse upsertAudiobookProgress(Book book, UpsertAudiobookProgressRequest body) {
+        var user = requestContext.getUser();
+        var progressBuilder = Optional.ofNullable(audiobookProgressService.findByBookIdAndUserId(book.getId(), user.getId()))
+                .map(AudiobookProgress::toBuilder)
+                .orElse(null);
+        if (progressBuilder == null) {
+            progressBuilder = AudiobookProgress.builder()
+                    .user(user)
+                    .book(book);
+        }
+        var progress = progressBuilder
+                .percent(body.getPercent())
+                .seconds(body.getSeconds())
+                .duration(body.getDuration())
+                .currentChapter(body.getCurrentChapter())
+                .totalChapters(body.getTotalChapters())
+                .build();
+        progress = audiobookProgressService.save(progress);
+        return AudiobookProgressService.toResponse(progress);
     }
 
     public BookResponse uploadBookFile(
@@ -180,7 +214,7 @@ public class CatalogueManager {
         book = bookService.saveBook(book);
 
         var response = BookService.toResponse(book);
-        response.setEbookProgress(getProgressResponseForBook(response.getId()));
+        response.setEbookProgress(getEbookProgressResponseForBook(response.getId()));
         return response;
     }
 
@@ -238,14 +272,22 @@ public class CatalogueManager {
         var savedBook = bookService.saveBook(book);
 
         var response = BookService.toResponse(savedBook);
-        response.setEbookProgress(getProgressResponseForBook(response.getId()));
+        response.setEbookProgress(getEbookProgressResponseForBook(response.getId()));
+        response.setAudiobookProgress(getAudiobookProgressResponseForBook(response.getId()));
         return response;
     }
 
-    private ProgressResponse getProgressResponseForBook(String bookId) {
+    private EbookProgressResponse getEbookProgressResponseForBook(String bookId) {
         var userId = requestContext.getUser().getId();
-        return Optional.ofNullable(progressService.findByBookIdAndUserId(bookId, userId))
-                .map(ProgressService::toResponse)
+        return Optional.ofNullable(ebookProgressService.findByBookIdAndUserId(bookId, userId))
+                .map(EbookProgressService::toResponse)
+                .orElse(null);
+    }
+
+    private AudiobookProgressResponse getAudiobookProgressResponseForBook(String bookId) {
+        var userId = requestContext.getUser().getId();
+        return Optional.ofNullable(audiobookProgressService.findByBookIdAndUserId(bookId, userId))
+                .map(AudiobookProgressService::toResponse)
                 .orElse(null);
     }
 

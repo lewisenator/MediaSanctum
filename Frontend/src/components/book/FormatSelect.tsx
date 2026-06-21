@@ -4,17 +4,19 @@ import { PiBookLight } from "react-icons/pi";
 type FormatSelectProps = {
   selectedFormat: string;
   setSelectedFormat: (selectedFormat: string) => void;
+  className?: string;
 };
 
 const FormatSelect = (
   {
     selectedFormat,
     setSelectedFormat,
+    className = "",
   }: FormatSelectProps
 ) => {
   return (
     <div
-      className="flex flex-row mt-8 bg-surfaceAlt border border-border p-1 rounded-lg max-w-53"
+      className={`flex flex-row mt-8 bg-surfaceAlt border border-border p-1 rounded-lg max-w-53 ${className}`}
     >
           <span
             onClick={() => setSelectedFormat("ebook")}

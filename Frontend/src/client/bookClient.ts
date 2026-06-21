@@ -23,18 +23,29 @@ export type Book = {
   ebookFile?: BookFile;
   audiobookFile?: BookFile;
   ebookProgress?: EbookProgress;
+  audiobookProgress?: AudiobookProgress;
   tags: Tag[];
 };
 
 export type EbookProgress = {
   id: string;
-  editionType: string;
   epubcfi: string;
   percent: number;
   currentChapter: number;
   totalChapters: number;
   currentPage: number;
   totalPages: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AudiobookProgress = {
+  id: string;
+  percent: number;
+  currentChapter: number;
+  totalChapters: number;
+  seconds: number;
+  duration: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -108,14 +119,15 @@ export type Chapter = {
   startTime: string;
   end: number;
   endTime: string;
-  tags: Map<string, string>;
+  title: string;
+  tags: Record<string, string>;
 };
 
 export type Format = {
   duration: string;
   bitRate: string;
   size: string;
-  tags: Map<string, string>;
+  tags: Record<string, string>;
 };
 
 
@@ -178,36 +190,43 @@ export const uploadAudiobook = async (id: string, audiobook: File): Promise<Book
   }
 };
 
-export type Progress = {
+export type EbookProgressRequest = {
   epubcfi: string;
   percent: number;
   currentChapter: number;
   totalChapters: number;
   currentPage: number;
   totalPages: number;
-};
-
-export type BookProgress = {
-  id: string;
-  editionType: string;
-  epubcfi: string;
-  percent: number;
-  currentChapter: number;
-  totalChapters: number;
-  currentPage: number;
-  totalPages: number;
-  createdAt: string;
-  updatedAt: string;
 };
 
 export const reportEbookProgress = async (
   bookId: string,
-  progress: Progress
-): Promise<BookProgress> => {
+  progress: EbookProgressRequest
+): Promise<EbookProgress> => {
   try {
-    const res: AxiosResponse<DataResponse<BookProgress>> = await api.post(`/progress/${bookId}/ebook`, progress);
+    const res: AxiosResponse<DataResponse<EbookProgress>> = await api.post(`/progress/${bookId}/ebook`, progress);
     return res.data.data!;
   } catch (err: any) {
-    throw handleError(err, `Failed to upsert book progress ${bookId}`);
+    throw handleError(err, `Failed to upsert ebook progress ${bookId}`);
+  }
+};
+
+export type AudiobookProgressRequest = {
+  percent: number;
+  currentChapter: number;
+  totalChapters: number;
+  seconds: number;
+  duration: number;
+};
+
+export const reportAudiobookProgress = async (
+  bookId: string,
+  progress: AudiobookProgressRequest
+): Promise<AudiobookProgress> => {
+  try {
+    const res: AxiosResponse<DataResponse<AudiobookProgress>> = await api.post(`/progress/${bookId}/audiobook`, progress);
+    return res.data.data!;
+  } catch (err: any) {
+    throw handleError(err, `Failed to upsert audiobook progress ${bookId}`);
   }
 };

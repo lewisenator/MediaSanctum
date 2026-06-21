@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +19,12 @@ public class GlobalExceptionHandler {
 
     @Autowired
     private MediaSanctumConfig config;
+
+    // Client closed the connection mid-stream (seek, pause, tab close). Not an error.
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public void handleClientDisconnect(AsyncRequestNotUsableException e) {
+        log.debug("Client disconnected during streaming: {}", e.getMessage());
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<DataResponse<?>> handleException(Exception e) {

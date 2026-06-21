@@ -92,7 +92,7 @@ public class PublicController {
         HttpRange range = headers.getRange().isEmpty() ? null : headers.getRange().getFirst();
         ResourceRegion region = (range != null)
                 ? range.toResourceRegion(resource)
-                : new ResourceRegion(resource, 0, Math.min(1024 * 1024, contentLength));
+                : new ResourceRegion(resource, 0, contentLength);
         return ResponseEntity
                 .status(range != null ? HttpStatus.PARTIAL_CONTENT : HttpStatus.OK)
                 .contentType(MediaType.parseMediaType("audio/mp4"))

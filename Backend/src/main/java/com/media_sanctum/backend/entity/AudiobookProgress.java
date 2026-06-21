@@ -22,8 +22,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Builder(toBuilder = true)
-@Table(name = "progress")
-public class Progress {
+@Table(name = "audiobook_progress")
+public class AudiobookProgress {
 
     @Id
     @Column(name = "id", nullable = false, updatable = false)
@@ -37,12 +37,6 @@ public class Progress {
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
     private User user;
 
-    @Column(name = "edition_type", nullable = false)
-    private EditionType editionType;
-
-    @Column(name = "epubcfi", nullable = false)
-    private String epubcfi;
-
     @Column(name = "percent")
     private Integer percent;
 
@@ -52,11 +46,11 @@ public class Progress {
     @Column(name = "total_chapters")
     private Integer totalChapters;
 
-    @Column(name = "current_page")
-    private Integer currentPage;
+    @Column(name = "seconds")
+    private Integer seconds;
 
-    @Column(name = "total_pages")
-    private Integer totalPages;
+    @Column(name = "duration")
+    private Integer duration;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

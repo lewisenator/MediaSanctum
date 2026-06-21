@@ -1,5 +1,4 @@
 import { type Book } from '#/client/bookClient.ts';
-import PageDuration from '#/components/formatting/PageDuration.tsx';
 import Progress from '#/components/formatting/Progress.tsx';
 import FileSize from '#/components/formatting/FileSize.tsx';
 import { Link } from '@tanstack/react-router';
@@ -7,6 +6,7 @@ import { IoIosPlay } from 'react-icons/io';
 import { IoCloudDownloadOutline } from 'react-icons/io5';
 import { useState } from 'react';
 import AudioDuration from '#/components/formatting/AudioDuration.tsx';
+import Time from '#/components/formatting/Time.tsx';
 
 type AvailableAudiobookProps = {
   book: Book;
@@ -16,20 +16,54 @@ const AvailableAudiobook = (
   {book}: AvailableAudiobookProps
 ) => {
 
-  const percent = 0;
-  const currentPage = 0;
-  const pages = 0;
+  const percent = book.audiobookProgress?.percent || 0;
+  const seconds = book.audiobookProgress?.seconds || 0;
 
-  const durationString = book.audiobookFile?.ffProbe?.format.duration
-  const duration = durationString ? Number.parseFloat(durationString) : 0;
+  const durationString = book.audiobookFile?.ffProbe?.format.duration;
+  const duration = durationString
+    ? Number.parseFloat(durationString)
+    : (book.audiobookProgress?.duration || 0);
+
+  const chapters = book.audiobookFile?.ffProbe?.chapters;
+  const currentChapterIndex = (book.audiobookProgress?.currentChapter || 1) - 1;
+  const currentChapter = chapters && currentChapterIndex
+    ? chapters[currentChapterIndex]
+    : undefined;
 
   const [downloading, setDownloading] = useState<boolean>(false);
   const downloadBook = async () => {
     if (!book.audiobookFile) return;
     setDownloading(true);
+
     try {
       const response = await fetch(book.audiobookFile.url);
-      const audiobookFileBlob: Blob = await response.blob();
+      console.log('fetching: ', book.audiobookFile.url);
+
+      const contentLength = response.headers.get('content-length');
+      const totalBytes = contentLength ? parseInt(contentLength, 10) : 0;
+
+      if (!response.body) return;
+
+      const reader = response.body.getReader();
+      let receivedBytes = 0;
+      const chunks = [];
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        chunks.push(value);
+        receivedBytes += value.length;
+
+        if (totalBytes) {
+          console.log('downloading... totalBytes:', totalBytes,
+            ' receivedBytes:', receivedBytes,
+            ' ', Math.round((receivedBytes / totalBytes) * 100), '%');
+        }
+      }
+
+      const audiobookFileBlob = new Blob(chunks);
+
       const url = window.URL.createObjectURL(audiobookFileBlob);
       const link = document.createElement('a');
       link.href = url;
@@ -53,13 +87,20 @@ const AvailableAudiobook = (
           {/*stats*/}
           <div className="flex flex-row mb-3 sm:mb-5 w-full items-baseline">
             <span className="text-[40px] font-bolder mr-2 font-display">{percent}%</span>
-            <span>{currentPage} / {pages} ⋅
-              <PageDuration
-                className="text-textDim tabular-nums ml-1"
-                pagesLeft={pages! - currentPage!}
-                prefix="≈"
-                suffix="left"
-              />
+            <span>
+              {currentChapter && (
+                <span className="capitalize">
+                  {currentChapterIndex + 1}. {currentChapter?.title?.toLowerCase()} -
+                </span>
+              )}
+              <span className="ml-1">
+                <Time
+                  milliseconds={(duration - seconds) * 1000}
+                  showHoursMinutesSeconds={false}
+                  className="mr-1"
+                />
+                Left
+              </span>
             </span>
           </div>
           {/*Progress*/}
@@ -106,7 +147,7 @@ const AvailableAudiobook = (
             disabled={downloading}
             onClick={downloadBook}
           >
-            <IoCloudDownloadOutline /> Download M4B
+            <IoCloudDownloadOutline /> {downloading ? "Downloading..." : "Download M4B"}
           </button>
           {/* TODO: implement bookmarks */}
           <button disabled={true} className="btn rounded-lg border border-sidebarTextDim grow shrink-0 disabled:cursor-not-allowed!">Bookmarks</button>

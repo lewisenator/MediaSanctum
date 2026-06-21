@@ -1,6 +1,6 @@
 package com.media_sanctum.backend.resource;
 
-import com.media_sanctum.backend.entity.EditionType;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,15 +10,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProgressResponse {
-    private String id;
-    private EditionType editionType;
-    private String epubcfi;
+public class UpsertAudiobookProgressRequest {
+    @NotNull
     private Integer percent;
+
     private Integer currentChapter;
     private Integer totalChapters;
-    private Integer currentPage;
-    private Integer totalPages;
-    private String createdAt;
-    private String updatedAt;
+
+    @NotNull
+    private Integer seconds;
+
+    @NotNull
+    private Integer duration;
 }

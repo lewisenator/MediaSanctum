@@ -1,6 +1,5 @@
 package com.media_sanctum.backend.resource;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,17 +9,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpsertProgressRequest {
-
-    @NotNull
+public class EbookProgressResponse {
+    private String id;
     private String epubcfi;
-
-    @NotNull
     private Integer percent;
-
     private Integer currentChapter;
     private Integer totalChapters;
-
     private Integer currentPage;
     private Integer totalPages;
+    private String createdAt;
+    private String updatedAt;
 }
