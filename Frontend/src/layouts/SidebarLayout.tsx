@@ -10,7 +10,6 @@ const SidebarLayout = () => {
         <TopBar />
         <Outlet />
       </div>
-
     </div>
   );
 };

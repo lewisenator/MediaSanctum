@@ -8,6 +8,20 @@ import { AuthProvider } from '#/context/AuthContext.tsx';
 
 const router = getRouter();
 
+// Prevent iOS rubber-band overscroll globally, while allowing overflow-y/x scroll containers.
+// Non-passive so we can call preventDefault(); CSS overscroll-behavior covers iOS 16+ but
+// this handles older versions too.
+document.addEventListener('touchmove', (e: TouchEvent) => {
+  let target = e.target as Element | null;
+  while (target && target !== document.documentElement) {
+    const { overflowY, overflowX } = window.getComputedStyle(target);
+    if ((overflowY === 'scroll' || overflowY === 'auto') && target.scrollHeight > target.clientHeight) return;
+    if ((overflowX === 'scroll' || overflowX === 'auto') && target.scrollWidth > target.clientWidth) return;
+    target = target.parentElement;
+  }
+  e.preventDefault();
+}, { passive: false });
+
 const rootElement = document.getElementById('app')!
 
 if (!rootElement.innerHTML) {

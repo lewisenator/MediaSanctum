@@ -47,6 +47,7 @@ body {
   font-family: var(--font-text);
   background-color: var(--c-bg);
   color: var(--c-text);
+  overscroll-behavior: none;
 }
 
 * {
@@ -136,7 +137,7 @@ button {
 }
 
 .search-bar input[type="search"] {
-  @apply min-w-0 flex-1 bg-transparent border-none outline-none font-ui text-sm text-text;
+  @apply min-w-0 flex-1 bg-transparent border-none outline-none font-ui text-base text-text;
 }
 
 .search-bar input[type="search"]::placeholder {

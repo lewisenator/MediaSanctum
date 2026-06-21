@@ -6,7 +6,7 @@ import { getBook } from '#/client/bookClient.ts';
 import { type NavItem, Rendition } from 'epubjs';
 import { useTheme } from '#/context/ThemeContext.tsx';
 import ProgressBar from '#/components/reader/ProgressBar.tsx';
-import { readerStyles } from './readerStyles.ts';
+import { readerStyles } from './-readerStyles.ts';
 import TitleBar from '#/components/reader/TitleBar.tsx';
 import TOC from '#/components/reader/TOC.tsx';
 import ReaderSettings from '#/components/reader/ReaderSettings.tsx';
@@ -70,6 +70,7 @@ function EbookReaderPage() {
 
   const rendition = useRef<Rendition | undefined>(undefined);
   const readerRef = useRef<HTMLDivElement>(null);
+  const swipeTouchStartX = useRef<number | null>(null);
 
   const lastCfiRef = useRef<string>('');
 
@@ -288,22 +289,20 @@ function EbookReaderPage() {
               }}
               showToc={true}
             />
-            {/* Nav zones: catch left/right clicks; yield to epub links via elementFromPoint */}
+            {/* Full-width overlay: swipe left/right to turn pages, tap left/right half to turn pages.
+                Yields to epub links via elementFromPoint. Swipes suppress the subsequent click. */}
             <div
-              className="click-left absolute top-11.75 inset-y-0 left-0 w-1/4 z-10 cursor-pointer"
-              onClick={(e) => {
-                const iframe = readerRef.current?.querySelector('iframe');
-                if (iframe?.contentDocument) {
-                  const rect = iframe.getBoundingClientRect();
-                  const el = iframe.contentDocument.elementFromPoint(e.clientX - rect.left, e.clientY - rect.top);
-                  const link = (el as HTMLElement)?.closest('a');
-                  if (link) { (link as HTMLElement).click(); return; }
-                }
-                rendition.current?.prev();
+              className="absolute top-11.75 inset-y-0 inset-x-0 z-10 cursor-pointer touch-pan-x"
+              onTouchStart={(e) => { swipeTouchStartX.current = e.touches[0].clientX; }}
+              onTouchEnd={(e) => {
+                const startX = swipeTouchStartX.current;
+                swipeTouchStartX.current = null;
+                if (startX === null) return;
+                const delta = e.changedTouches[0].clientX - startX;
+                if (Math.abs(delta) < 50) return;
+                if (delta < 0) rendition.current?.next();
+                else rendition.current?.prev();
               }}
-            />
-            <div
-              className="click-right absolute top-11.75 inset-y-0 right-0 w-1/4 z-10 cursor-pointer"
               onClick={(e) => {
                 const iframe = readerRef.current?.querySelector('iframe');
                 if (iframe?.contentDocument) {
@@ -312,7 +311,9 @@ function EbookReaderPage() {
                   const link = (el as HTMLElement)?.closest('a');
                   if (link) { (link as HTMLElement).click(); return; }
                 }
-                rendition.current?.next();
+                const isLeftHalf = e.clientX < (readerRef.current?.getBoundingClientRect().width ?? window.innerWidth) / 2;
+                if (isLeftHalf) rendition.current?.prev();
+                else rendition.current?.next();
               }}
             />
 

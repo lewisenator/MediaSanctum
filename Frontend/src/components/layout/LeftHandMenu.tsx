@@ -31,9 +31,9 @@ const LeftHandMenu = (
     route: string;
     icon: React.ReactNode;
   }[] = [
-    {name: 'Books', route: '/books', icon: <IoBookOutline />},
-    {name: 'Series', route: '/series', icon: <PiListLight />},
-    {name: 'Authors', route: '/authors', icon: <IoPersonOutline />},
+    {name: 'Books', route: '/books/', icon: <IoBookOutline />},
+    {name: 'Series', route: '/series/', icon: <PiListLight />},
+    {name: 'Authors', route: '/authors/', icon: <IoPersonOutline />},
   ];
 
   const handleLogout = async () => {

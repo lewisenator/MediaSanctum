@@ -19,14 +19,15 @@ const Breadcrumbs = (
     <div
       className={`${className} flex flex-row items-center font-text text-textDim text-sm`}
     >
-      <IoIosArrowBack />
       {items.map((element, index) => (
-        <>
-          { index !== 0 && (
+        <span key={index} className="flex items-center justify-baseline">
+          { index !== 0 ? (
             <RxSlash />
+          ) : (
+            <IoIosArrowBack />
           )}
           {element}
-        </>
+        </span>
       ))}
     </div>
   );

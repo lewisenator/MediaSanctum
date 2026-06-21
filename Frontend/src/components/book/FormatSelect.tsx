@@ -16,7 +16,7 @@ const FormatSelect = (
 ) => {
   return (
     <div
-      className={`flex flex-row mt-8 bg-surfaceAlt border border-border p-1 rounded-lg max-w-53 ${className}`}
+      className={`flex flex-row mt-4 md:mt-8 lg:mt-8 bg-surfaceAlt border border-border p-1 rounded-lg max-w-53 ${className}`}
     >
           <span
             onClick={() => setSelectedFormat("ebook")}

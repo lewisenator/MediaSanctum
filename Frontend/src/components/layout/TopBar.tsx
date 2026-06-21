@@ -18,7 +18,7 @@ const TopBar = () => {
           </div>
           <div
             id="left-hand-menu-flyout"
-            className="fixed inset-y-0 left-0 z-30 flex w-64 flex-col shadow-[4px_0_6px_-2px_rgba(0,0,0,0.15)]
+            className="fixed inset-y-0 left-0 z-60 flex w-64 flex-col shadow-[4px_0_6px_-2px_rgba(0,0,0,0.15)]
             dark:shadow-[4px_0_6px_-2px_rgba(0,0,0,0.45)]
             transition-all duration-200 ease-in-out md:static md:translate-x-0 bg-sidebar text-sidebarText"
           >

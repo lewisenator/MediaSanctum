@@ -3,10 +3,11 @@ import { type Book, getBook } from '#/client/bookClient.ts';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 import { BsBook } from 'react-icons/bs';
 import TimeAgo from '#/components/formatting/TimeAgo.tsx';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import Main from '#/components/layout/Main.tsx';
 import LessMore from '#/components/formatting/LessMore.tsx';
 import Breadcrumbs, { breadcrumbClassName } from '#/components/layout/Breadcrumbs.tsx';
+import { useSwipe } from '#/hooks/useSwipe.ts';
 
 import MissingEbook from '#/components/book/MissingEbook.tsx';
 import AvailableEbook from '#/components/book/AvailableEbook.tsx';
@@ -31,7 +32,20 @@ function BookDetailsPage() {
   const { bookId } = Route.useParams();
   const { data: queriedBook } = useSuspenseQuery(bookQueryOptions(bookId));
   const [book, setBookUnwrapped] = useState<Book>(queriedBook);
+  const formats = ['ebook', 'audiobook'];
   const [selectedFormat, setSelectedFormat] = useState<string>("ebook");
+
+  const cycleFormat = useCallback((dir: 1 | -1) => {
+    setSelectedFormat(prev => {
+      const idx = formats.indexOf(prev);
+      return formats[(idx + dir + formats.length) % formats.length];
+    });
+  }, []);
+
+  const swipeRef = useSwipe<HTMLDivElement>({
+    onSwipeLeft: () => cycleFormat(1),
+    onSwipeRight: () => cycleFormat(-1),
+  });
 
 
   const setBook = async (newBook: Book) => {
@@ -52,10 +66,10 @@ function BookDetailsPage() {
     <Main>
       <div className="flex flex-col flex-1 max-w-6xl mx-auto">
         <Breadcrumbs
-          className="mb-2 md:mb-4 lg:mb-6"
+          className="mb-5 lg:mb-6"
           items={[
-            <Link to="/books" className={breadcrumbClassName}>Books</Link>,
-            <Link to="/books/$bookId" className={breadcrumbClassName} params={{bookId: bookId}}>{book.title}</Link>
+            <Link to="/books/" className={breadcrumbClassName}>Books</Link>,
+            <Link to="/books/$bookId/" className={breadcrumbClassName} params={{bookId: bookId}}>{book.title}</Link>
           ]}
         />
         <div className="flex flex-row">
@@ -72,7 +86,7 @@ function BookDetailsPage() {
           )}
 
           <div className="flex flex-col ml-5">
-            <h1 id="book-title" className="font-display font-semibold text-4xl text-text">{book.title}</h1>
+            <h1 id="book-title" className="font-display font-semibold text-4xl text-text -mt-1">{book.title}</h1>
             <p id="book-author" className="mt-1 text-md text-textDim italic">
               by
               <Link
@@ -126,58 +140,63 @@ function BookDetailsPage() {
         </div>
 
         <div
-          className="uppercase text-xs font-ui text-textMute mt-8"
+          className="uppercase text-xs font-ui text-textMute mt-4 md:mt-6 lg:mt-8"
         >
           About
         </div>
 
         <div>
           { book.description && (
-            <div className="mt-4 max-w-none">
+            <div className="mt-2 md:mt-4 max-w-none">
               <LessMore
                 className="text-sm leading-relaxed text-text font-ui"
                 text={book.description}
-                limit={350}
+                limit={150}
+                mdLimit={300}
+                lgLimit={500}
+                xlLimit={1000}
               />
             </div>
           )}
         </div>
 
-        <FormatSelect
-          selectedFormat={selectedFormat}
-          setSelectedFormat={setSelectedFormat}
-          className="mx-auto sm:mx-0"
-        />
+        <div ref={swipeRef}>
+          <FormatSelect
+            selectedFormat={selectedFormat}
+            setSelectedFormat={setSelectedFormat}
+            className="mx-auto sm:mx-0"
+          />
 
-        { selectedFormat === 'ebook' && (
-          <>
-            { book.ebookFile ? (
-              <AvailableEbook
-                book={book}
-              />
-            ) : (
-              <MissingEbook
-                book={book}
-                setBook={setBook}
-              />
-            )}
-          </>
-        )}
+          { selectedFormat === 'ebook' && (
+            <>
+              { book.ebookFile ? (
+                <AvailableEbook
+                  book={book}
+                />
+              ) : (
+                <MissingEbook
+                  book={book}
+                  setBook={setBook}
+                />
+              )}
+            </>
+          )}
 
-        { selectedFormat === 'audiobook' && (
-          <>
-            { book.audiobookFile ? (
-              <AvailableAudiobook
-                book={book}
-              />
-            ) : (
-              <MissingAudiobook
-                book={book}
-                setBook={setBook}
-              />
-            )}
-          </>
-        )}
+          { selectedFormat === 'audiobook' && (
+            <>
+              { book.audiobookFile ? (
+                <AvailableAudiobook
+                  book={book}
+                />
+              ) : (
+                <MissingAudiobook
+                  book={book}
+                  setBook={setBook}
+                />
+              )}
+            </>
+          )}
+        </div>
       </div>
     </Main>
   )

@@ -9,6 +9,7 @@ import Time from '#/components/formatting/Time.tsx';
 import { BsBook } from 'react-icons/bs';
 import Slider from '#/components/widgets/Slider.tsx';
 import { queryClient } from '#/router.tsx';
+import Breadcrumbs, { breadcrumbClassName } from '#/components/layout/Breadcrumbs.tsx';
 
 const REPORT_PROGRESS_EVERY_SECONDS = 30;
 
@@ -161,10 +162,18 @@ function ListenerPage() {
   }, [seconds]);
 
   return (
-    <div className="">
+    <div className="min-h-screen w-full">
       <audio src={book.audiobookFile!.url} className="hidden" ref={audioRef}></audio>
-      <div className="flex min-h-screen overflow-y-auto w-full">
-        <div id="audiobook-player" className="flex flex-col bg-bg grow items-center justi mt-10 min-w-100">
+      <div className="flex overflow-y-auto w-full">
+        <div id="audiobook-player" className="flex flex-col bg-bg grow items-center justi mt-4 md:mt-6 lg:mt-8 min-w-100">
+          <Breadcrumbs
+            className="self-start mb-5 ml-4 md:ml-6 lg:ml-8"
+            items={[
+              <Link to="/books/" className={breadcrumbClassName}>Books</Link>,
+              <Link to="/books/$bookId/" className={breadcrumbClassName} params={{bookId: bookId}}>{book.title}</Link>,
+              <Link to="/books/$bookId/listener" className={breadcrumbClassName} params={{bookId: bookId}}>Audiobook</Link>
+            ]}
+          />
           <div
             className="uppercase text-accent font-ui text-xs tracking-[0.2em]"
           >
@@ -176,20 +185,21 @@ function ListenerPage() {
               <img
                 src={book.audiobookEdition?.image?.url}
                 alt={book.title}
-                className="max-w-65 h-65 w-65 object-cover drop-shadow"
+                className="max-w-65 h-50 w-50 sm:h-55 sm:w-55 md:h-65 md:w-65 object-cover drop-shadow"
               />
             ) : (
-              <div className="shrink-0 grow-0 rounded-md border border-border bg-surfaceAlt flex items-center justify-center max-w-65 h-65 w-65 text-center text-4xl drop-shadow">
+              <div className="shrink-0 grow-0 rounded-md border border-border bg-surfaceAlt flex items-center justify-center
+                max-w-65 h-50 w-50 sm:h-55 sm:w-55 md:h-65 md:w-65 text-center text-4xl drop-shadow">
                 <BsBook />
               </div>
             )}
           </div>
 
-          <div className="mt-5 title font-display font-semibold text-4xl text-text">
+          <div className="mt-5 title font-display font-semibold text-2xl md:text-3xl lg:text-4xl text-text">
             {book.title}
           </div>
 
-          <div className="mt-1 text-md text-textDim italic">
+          <div className="mt-1 text-md text-textDim italic text-xs md:text-[16px]">
             <Link
               to="/authors/$authorId"
               params={{authorId: book.author.id}}
@@ -200,7 +210,7 @@ function ListenerPage() {
           </div>
 
           {narrator && (
-            <div className="mt-1 text-xs font-ui tracking-widest text-textMute uppercase">
+            <div className="mt-1 text-xs md:text-[14px] font-ui tracking-widest text-textMute uppercase">
               Narrated by {narrator}
             </div>
           )}
@@ -229,11 +239,11 @@ function ListenerPage() {
               value={seconds}
               setValue={setPosition}
               stepSize={1}
-              className="w-full"
+              className="w-full mt-2"
             />
           </div>
 
-          <div className="button-row flex items-center gap-3 mt-3">
+          <div className="button-row flex items-center gap-3 mt-3 mb-12">
             <button
               className="w-13 h-13 btn btn-rounded border-2 border-border hover:bg-surfaceAlt"
               onClick={previousChapter}
@@ -271,7 +281,7 @@ function ListenerPage() {
           setPosition={setPosition}
           currentChapter={currentChapter}
           setCurrentChapter={setCurrentChapter}
-          className="hidden lg:block"
+          className="hidden lg:block min-h-screen"
         />
       </div>
     </div>

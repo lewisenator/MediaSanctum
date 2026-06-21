@@ -82,11 +82,11 @@ const AvailableAudiobook = (
     <div
       className="bg-surface/98 mt-4 p-5 rounded-xl border border-border flex flex-col md:flex-row justify-between flex-wrap"
     >
-      <div className="flex flex-col sm:flex-row flex-1 w-full">
+      <div className="flex flex-col sm:flex-row flex-1 w-full order-2 md:order-1">
         <div className="flex flex-col w-full">
           {/*stats*/}
           <div className="flex flex-row mb-3 sm:mb-5 w-full items-baseline">
-            <span className="text-[40px] font-bolder mr-2 font-display">{percent}%</span>
+            <span className="text-[30px] md:text-[40px] font-bolder mr-2 font-display">{percent}%</span>
             <span>
               {currentChapter && (
                 <span className="capitalize">
@@ -105,34 +105,34 @@ const AvailableAudiobook = (
           </div>
           {/*Progress*/}
           <Progress
-            className="-mt-3 mb-4 sm:mr-20"
+            className="-mt-3 mb-4 mr-0 md:mr-20"
             heightPx={6}
             percent={percent}
           />
           {/*Meta*/}
           <div className="grid grid-cols-2 gap-3 sm:gap-5 w-full mb-5">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1 sm:gap-2">
               <div className="uppercase text-xs font-ui text-textMute tracking-widest">Duration</div>
               <div className="text-sm">
                 <AudioDuration seconds={duration} className="tabular-nums" />
               </div>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1 sm:gap-2">
               <div className="uppercase text-xs font-ui text-textMute tracking-widest">Format</div>
               <div className="text-sm uppercase">{book.audiobookFile?.ffProbe?.streams[0].codecName}</div>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1 sm:gap-2">
               <div className="uppercase text-xs font-ui text-textMute tracking-widest">File Size</div>
               <div className="text-sm"><FileSize bytes={book.audiobookFile?.size} /></div>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1 sm:gap-2">
               <div className="uppercase text-xs font-ui text-textMute tracking-widest">Last Opened</div>
               <div className="text-sm">Yesterday</div>
             </div>
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-3 shrink-0">
+      <div className="flex flex-col gap-3 shrink-0 md:order-2 mb-2">
         {/*buttons*/}
         <Link
           className="btn btn-primary rounded-lg"
@@ -141,17 +141,13 @@ const AvailableAudiobook = (
         >
           <IoIosPlay /> Continue Listening
         </Link>
-        <div className="flex flex-row sm:flex-col gap-3">
-          <button
-            className="btn rounded-lg border border-sidebarTextDim grow shrink-0"
-            disabled={downloading}
-            onClick={downloadBook}
-          >
-            <IoCloudDownloadOutline /> {downloading ? "Downloading..." : "Download M4B"}
-          </button>
-          {/* TODO: implement bookmarks */}
-          <button disabled={true} className="btn rounded-lg border border-sidebarTextDim grow shrink-0 disabled:cursor-not-allowed!">Bookmarks</button>
-        </div>
+        <button
+          className="btn rounded-lg border border-sidebarTextDim shrink-0"
+          disabled={downloading}
+          onClick={downloadBook}
+        >
+          <IoCloudDownloadOutline /> {downloading ? "Downloading..." : "Download M4B"}
+        </button>
       </div>
     </div>
   );
