@@ -30,7 +30,7 @@ const ProgressBar = (
   return (
     <div className="flex flex-row items-center justify-between w-full gap-3 px-8 py-2 bg-surface border-t border-border z-20">
       <div className="shrink-0">
-        <span className="tabular-nums whitespace-nowrap font-text text-textMute text-xs">
+        <span className="tabular-nums whitespace-nowrap font-text text-textMute text-xs flex items-baseline">
           {currentChapter >= 0 && totalChapters > 0 ? `Chapter ${currentChapter} / ${totalChapters}` : '—'}
         </span>
       </div>
@@ -60,7 +60,7 @@ const ProgressBar = (
           <div className="h-full bg-accent transition-[width] duration-200 ease-out pointer-events-none" style={{width: `${progress}%`}} />
         </div>
       </div>
-      <div className="shrink-0">
+      <div className="shrink-0 flex items-baseline">
         { !isNaN(progress) && (
           <span className="tabular-nums whitespace-nowrap font-text text-textMute text-xs">{`${progress} %`}</span>
         )}

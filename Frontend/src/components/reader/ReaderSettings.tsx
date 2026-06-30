@@ -134,7 +134,7 @@ const ReaderSettings = (
               value={paragraphSpacing}
               setValue={setParagraphSpacing}
               valueFormatter={(value) => `${value}em`}
-              min={0.2}
+              min={-0.4}
               max={2.0}
             />
           </div>

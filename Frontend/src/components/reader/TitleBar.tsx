@@ -26,7 +26,7 @@ const TitleBar = (
       id="reader-title-bar"
       className="flex flex-row items-center justify-between w-full gap-3 px-3 py-2 bg-surface border-b border-border"
     >
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center sm:min-w-25">
         <a onClick={() => backClicked()} className="flex flex-row font-ui items-center gap-2 rounded-md text-sm transition-colors
             hover:bg-surfaceAlt hover:text-text px-2.5 py-1 text-textDim border border-transparent hover:cursor-pointer">
           <IoIosArrowBack /> Back
@@ -46,11 +46,11 @@ const TitleBar = (
         ·
         <span className="font-ui text-xs text-textDim ml-1 italic">{book.author.name}</span>
       </div>
-      <div>
+      <div className="sm:min-w-25 flex justify-end">
         <a
           onClick={settingsClicked}
           className="flex flex-row font-ui items-center justify-center rounded-md
-            hover:bg-surfaceAlt hover:text-text hover:cursor-pointer w-7 h-7 text-textDim border border-border"
+            hover:bg-surfaceAlt hover:text-text hover:cursor-pointer w-7 h-7 text-textDim border border-border self-right"
         >
           <CiSettings/>
         </a>
