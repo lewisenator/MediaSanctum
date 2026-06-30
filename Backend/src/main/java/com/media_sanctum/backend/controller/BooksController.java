@@ -66,13 +66,7 @@ public class BooksController {
     ) {
         var book = catalogueManager.getBookResponse(id);
         if (book == null) {
-            var error = ErrorResponse.builder()
-                    .error("BOOK_NOT_FOUND")
-                    .message("Book with id %s not found".formatted(id))
-                    .timestamp(LocalDateTime.now().toString())
-                    .build();
-            DataResponse<BookResponse> dataResponse = DataResponse.error(error);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dataResponse);
+            return bookNotFoundError(id);
         }
         return ResponseEntity.ok(DataResponse.data(book));
     }
@@ -87,37 +81,49 @@ public class BooksController {
             @RequestParam("file") MultipartFile file
     ) {
         if (file.isEmpty()) {
-            var error = ErrorResponse.builder()
-                    .error("FILE_MISSING")
-                    .message("You must pass a file value in the file form parameter")
-                    .timestamp(LocalDateTime.now().toString())
-                    .build();
-            DataResponse<BookResponse> dataResponse = DataResponse.error(error);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dataResponse);
+            return fileMissingError();
         }
 
         var editionType = EditionType.fromPathValue(editionValue);
         if (editionType == null) {
-            var error = ErrorResponse.builder()
-                    .error("INVALID_EDITION_TYPE")
-                    .message("Invalid edition type (must be audiobook or ebook): %s".formatted(editionValue))
-                    .timestamp(LocalDateTime.now().toString())
-                    .build();
-            DataResponse<BookResponse> dataResponse = DataResponse.error(error);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dataResponse);
+            return invalidEditionTypeError(editionValue);
         }
 
         if (!bookService.exists(id)) {
-            var error = ErrorResponse.builder()
-                    .error("BOOK_NOT_FOUND")
-                    .message("Book with id %s not found".formatted(id))
-                    .timestamp(LocalDateTime.now().toString())
-                    .build();
-            DataResponse<BookResponse> dataResponse = DataResponse.error(error);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dataResponse);
+            return bookNotFoundError(id);
         }
 
         bookFileManager.uploadBookFile(id, editionType, file);
         return ResponseEntity.ok(DataResponse.data(catalogueManager.getBookResponse(id)));
+    }
+
+    private ResponseEntity<DataResponse<BookResponse>> fileMissingError() {
+        var error = ErrorResponse.builder()
+                .error("FILE_MISSING")
+                .message("You must pass a file value in the file form parameter")
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+        DataResponse<BookResponse> dataResponse = DataResponse.error(error);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dataResponse);
+    }
+
+    private ResponseEntity<DataResponse<BookResponse>> invalidEditionTypeError(String editionValue) {
+        var error = ErrorResponse.builder()
+                .error("INVALID_EDITION_TYPE")
+                .message("Invalid edition type (must be audiobook or ebook): %s".formatted(editionValue))
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+        DataResponse<BookResponse> dataResponse = DataResponse.error(error);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dataResponse);
+    }
+
+    private ResponseEntity<DataResponse<BookResponse>> bookNotFoundError(String id) {
+        var error = ErrorResponse.builder()
+                .error("BOOK_NOT_FOUND")
+                .message("Book with id %s not found".formatted(id))
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+        DataResponse<BookResponse> dataResponse = DataResponse.error(error);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dataResponse);
     }
 }

@@ -44,19 +44,13 @@ public class ProgressController {
     }
 
     @PostMapping("/{bookId}/ebook")
-    public ResponseEntity<DataResponse<EbookProgressResponse>> upsertProgress(
+    public ResponseEntity<DataResponse<EbookProgressResponse>> upsertEbookProgress(
             @PathVariable @NotBlank String bookId,
             @NotNull @RequestBody UpsertEbookProgressRequest progressRequest
     ) {
         var book = bookService.getBook(bookId);
         if (book == null) {
-            var error = ErrorResponse.builder()
-                    .error("BOOK_NOT_FOUND")
-                    .message("Book with id %s not found".formatted(bookId))
-                    .timestamp(LocalDateTime.now().toString())
-                    .build();
-            DataResponse<EbookProgressResponse> dataResponse = DataResponse.error(error);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dataResponse);
+            return bookNotFoundError(bookId);
         }
 
         var progressResponse = ebookProgressService.upsert(book, requestContext.getUser(), progressRequest);
@@ -64,22 +58,25 @@ public class ProgressController {
     }
 
     @PostMapping("/{bookId}/audiobook")
-    public ResponseEntity<DataResponse<AudiobookProgressResponse>> upsertProgress(
+    public ResponseEntity<DataResponse<AudiobookProgressResponse>> upsertAudiobookProgress(
             @PathVariable @NotBlank String bookId,
             @NotNull @RequestBody UpsertAudiobookProgressRequest progressRequest
     ) {
         var book = bookService.getBook(bookId);
         if (book == null) {
-            var error = ErrorResponse.builder()
-                    .error("BOOK_NOT_FOUND")
-                    .message("Book with id %s not found".formatted(bookId))
-                    .timestamp(LocalDateTime.now().toString())
-                    .build();
-            DataResponse<AudiobookProgressResponse> dataResponse = DataResponse.error(error);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dataResponse);
+            return bookNotFoundError(bookId);
         }
 
         var progressResponse = audiobookProgressService.upsert(book, requestContext.getUser(), progressRequest);
         return ResponseEntity.ok(DataResponse.data(progressResponse));
+    }
+
+    private <T> ResponseEntity<DataResponse<T>> bookNotFoundError(String bookId) {
+        var error = ErrorResponse.builder()
+                .error("BOOK_NOT_FOUND")
+                .message("Book with id %s not found".formatted(bookId))
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(DataResponse.error(error));
     }
 }

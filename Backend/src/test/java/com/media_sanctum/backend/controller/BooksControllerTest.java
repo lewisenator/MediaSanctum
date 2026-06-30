@@ -9,9 +9,11 @@ import com.media_sanctum.backend.resource.DataResponse;
 import com.media_sanctum.backend.utils.json.JsonAssertionBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -122,6 +124,140 @@ public class BooksControllerTest extends BaseControllerTest {
 
         JsonAssertionBuilder.assertThatJson(response.getBody())
                 .matchesContract(booksContract);
+    }
+
+    @Test
+    public void updateBook_fileMissing_returns400() {
+        var body = new LinkedMultiValueMap<String, Object>();
+        body.add("file", new ByteArrayResource(new byte[0]) {
+            @Override public String getFilename() { return "book.pdf"; }
+        });
+
+        var response = restClient.post()
+                .uri("/api/books/%s/ebook/upload".formatted(UUID.randomUUID()))
+                .header("Authorization", "Bearer " + getAccessToken())
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(body)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, (_, _) -> {})
+                .toEntity(String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+
+        JsonAssertionBuilder.assertThatJson(response.getBody())
+                .matchesContract("""
+                        {
+                            "data": null,
+                            "error": {
+                                "error": "FILE_MISSING",
+                                "message": "{{STRING}}",
+                                "timestamp": "{{TIMESTAMP?amount=1&unit=MINUTES}}"
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    public void updateBook_invalidEditionType_returns400() {
+        var body = new LinkedMultiValueMap<String, Object>();
+        body.add("file", new ByteArrayResource("content".getBytes()) {
+            @Override public String getFilename() { return "book.pdf"; }
+        });
+
+        var response = restClient.post()
+                .uri("/api/books/%s/invalid/upload".formatted(UUID.randomUUID()))
+                .header("Authorization", "Bearer " + getAccessToken())
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(body)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, (_, _) -> {})
+                .toEntity(String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+
+        JsonAssertionBuilder.assertThatJson(response.getBody())
+                .matchesContract("""
+                        {
+                            "data": null,
+                            "error": {
+                                "error": "INVALID_EDITION_TYPE",
+                                "message": "{{STRING}}",
+                                "timestamp": "{{TIMESTAMP?amount=1&unit=MINUTES}}"
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    public void updateBook_bookNotFound_returns404() {
+        var body = new LinkedMultiValueMap<String, Object>();
+        body.add("file", new ByteArrayResource("content".getBytes()) {
+            @Override public String getFilename() { return "book.pdf"; }
+        });
+
+        var response = restClient.post()
+                .uri("/api/books/%s/ebook/upload".formatted(UUID.randomUUID()))
+                .header("Authorization", "Bearer " + getAccessToken())
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(body)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, (_, _) -> {})
+                .toEntity(String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+
+        JsonAssertionBuilder.assertThatJson(response.getBody())
+                .matchesContract("""
+                        {
+                            "data": null,
+                            "error": {
+                                "error": "BOOK_NOT_FOUND",
+                                "message": "{{STRING}}",
+                                "timestamp": "{{TIMESTAMP?amount=1&unit=MINUTES}}"
+                            }
+                        }
+                        """);
+    }
+
+    @Test
+    public void updateBook_ebook_ok() throws Exception {
+        var addBookRequest = AddBookRequest.builder()
+                .hardcoverId(JURASSIC_PARK_BOOK_ID)
+                .build();
+
+        var addResponse = restClient.post()
+                .uri("/api/books")
+                .header("Authorization", "Bearer " + getAccessToken())
+                .body(addBookRequest)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, (_, _) -> {})
+                .toEntity(String.class);
+
+        var bookId = objectMapper.readValue(addResponse.getBody(),
+                new TypeReference<DataResponse<BookResponse>>() {}).getData().getId();
+
+        var body = new LinkedMultiValueMap<String, Object>();
+        body.add("file", new ByteArrayResource("%PDF-1.4 test content".getBytes()) {
+            @Override public String getFilename() { return "jurassic-park.pdf"; }
+        });
+
+        var response = restClient.post()
+                .uri("/api/books/%s/ebook/upload".formatted(bookId))
+                .header("Authorization", "Bearer " + getAccessToken())
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(body)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, (_, _) -> {})
+                .toEntity(String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+
+        JsonAssertionBuilder.assertThatJson(response.getBody())
+                .matchesContract(DATA_CONTRACT.formatted(BOOK_CONTRACT));
     }
 
     @Test
