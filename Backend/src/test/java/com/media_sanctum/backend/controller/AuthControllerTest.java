@@ -27,6 +27,7 @@ class AuthControllerTest extends BaseControllerTest {
     protected String password = UUID.randomUUID().toString();
     protected String email = UUID.randomUUID() + "@example.com";
     protected UserModel userModel;
+
     @BeforeEach
     public void setup() {
         super.setup();
@@ -271,7 +272,7 @@ class AuthControllerTest extends BaseControllerTest {
                 .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
                 .toEntity(String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(response.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(response.getHeaders().headerNames()).doesNotContain("set-cookie");
 
@@ -280,7 +281,7 @@ class AuthControllerTest extends BaseControllerTest {
                 "data": null,
                 "error": {
                     "timestamp" : "{{TIMESTAMP?amount=10&unit=SECONDS}}",
-                    "error" : "BadCredentialsException",
+                    "error" : "INVALID_REFRESH_TOKEN",
                     "message" : "{{STRING}}"
                 }
             }

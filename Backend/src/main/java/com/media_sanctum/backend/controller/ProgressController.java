@@ -1,13 +1,15 @@
 package com.media_sanctum.backend.controller;
 
-import com.media_sanctum.backend.manager.CatalogueManager;
+import com.media_sanctum.backend.config.RequestContext;
 import com.media_sanctum.backend.resource.AudiobookProgressResponse;
 import com.media_sanctum.backend.resource.DataResponse;
-import com.media_sanctum.backend.resource.ErrorResponse;
 import com.media_sanctum.backend.resource.EbookProgressResponse;
+import com.media_sanctum.backend.resource.ErrorResponse;
 import com.media_sanctum.backend.resource.UpsertAudiobookProgressRequest;
 import com.media_sanctum.backend.resource.UpsertEbookProgressRequest;
+import com.media_sanctum.backend.service.AudiobookProgressService;
 import com.media_sanctum.backend.service.BookService;
+import com.media_sanctum.backend.service.EbookProgressService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
@@ -24,15 +26,21 @@ import java.time.LocalDateTime;
 @RequestMapping("/api/progress")
 public class ProgressController {
 
-    private final CatalogueManager catalogueManager;
     private final BookService bookService;
+    private final EbookProgressService ebookProgressService;
+    private final AudiobookProgressService audiobookProgressService;
+    private final RequestContext requestContext;
 
     public ProgressController(
-            CatalogueManager catalogueManager,
-            BookService bookService
+            BookService bookService,
+            EbookProgressService ebookProgressService,
+            AudiobookProgressService audiobookProgressService,
+            RequestContext requestContext
     ) {
-        this.catalogueManager = catalogueManager;
         this.bookService = bookService;
+        this.ebookProgressService = ebookProgressService;
+        this.audiobookProgressService = audiobookProgressService;
+        this.requestContext = requestContext;
     }
 
     @PostMapping("/{bookId}/ebook")
@@ -51,8 +59,7 @@ public class ProgressController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dataResponse);
         }
 
-        var progressResponse = catalogueManager.upsertEbookProgress(book, progressRequest);
-
+        var progressResponse = ebookProgressService.upsert(book, requestContext.getUser(), progressRequest);
         return ResponseEntity.ok(DataResponse.data(progressResponse));
     }
 
@@ -72,8 +79,7 @@ public class ProgressController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dataResponse);
         }
 
-        var progressResponse = catalogueManager.upsertAudiobookProgress(book, progressRequest);
-
+        var progressResponse = audiobookProgressService.upsert(book, requestContext.getUser(), progressRequest);
         return ResponseEntity.ok(DataResponse.data(progressResponse));
     }
 }

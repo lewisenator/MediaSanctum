@@ -1,7 +1,9 @@
 package com.media_sanctum.backend.service;
 
+import com.media_sanctum.backend.client.hardcover.model.HardcoverAuthor;
 import com.media_sanctum.backend.client.hardcover.model.HardcoverLink;
 import com.media_sanctum.backend.entity.Author;
+import com.media_sanctum.backend.entity.Image;
 import com.media_sanctum.backend.repository.AuthorRepository;
 import com.media_sanctum.backend.resource.AuthorResponse;
 import com.media_sanctum.backend.resource.LinkResponse;
@@ -47,6 +49,23 @@ public class AuthorService {
 
     public Author saveAuthor(Author author) {
         return authorRepository.save(author);
+    }
+
+    public Author addAuthor(HardcoverAuthor hardcoverAuthor, Image image) {
+        var author = Author.builder()
+                .hardcoverId(hardcoverAuthor.getId())
+                .name(hardcoverAuthor.getName())
+                .title(hardcoverAuthor.getTitle())
+                .alternateNames(hardcoverAuthor.getAlternateNames())
+                .slug(hardcoverAuthor.getSlug())
+                .bio(hardcoverAuthor.getBio())
+                .bornYear(hardcoverAuthor.getBornYear())
+                .deathYear(hardcoverAuthor.getDeathYear())
+                .booksCount(hardcoverAuthor.getBooksCount())
+                .links(hardcoverAuthor.getLinks())
+                .build();
+        author.setImage(image);
+        return saveAuthor(author);
     }
 
     public static AuthorResponse toResponse(Author author) {

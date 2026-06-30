@@ -1,7 +1,6 @@
 package com.media_sanctum.backend.entity;
 
 import com.media_sanctum.backend.client.hardcover.model.HardcoverFeaturedSeriesSearchResult;
-import com.media_sanctum.backend.client.hardcover.model.HardcoverLink;
 import com.media_sanctum.backend.client.hardcover.model.HardcoverTag;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

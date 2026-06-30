@@ -56,7 +56,7 @@
       <property name="format" value="^[a-z]([a-zA-Z0-9]*)?$"/>
     </module>
     <module name="CatchParameterName">
-      <property name="format" value="^[a-z]([a-zA-Z0-9]*)?$"/>
+      <property name="format" value="^[a-z_]([a-zA-Z0-9]*)?$"/>
     </module>
     <module name="LocalVariableName">
       <property name="format" value="^[a-z]([a-zA-Z0-9]*)?$"/>
@@ -91,7 +91,7 @@
     <module name="RightCurly">
       <property name="id" value="RightCurlyAlone"/>
       <property name="option" value="alone"/>
-      <property name="tokens" value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, STATIC_INIT, INSTANCE_INIT, ANNOTATION_DEF, ENUM_DEF, INTERFACE_DEF, RECORD_DEF, COMPACT_CTOR_DEF"/>
+      <property name="tokens" value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, STATIC_INIT, INSTANCE_INIT, ANNOTATION_DEF, ENUM_DEF, INTERFACE_DEF, COMPACT_CTOR_DEF"/>
     </module>
 
     <!-- Whitespace -->
@@ -104,6 +104,7 @@
       <property name="allowEmptyMethods" value="true"/>
       <property name="allowEmptyTypes" value="true"/>
       <property name="allowEmptyLoops" value="true"/>
+      <property name="allowEmptyCatches" value="true"/>
       <property name="ignoreEnhancedForColon" value="false"/>
     </module>
     <module name="NoWhitespaceBefore">
@@ -153,7 +154,7 @@
     <module name="UpperEll"/>
     <module name="ModifierOrder"/>
     <module name="EmptyCatchBlock">
-      <property name="exceptionVariableName" value="expected|ignored"/>
+      <property name="exceptionVariableName" value="expected|ignored|_"/>
     </module>
     <module name="OneStatementPerLine"/>
     <module name="InnerAssignment"/>

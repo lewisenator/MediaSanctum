@@ -1,6 +1,5 @@
 package com.media_sanctum.backend.controller;
 
-import com.fasterxml.jackson.databind.deser.DataFormatReaders;
 import com.media_sanctum.backend.entity.BookFile;
 import com.media_sanctum.backend.entity.Image;
 import com.media_sanctum.backend.service.BookFileService;
@@ -23,10 +22,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -123,7 +120,7 @@ public class PublicController {
                 .body(new FileSystemResource(file));
     }
 
-    private static File getBookFile(BookFile bookFile) {
+    private static File getBookFileFile(BookFile bookFile) {
         File file = Path.of(bookFile.getDirectory(), bookFile.getFilename()).toFile();
         if (!file.exists()) {
             return null;
@@ -148,13 +145,14 @@ public class PublicController {
             default -> throw new IllegalStateException("Unexpected value: " + extension);
         };
     }
+
     private Optional<LoadedFile> loadFile(Matcher filenameMatcher) {
         var result = Optional.<LoadedFile>empty();
         var bookFileId = filenameMatcher.group(1);
         var extension = filenameMatcher.group(2);
         var bookFile = bookFileService.getBookFile(bookFileId);
 
-        File file = getBookFile(bookFile);
+        File file = getBookFileFile(bookFile);
         if (file == null) {
             return result;
         }

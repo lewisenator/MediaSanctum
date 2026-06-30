@@ -1,6 +1,6 @@
 package com.media_sanctum.backend.controller;
 
-import com.media_sanctum.backend.manager.CatalogueManager;
+import com.media_sanctum.backend.manager.HardcoverSyncManager;
 import com.media_sanctum.backend.resource.AddAuthorRequest;
 import com.media_sanctum.backend.resource.AuthorResponse;
 import com.media_sanctum.backend.resource.DataResponse;
@@ -23,11 +23,11 @@ import java.util.List;
 @RequestMapping("/api/authors")
 public class AuthorsController {
 
-    private final CatalogueManager catalogueManager;
+    private final HardcoverSyncManager hardcoverSyncManager;
     private final AuthorService authorService;
 
-    public AuthorsController(CatalogueManager catalogueManager, AuthorService authorService) {
-        this.catalogueManager = catalogueManager;
+    public AuthorsController(HardcoverSyncManager hardcoverSyncManager, AuthorService authorService) {
+        this.hardcoverSyncManager = hardcoverSyncManager;
         this.authorService = authorService;
     }
 
@@ -35,16 +35,13 @@ public class AuthorsController {
     public ResponseEntity<DataResponse<AuthorResponse>> addAuthor(
             @NotNull @RequestBody AddAuthorRequest addAuthorRequest
     ) {
-        var hardcoverId = addAuthorRequest.getHardcoverId();
-        var author = catalogueManager.addAuthor(hardcoverId);
-        var authorResponse = AuthorService.toResponse(author);
-        return ResponseEntity.ok(DataResponse.data(authorResponse));
+        var author = hardcoverSyncManager.addAuthor(addAuthorRequest.getHardcoverId());
+        return ResponseEntity.ok(DataResponse.data(AuthorService.toResponse(author)));
     }
 
     @GetMapping
     public ResponseEntity<DataResponse<List<AuthorResponse>>> getAuthors() {
-        var authors = authorService.getAuthorsResponse();
-        return ResponseEntity.ok(DataResponse.data(authors));
+        return ResponseEntity.ok(DataResponse.data(authorService.getAuthorsResponse()));
     }
 
     @GetMapping("/{id}")

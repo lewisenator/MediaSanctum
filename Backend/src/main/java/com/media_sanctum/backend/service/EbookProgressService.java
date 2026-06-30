@@ -1,19 +1,44 @@
 package com.media_sanctum.backend.service;
 
+import com.media_sanctum.backend.entity.Book;
 import com.media_sanctum.backend.entity.EbookProgress;
+import com.media_sanctum.backend.entity.User;
 import com.media_sanctum.backend.repository.EbookProgressRepository;
 import com.media_sanctum.backend.resource.EbookProgressResponse;
+import com.media_sanctum.backend.resource.UpsertEbookProgressRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class EbookProgressService {
 
     @Autowired
-    private EbookProgressRepository ebookProgressRepository;
+    private final EbookProgressRepository ebookProgressRepository;
 
     public EbookProgressService(EbookProgressRepository ebookProgressRepository) {
         this.ebookProgressRepository = ebookProgressRepository;
+    }
+
+    public EbookProgressResponse upsert(Book book, User user, UpsertEbookProgressRequest body) {
+        var progressBuilder = Optional.ofNullable(findByBookIdAndUserId(book.getId(), user.getId()))
+                .map(EbookProgress::toBuilder)
+                .orElse(null);
+        if (progressBuilder == null) {
+            progressBuilder = EbookProgress.builder()
+                    .user(user)
+                    .book(book);
+        }
+        var progress = progressBuilder
+                .epubcfi(body.getEpubcfi())
+                .percent(body.getPercent())
+                .currentPage(body.getCurrentPage())
+                .totalPages(body.getTotalPages())
+                .currentChapter(body.getCurrentChapter())
+                .totalChapters(body.getTotalChapters())
+                .build();
+        return toResponse(save(progress));
     }
 
     public EbookProgress save(EbookProgress ebookProgress) {

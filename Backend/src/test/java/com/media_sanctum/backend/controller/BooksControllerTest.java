@@ -23,6 +23,14 @@ public class BooksControllerTest extends BaseControllerTest {
 
     private static final Integer JURASSIC_PARK_BOOK_ID = 9724;
 
+    public static final String TAG_CONTRACT = """
+            {
+                "tag": "{{STRING}}",
+                "count": "{{INTEGER}}",
+                "category": "{{STRING}}"
+            }
+            """;
+
     public static final String BOOK_CONTRACT = """
             {
                 "id": "{{UUID}}",
@@ -42,9 +50,14 @@ public class BooksControllerTest extends BaseControllerTest {
                 "author": "{{OBJECT}}",
                 "audiobookEdition": "{{OBJECT}}",
                 "ebookEdition": "{{OBJECT}}",
-                "featuredSeries": "{{OBJECT}}"
+                "featuredSeries": "{{OBJECT}}",
+                "tags": "{{OBJECT-ARRAY?contract=%s}}",
+                "ebookFile": "{{OBJECT?nullable=true}}",
+                "audiobookFile": "{{OBJECT?nullable=true}}",
+                "ebookProgress": "{{OBJECT?nullable=true}}",
+                "audiobookProgress": "{{OBJECT?nullable=true}}"
             }
-            """;
+            """.formatted(URLEncoder.encode(TAG_CONTRACT, StandardCharsets.UTF_8));
 
     @Autowired
     private ObjectMapper objectMapper;

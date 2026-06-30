@@ -16,7 +16,7 @@ public enum EditionType {
     }
 
     public static EditionType fromPathValue(String value) {
-        return Arrays.stream(EditionType.values())
+        return Arrays.stream(values())
                 .filter(e -> e.pathValue.equals(value))
                 .findFirst()
                 .orElse(null);

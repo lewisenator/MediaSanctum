@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+@SuppressWarnings("PMD.ImplicitFunctionalInterface")
 public interface AudiobookProgressRepository extends JpaRepository<AudiobookProgress, String> {
 
     Optional<AudiobookProgress> findByBookIdAndUserId(String bookId, String userId);

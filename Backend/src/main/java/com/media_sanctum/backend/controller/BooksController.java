@@ -1,7 +1,9 @@
 package com.media_sanctum.backend.controller;
 
 import com.media_sanctum.backend.entity.EditionType;
+import com.media_sanctum.backend.manager.BookFileManager;
 import com.media_sanctum.backend.manager.CatalogueManager;
+import com.media_sanctum.backend.manager.HardcoverSyncManager;
 import com.media_sanctum.backend.resource.AddBookRequest;
 import com.media_sanctum.backend.resource.BookResponse;
 import com.media_sanctum.backend.resource.DataResponse;
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.service.annotation.PostExchange;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,10 +29,19 @@ import java.util.List;
 @RequestMapping("/api/books")
 public class BooksController {
 
+    private final HardcoverSyncManager hardcoverSyncManager;
+    private final BookFileManager bookFileManager;
     private final CatalogueManager catalogueManager;
     private final BookService bookService;
 
-    public BooksController(CatalogueManager catalogueManager, BookService bookService) {
+    public BooksController(
+            HardcoverSyncManager hardcoverSyncManager,
+            BookFileManager bookFileManager,
+            CatalogueManager catalogueManager,
+            BookService bookService
+    ) {
+        this.hardcoverSyncManager = hardcoverSyncManager;
+        this.bookFileManager = bookFileManager;
         this.catalogueManager = catalogueManager;
         this.bookService = bookService;
     }
@@ -40,9 +50,8 @@ public class BooksController {
     public ResponseEntity<DataResponse<BookResponse>> addBook(
             @NotNull @RequestBody AddBookRequest addBookRequest
     ) {
-        var hardcoverId = addBookRequest.getHardcoverId();
-        var book = catalogueManager.addBook(hardcoverId);
-        return ResponseEntity.ok(DataResponse.data(book));
+        var book = hardcoverSyncManager.addBook(addBookRequest.getHardcoverId());
+        return ResponseEntity.ok(DataResponse.data(catalogueManager.getBookResponse(book.getId())));
     }
 
     @GetMapping
@@ -108,8 +117,7 @@ public class BooksController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dataResponse);
         }
 
-        var book = catalogueManager.uploadBookFile(id, editionType, file);
-
-        return ResponseEntity.ok(DataResponse.data(book));
+        bookFileManager.uploadBookFile(id, editionType, file);
+        return ResponseEntity.ok(DataResponse.data(catalogueManager.getBookResponse(id)));
     }
 }

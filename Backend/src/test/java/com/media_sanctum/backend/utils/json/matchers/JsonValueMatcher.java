@@ -1,12 +1,6 @@
 package com.media_sanctum.backend.utils.json.matchers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.json.JSONObject;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * Interface for custom JSON value matchers used in contract testing.

@@ -54,7 +54,9 @@
   </rule>
 
   <!-- Performance -->
-  <rule ref="category/java/performance.xml"/>
+  <rule ref="category/java/performance.xml">
+    <exclude name="TooFewBranchesForSwitch"/>           <!-- Exhaustive enum switches are preferred over if-else for compile-time safety -->
+  </rule>
 
   <!-- Security -->
   <rule ref="category/java/security.xml"/>

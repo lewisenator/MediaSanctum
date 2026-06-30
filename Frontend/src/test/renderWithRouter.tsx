@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
+import { ThemeProvider } from '#/context/ThemeContext.tsx';
 
 export async function renderWithRouter(ui: React.ReactElement, initialPath = '/') {
   const queryClient = new QueryClient({
@@ -45,9 +46,11 @@ export async function renderWithRouter(ui: React.ReactElement, initialPath = '/'
 
   return {
     ...render(
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </ThemeProvider>
     ),
     router,
   };

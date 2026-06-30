@@ -19,6 +19,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -88,26 +89,19 @@ public class AuthController {
     public ResponseEntity<DataResponse<AuthResponse>> refresh(
             @CookieValue(name = REFRESH_COOKIE_NAME, required = false) String refreshToken) {
         if (refreshToken == null || refreshToken.isEmpty()) {
-            var error = ErrorResponse.builder()
-                    .error("INVALID_REFRESH_TOKEN")
-                    .message("Invalid refresh token")
-                    .timestamp(LocalDateTime.now().toString())
-                    .build();
-            DataResponse<AuthResponse> response = DataResponse.error(error);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            return unauthorizedError();
         }
 
-        var tokenPayload = jwtService.verifyJwtToken(refreshToken);
+        JwtService.TokenPayload tokenPayload;
+        try {
+            tokenPayload = jwtService.verifyJwtToken(refreshToken);
+        } catch (AuthenticationException _) {
+            return unauthorizedError();
+        }
 
         var maybeUser = userService.getUserModelById(tokenPayload.getUserId());
         if (maybeUser.isEmpty()) {
-            var error = ErrorResponse.builder()
-                    .error("INVALID_REFRESH_TOKEN")
-                    .message("Invalid refresh token")
-                    .timestamp(LocalDateTime.now().toString())
-                    .build();
-            DataResponse<AuthResponse> response = DataResponse.error(error);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            return unauthorizedError();
         }
 
         var user = maybeUser.get();
@@ -115,6 +109,16 @@ public class AuthController {
         var authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
         return buildAuthResponseEntity(user, authorities);
+    }
+
+    private ResponseEntity<DataResponse<AuthResponse>> unauthorizedError() {
+        var error = ErrorResponse.builder()
+                .error("INVALID_REFRESH_TOKEN")
+                .message("Invalid refresh token")
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+        DataResponse<AuthResponse> response = DataResponse.error(error);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     private @NonNull ResponseEntity<DataResponse<AuthResponse>> buildAuthResponseEntity(

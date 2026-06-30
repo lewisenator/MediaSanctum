@@ -7,9 +7,7 @@ import com.media_sanctum.backend.resource.DataResponse;
 import com.media_sanctum.backend.resource.LoginRequest;
 import com.media_sanctum.backend.security.AdminUserBootstrapService;
 import com.media_sanctum.backend.service.UserService;
-
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +16,9 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
-import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import org.springframework.web.client.RestClient;
-
 
 import java.security.SecureRandom;
 import java.util.Base64;
