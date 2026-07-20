@@ -45,7 +45,7 @@ public class AudiobookProgressService {
     }
 
     public AudiobookProgress findByBookIdAndUserId(String bookId, String userId) {
-        return audiobookProgressRepository.findByBookIdAndUserId(bookId, userId).orElse(null);
+        return audiobookProgressRepository.findFirstByBookIdAndUserId(bookId, userId).orElse(null);
     }
 
     public AudiobookProgress getProgress(String id) {
