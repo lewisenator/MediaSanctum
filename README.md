@@ -1,20 +1,54 @@
 # MediaSanctum
 
+<p align="center">
+<a href="docs/images/desktop/05_book_details.png"><img src="docs/images/desktop/05_book_details.png" width="500"/></a>
+</p>
+
 A self-hosted library manager for ebooks and audiobooks — browse your collection, read or listen in the browser, and pick up right where you left off. Book and author metadata is enriched via the [Hardcover](https://hardcover.app) API.
 
-<!--
-Screenshots — drop images into a `docs/screenshots/` folder and update the paths below.
-Suggested shots: login, library/book grid, book details, in-browser reader, audiobook player, author page.
--->
 ## Screenshots
 
-| Library | Book Details |
-|---|---|
-| _screenshot coming soon_ | _screenshot coming soon_ |
+<table>
+<tr>
+<td align="center"><a href="docs/images/desktop/01_login_page.png"><img src="docs/images/desktop/01_login_page.png" width="160"/></a><br/><sub>Login</sub></td>
+<td align="center"><a href="docs/images/desktop/02_book_index.png"><img src="docs/images/desktop/02_book_index.png" width="160"/></a><br/><sub>Library</sub></td>
+<td align="center"><a href="docs/images/desktop/03_theme_picker.png"><img src="docs/images/desktop/03_theme_picker.png" width="160"/></a><br/><sub>Theme Picker</sub></td>
+<td align="center"><a href="docs/images/desktop/04_book_search.png"><img src="docs/images/desktop/04_book_search.png" width="160"/></a><br/><sub>Search</sub></td>
+<td align="center"><a href="docs/images/desktop/05_book_details.png"><img src="docs/images/desktop/05_book_details.png" width="160"/></a><br/><sub>Book Details</sub></td>
+</tr>
+<tr>
+<td align="center"><a href="docs/images/desktop/06_ebook_progress_widget.png"><img src="docs/images/desktop/06_ebook_progress_widget.png" width="160"/></a><br/><sub>Reading Progress</sub></td>
+<td align="center"><a href="docs/images/desktop/07_epub_reader.png"><img src="docs/images/desktop/07_epub_reader.png" width="160"/></a><br/><sub>Ebook Reader</sub></td>
+<td align="center"><a href="docs/images/desktop/08_epub_toc.png"><img src="docs/images/desktop/08_epub_toc.png" width="160"/></a><br/><sub>Table of Contents</sub></td>
+<td align="center"><a href="docs/images/desktop/09_epub_settings.png"><img src="docs/images/desktop/09_epub_settings.png" width="160"/></a><br/><sub>Reader Settings</sub></td>
+<td align="center"><a href="docs/images/desktop/10_audiobook_player.png"><img src="docs/images/desktop/10_audiobook_player.png" width="160"/></a><br/><sub>Audiobook Player</sub></td>
+</tr>
+</table>
 
-| Reader | Audiobook Player |
-|---|---|
-| _screenshot coming soon_ | _screenshot coming soon_ |
+*Click any screenshot to view full size.*
+
+<details>
+<summary>📱 View mobile screenshots (10)</summary>
+<br/>
+
+<table>
+<tr>
+<td align="center"><a href="docs/images/mobile/01_login_page.jpeg"><img src="docs/images/mobile/01_login_page.jpeg" width="110"/></a><br/><sub>Login</sub></td>
+<td align="center"><a href="docs/images/mobile/02_book_index.jpeg"><img src="docs/images/mobile/02_book_index.jpeg" width="110"/></a><br/><sub>Library</sub></td>
+<td align="center"><a href="docs/images/mobile/03_left_hand_menu.jpeg"><img src="docs/images/mobile/03_left_hand_menu.jpeg" width="110"/></a><br/><sub>Navigation Menu</sub></td>
+<td align="center"><a href="docs/images/mobile/04_theme_picker.jpeg"><img src="docs/images/mobile/04_theme_picker.jpeg" width="110"/></a><br/><sub>Theme Picker</sub></td>
+<td align="center"><a href="docs/images/mobile/05_book_search.jpeg"><img src="docs/images/mobile/05_book_search.jpeg" width="110"/></a><br/><sub>Search</sub></td>
+</tr>
+<tr>
+<td align="center"><a href="docs/images/mobile/06_book_details.jpeg"><img src="docs/images/mobile/06_book_details.jpeg" width="110"/></a><br/><sub>Book Details</sub></td>
+<td align="center"><a href="docs/images/mobile/07_epub_reader.jpeg"><img src="docs/images/mobile/07_epub_reader.jpeg" width="110"/></a><br/><sub>Ebook Reader</sub></td>
+<td align="center"><a href="docs/images/mobile/08_epub_toc.jpeg"><img src="docs/images/mobile/08_epub_toc.jpeg" width="110"/></a><br/><sub>Table of Contents</sub></td>
+<td align="center"><a href="docs/images/mobile/09_epub_settings.jpeg"><img src="docs/images/mobile/09_epub_settings.jpeg" width="110"/></a><br/><sub>Reader Settings</sub></td>
+<td align="center"><a href="docs/images/mobile/10_audiobook_player.jpeg"><img src="docs/images/mobile/10_audiobook_player.jpeg" width="110"/></a><br/><sub>Audiobook Player</sub></td>
+</tr>
+</table>
+
+</details>
 
 ---
 
