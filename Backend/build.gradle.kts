@@ -43,7 +43,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.flywaydb:flyway-core")
-    implementation("org.xerial:sqlite-jdbc:3.53.1.0")
+    implementation("org.xerial:sqlite-jdbc:3.53.2.0")
     implementation("org.hibernate.orm:hibernate-community-dialects")
     implementation("com.nimbusds:nimbus-jose-jwt:10.9")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
