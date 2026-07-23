@@ -10,5 +10,6 @@ CREATE TABLE audiobook_progress (
     created_at       TEXT NOT NULL,
     updated_at       TEXT NOT NULL,
     CONSTRAINT fk_audiobook_progress_user_id FOREIGN KEY (user_id) REFERENCES users(id),
-    CONSTRAINT fk_audiobook_progress_book_id FOREIGN KEY (book_id) REFERENCES books(id)
+    CONSTRAINT fk_audiobook_progress_book_id FOREIGN KEY (book_id) REFERENCES books(id),
+    CONSTRAINT uk_audiobook_progress_user_book UNIQUE (user_id, book_id)
 );
