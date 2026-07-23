@@ -5,7 +5,7 @@ plugins {
     jacoco
     checkstyle
     pmd
-    id("com.github.spotbugs") version "6.5.5"
+    id("com.github.spotbugs") version "6.5.9"
 }
 
 group = "com.media-sanctum"
