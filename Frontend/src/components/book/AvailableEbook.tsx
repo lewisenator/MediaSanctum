@@ -6,6 +6,7 @@ import { IoCloudDownloadOutline } from 'react-icons/io5';
 import { IoIosPlay } from "react-icons/io";
 import { Link } from '@tanstack/react-router';
 import Progress from '#/components/formatting/Progress.tsx';
+import TimeAgo from '#/components/formatting/TimeAgo.tsx';
 
 type AvailableEbookProps = {
   book: Book;
@@ -20,6 +21,7 @@ const AvailableEbook = (
   const pages = book?.ebookProgress?.totalPages || book.pages || 1;
   const currentPage = book?.ebookProgress?.currentPage || 0;
   const percent = book.ebookProgress?.percent || 0;
+  const lastOpened = book.ebookProgress?.updatedAt;
 
   const [downloading, setDownloading] = useState<boolean>(false);
   const downloadBook = async () => {
@@ -83,7 +85,13 @@ const AvailableEbook = (
             </div>
             <div className="flex flex-col gap-1 sm:gap-2">
               <div className="uppercase text-xs font-ui text-textMute tracking-widest">Last Opened</div>
-              <div className="text-sm">Yesterday</div>
+              <div className="text-sm">
+                {lastOpened ? (
+                  <TimeAgo date={new Date(lastOpened)} />
+                ) : (
+                  <span>Never</span>
+                )}
+              </div>
             </div>
           </div>
         </div>

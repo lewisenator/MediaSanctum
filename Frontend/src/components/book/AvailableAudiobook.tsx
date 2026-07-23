@@ -7,6 +7,7 @@ import { IoCloudDownloadOutline } from 'react-icons/io5';
 import { useState } from 'react';
 import AudioDuration from '#/components/formatting/AudioDuration.tsx';
 import Time from '#/components/formatting/Time.tsx';
+import TimeAgo from '#/components/formatting/TimeAgo.tsx';
 
 type AvailableAudiobookProps = {
   book: Book;
@@ -18,6 +19,7 @@ const AvailableAudiobook = (
 
   const percent = book.audiobookProgress?.percent || 0;
   const seconds = book.audiobookProgress?.seconds || 0;
+  const lastOpened = book.audiobookProgress?.updatedAt;
 
   const durationString = book.audiobookFile?.ffProbe?.format.duration;
   const duration = durationString
@@ -127,7 +129,13 @@ const AvailableAudiobook = (
             </div>
             <div className="flex flex-col gap-1 sm:gap-2">
               <div className="uppercase text-xs font-ui text-textMute tracking-widest">Last Opened</div>
-              <div className="text-sm">Yesterday</div>
+              <div className="text-sm">
+                {lastOpened ? (
+                  <TimeAgo date={new Date(lastOpened)} />
+                ) : (
+                  <span>Never</span>
+                )}
+              </div>
             </div>
           </div>
         </div>
