@@ -51,6 +51,7 @@ public class AuthorControllerTest extends BaseControllerTest {
                 "bornYear": "{{INTEGER?nullable=true}}",
                 "deathYear": "{{INTEGER?nullable=true}}",
                 "booksCount": "{{INTEGER}}",
+                "libraryBooksCount": "{{INTEGER?nullable=true}}",
                 "links": "{{OBJECT-ARRAY?contract=%s}}",
                 "createdAt": "{{TIMESTAMP?amount=1&unit=MINUTES}}",
                 "updatedAt": "{{TIMESTAMP?amount=1&unit=MINUTES}}",

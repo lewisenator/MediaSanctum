@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { IoIosSearch } from 'react-icons/io';
 import Main from '#/components/layout/Main.tsx';
 import { RxPerson } from "react-icons/rx";
-import AuthorCard from '#/components/book/AuthorCard.tsx';
+import AuthorCard from '#/components/author/AuthorCard.tsx';
 
 const authorsQueryOptions = () => queryOptions({
   queryKey: ['authors'],

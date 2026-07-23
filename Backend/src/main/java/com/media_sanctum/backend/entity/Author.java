@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -62,6 +63,9 @@ public class Author {
 
     @Column(name = "books_count")
     private Integer booksCount;
+
+    @Formula("(SELECT COUNT(b.id) FROM books b WHERE b.author_id = id)")
+    private Long libraryBooksCount;
 
     @Column(name = "links", columnDefinition = "TEXT")
     @JdbcTypeCode(SqlTypes.JSON)

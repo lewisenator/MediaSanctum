@@ -17,6 +17,7 @@ export type Author = {
   bornYear: number;
   deathYear: number;
   booksCount: number;
+  libraryBooksCount: number;
   links: AuthorLink[];
   createdAt: string;
   updatedAt: string;

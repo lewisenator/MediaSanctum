@@ -21,6 +21,7 @@ public class AuthorResponse {
     private Integer bornYear;
     private Integer deathYear;
     private Integer booksCount;
+    private Long libraryBooksCount;
     private List<LinkResponse> links;
     private String createdAt;
     private String updatedAt;

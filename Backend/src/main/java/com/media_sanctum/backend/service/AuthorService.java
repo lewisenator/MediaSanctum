@@ -82,6 +82,7 @@ public class AuthorService {
                 .bornYear(author.getBornYear())
                 .deathYear(author.getDeathYear())
                 .booksCount(author.getBooksCount())
+                .libraryBooksCount(author.getLibraryBooksCount())
                 .links(author.getLinks().stream().map(AuthorService::toLinkResponse).toList())
                 .image(ImageService.toResponse(author.getImage()))
                 .createdAt(author.getCreatedAt().toString())

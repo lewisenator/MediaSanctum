@@ -30,7 +30,7 @@ const AuthorCard = (
             {author.name}
           </p>
           <div className="text-xs text-textDim mt-1 overflow-hidden">
-            {author.name}
+            {`${author.libraryBooksCount} ${author.libraryBooksCount !== 1 ? 'books' : 'book'}`}
           </div>
         </div>
         <div className="flex flex-row justify-between mt-2">
