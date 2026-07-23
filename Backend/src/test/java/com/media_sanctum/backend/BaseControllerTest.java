@@ -15,13 +15,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.client.RestClient;
 
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,15 +60,59 @@ public abstract class BaseControllerTest {
 	@Autowired
 	protected UserService userService;
 
+	private static final Set<HttpMethod> CSRF_EXEMPT_METHODS =
+			Set.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS, HttpMethod.TRACE);
+
 	protected RestClient restClient;
+
+	private String csrfToken;
 
 	@BeforeEach
 	public void setup() {
 		bootstrapService.bootstrap();
+		csrfToken = null;
 
 		restClient = RestClient.builder()
 				.baseUrl("http://localhost:" + port)
+				.requestInterceptor(this::attachCsrfToken)
 				.build();
+	}
+
+	/**
+	 * Mirrors what a browser does automatically: attach the XSRF-TOKEN cookie/header pair to every
+	 * state-changing request, fetching one first if this test hasn't obtained one yet.
+	 */
+	private ClientHttpResponse attachCsrfToken(
+			HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
+		if (!CSRF_EXEMPT_METHODS.contains(request.getMethod())) {
+			var token = ensureCsrfToken();
+			var headers = request.getHeaders();
+			headers.set("X-XSRF-TOKEN", token);
+			var existingCookie = headers.getFirst(HttpHeaders.COOKIE);
+			headers.set(HttpHeaders.COOKIE, existingCookie == null
+					? "XSRF-TOKEN=" + token
+					: existingCookie + "; XSRF-TOKEN=" + token);
+		}
+		return execution.execute(request, body);
+	}
+
+	private synchronized String ensureCsrfToken() {
+		if (csrfToken == null) {
+			var response = restClient.get()
+					.uri("/api/actuator/health")
+					.retrieve()
+					.toBodilessEntity();
+			var setCookieHeaders = response.getHeaders().get(HttpHeaders.SET_COOKIE);
+			csrfToken = setCookieHeaders == null ? null : setCookieHeaders.stream()
+					.filter(header -> header.startsWith("XSRF-TOKEN="))
+					.map(header -> header.split(";", 2)[0].substring("XSRF-TOKEN=".length()))
+					.findFirst()
+					.orElse(null);
+			if (csrfToken == null) {
+				throw new IllegalStateException("No XSRF-TOKEN cookie returned from health check");
+			}
+		}
+		return csrfToken;
 	}
 
 	@DynamicPropertySource
