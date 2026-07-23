@@ -21,7 +21,7 @@ class UserControllerTest extends BaseControllerTest {
                 .uri("/api/users")
                 .header("Authorization", "Bearer " + getAccessToken())
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
                 .toEntity(String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

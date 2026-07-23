@@ -57,7 +57,7 @@ class AuthControllerTest extends BaseControllerTest {
                 .uri("/api/auth/login")
                 .body(loginRequest)
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
                 .toEntity(String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -90,7 +90,7 @@ class AuthControllerTest extends BaseControllerTest {
                 .uri("/api/auth/login")
                 .body(loginRequest)
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
                 .toEntity(String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -122,7 +122,7 @@ class AuthControllerTest extends BaseControllerTest {
                 .uri("/api/auth/refresh")
                 .cookie(cookie.getKey(), cookie.getValue())
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
                 .toEntity(String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -164,7 +164,7 @@ class AuthControllerTest extends BaseControllerTest {
                 .uri("/api/auth/refresh")
                 .cookie(cookie.getKey(), cookie.getValue())
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
                 .toEntity(String.class);
 
         assertThat(refreshResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -196,7 +196,7 @@ class AuthControllerTest extends BaseControllerTest {
                 .uri("/api/auth/logout")
                 .cookie(cookie.getKey(), cookie.getValue())
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
                 .toEntity(String.class);
 
         assertThat(logoutResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -269,7 +269,7 @@ class AuthControllerTest extends BaseControllerTest {
                 .uri("/api/auth/refresh")
                 .cookie("refresh-token", badCookie)
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
                 .toEntity(String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);

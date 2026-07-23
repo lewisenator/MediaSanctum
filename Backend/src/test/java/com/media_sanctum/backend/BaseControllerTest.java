@@ -67,6 +67,10 @@ public abstract class BaseControllerTest {
 
 	private String csrfToken;
 
+	protected RestClient.ResponseSpec.ErrorHandler doNothingErrorHandler = (_, _) -> {
+		// Do nothing; allow tests to inspect the response instead of throwing an exception.
+	};
+
 	@BeforeEach
 	public void setup() {
 		bootstrapService.bootstrap();

@@ -78,7 +78,7 @@ public class AuthorControllerTest extends BaseControllerTest {
                 .header("Authorization", "Bearer " + getAccessToken())
                 .body(addAuthorRequest)
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
                 .toEntity(String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -96,7 +96,7 @@ public class AuthorControllerTest extends BaseControllerTest {
                 .uri("/api/authors/" + id)
                 .header("Authorization", "Bearer " + getAccessToken())
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
                 .toEntity(String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -110,7 +110,7 @@ public class AuthorControllerTest extends BaseControllerTest {
                 .uri("/api/authors")
                 .header("Authorization", "Bearer " + getAccessToken())
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
                 .toEntity(String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -134,7 +134,7 @@ public class AuthorControllerTest extends BaseControllerTest {
                 .uri("/api/authors/%s".formatted(UUID.randomUUID()))
                 .header("Authorization", "Bearer " + getAccessToken())
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
                 .toEntity(String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);

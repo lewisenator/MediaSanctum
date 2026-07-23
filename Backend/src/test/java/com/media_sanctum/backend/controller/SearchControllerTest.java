@@ -28,7 +28,7 @@ public class SearchControllerTest extends BaseControllerTest {
                 .uri("/api/search/authors?q=" + encode.apply("Craig Alanson"))
                 .header("Authorization", "Bearer " + getAccessToken())
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
                 .toEntity(new ParameterizedTypeReference<DataResponse<SearchResponse<AuthorSearchResultResponse>>>() {
                 });
 
@@ -47,7 +47,7 @@ public class SearchControllerTest extends BaseControllerTest {
                 .uri("/api/search/books?q=" + encode.apply("Columbus Day"))
                 .header("Authorization", "Bearer " + getAccessToken())
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (_, _) -> {/* Don't Care */})
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
                 .toEntity(new ParameterizedTypeReference<DataResponse<SearchResponse<BookSearchResultResponse>>>() {
                 });
 
