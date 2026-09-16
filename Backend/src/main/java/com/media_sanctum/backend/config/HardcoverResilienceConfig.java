@@ -25,12 +25,15 @@ public class HardcoverResilienceConfig {
 
     @Bean
     public RetryConfigCustomizer hardcoverRateLimitRetryConfigCustomizer(
-            @Value("${resilience4j.retry.instances.hardcover-ratelimit.wait-duration}") Duration fallbackWaitDuration,
+            @Value("${resilience4j.retry.instances.hardcover-ratelimit.wait-duration}")
+            Duration fallbackWaitDuration,
             @Value("${resilience4j.retry.instances.hardcover-ratelimit.exponential-backoff-multiplier}")
             double fallbackBackoffMultiplier
     ) {
-        IntervalFunction fallback = IntervalFunction.ofExponentialBackoff(fallbackWaitDuration, fallbackBackoffMultiplier);
-        return RetryConfigCustomizer.of(RATE_LIMIT_INSTANCE, builder -> applyRetryAfterAwareInterval(builder, fallback));
+        IntervalFunction fallback =
+                IntervalFunction.ofExponentialBackoff(fallbackWaitDuration, fallbackBackoffMultiplier);
+        return RetryConfigCustomizer.of(
+                RATE_LIMIT_INSTANCE, builder -> applyRetryAfterAwareInterval(builder, fallback));
     }
 
     /**
@@ -40,8 +43,11 @@ public class HardcoverResilienceConfig {
      */
     private static <T> void applyRetryAfterAwareInterval(RetryConfig.Builder<T> builder, IntervalFunction fallback) {
         builder.intervalBiFunction((attempt, either) -> {
-            if (either.isLeft() && either.getLeft() instanceof HardcoverRateLimitException rle && rle.getRetryAfter() != null) {
-                return rle.getRetryAfter().toMillis();
+            boolean isRateLimited = either.isLeft()
+                    && either.getLeft() instanceof HardcoverRateLimitException rle
+                    && rle.getRetryAfter() != null;
+            if (isRateLimited) {
+                return ((HardcoverRateLimitException) either.getLeft()).getRetryAfter().toMillis();
             }
             return fallback.apply(attempt);
         });

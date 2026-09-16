@@ -17,6 +17,11 @@ public class HardcoverClientException extends HardcoverException {
         this.statusCode = statusCode;
     }
 
+    public HardcoverClientException(String message, int statusCode, Throwable cause) {
+        super(message, cause);
+        this.statusCode = statusCode;
+    }
+
     public int getStatusCode() {
         return statusCode;
     }

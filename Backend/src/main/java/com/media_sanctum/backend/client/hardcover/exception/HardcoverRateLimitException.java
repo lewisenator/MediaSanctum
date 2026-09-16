@@ -18,6 +18,11 @@ public class HardcoverRateLimitException extends HardcoverException {
         this.retryAfter = retryAfter;
     }
 
+    public HardcoverRateLimitException(String message, Duration retryAfter, Throwable cause) {
+        super(message, cause);
+        this.retryAfter = retryAfter;
+    }
+
     /**
      * The wait-duration hint parsed from the response, or {@code null} if Hardcover didn't send
      * one and the caller should fall back to its own backoff schedule.

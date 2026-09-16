@@ -24,10 +24,6 @@ import org.springframework.web.client.RestClient;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -118,7 +114,7 @@ public class HardcoverClient {
                 return RateLimiter.decorateSupplier(hardcoverRateLimiter, counted).get();
             } catch (RequestNotPermitted e) {
                 throw new HardcoverRateLimitException(
-                        "Hardcover local rate limiter rejected request for query " + query, null);
+                        "Hardcover local rate limiter rejected request for query " + query, null, e);
             }
         };
         Supplier<JsonNode> generalRetried = Retry.decorateSupplier(hardcoverGeneralRetry, throttled);
@@ -126,18 +122,23 @@ public class HardcoverClient {
 
         try {
             return rateLimitRetried.get();
-        } catch (HardcoverRateLimitException e) {
-            throw (HardcoverRateLimitException) e.withDiagnostics(
-                    endpoint, query, attempts.get(), Duration.between(start, Instant.now()), e.getRateLimitHeaders());
         } catch (HardcoverClientException e) {
             throw e;
         } catch (HardcoverException e) {
-            throw e.withDiagnostics(
+            // withDiagnostics mutates e in place and returns `this`; the void call keeps PMD's
+            // PreserveStackTrace check from mistaking the return value for a newly built exception.
+            // Covers HardcoverRateLimitException too - getRateLimitHeaders() is empty by default
+            // on the base type, so no rate-limit-specific branch is needed here.
+            e.withDiagnostics(
                     endpoint, query, attempts.get(), Duration.between(start, Instant.now()), e.getRateLimitHeaders());
+            throw e;
         }
     }
 
-    @SuppressWarnings("PMD.AvoidCatchingGenericException")
+    // Each catch branch maps one distinct Hardcover failure mode (429, 403 batch-limit, other
+    // 4xx, transient 5xx/network, already-typed) to the exception type the two retry tracks key
+    // on - splitting it up would just move the branching into more methods, not remove it.
+    @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.CyclomaticComplexity"})
     private JsonNode executeQuery(String query, Map<String, Object> variables) {
         var safeVars = variables != null ? variables : Map.<String, Object>of();
         var body = Map.of("query", query, "variables", safeVars);
@@ -155,11 +156,11 @@ public class HardcoverClient {
         } catch (HttpClientErrorException.Forbidden e) {
             throw new HardcoverClientException(
                     "Hardcover rejected query " + query + " with 403 (likely batch-limit exceeded): "
-                            + e.getMessage(), 403);
+                            + e.getMessage(), 403, e);
         } catch (HttpClientErrorException e) {
             throw new HardcoverClientException(
                     "Hardcover client error " + e.getStatusCode().value() + " for query " + query + ": "
-                            + e.getMessage(), e.getStatusCode().value());
+                            + e.getMessage(), e.getStatusCode().value(), e);
         } catch (HttpServerErrorException | ResourceAccessException e) {
             throw new HardcoverException("Hardcover transient error while executing query " + query, e);
         } catch (HardcoverException e) {
@@ -172,77 +173,12 @@ public class HardcoverClient {
 
     private HardcoverRateLimitException toRateLimitException(String query, HttpClientErrorException.TooManyRequests e) {
         HttpHeaders headers = e.getResponseHeaders();
-        Duration retryAfter = parseRetryAfter(headers);
-        Map<String, String> rateLimitHeaders = captureRateLimitHeaders(headers);
+        Duration retryAfter = HardcoverRateLimitHeaders.parseRetryAfter(headers);
+        Map<String, String> rateLimitHeaders = HardcoverRateLimitHeaders.capture(headers);
         var ex = new HardcoverRateLimitException(
-                "Hardcover rate limit (429) for query " + query, retryAfter);
+                "Hardcover rate limit (429) for query " + query, retryAfter, e);
         ex.withDiagnostics(null, null, 0, null, rateLimitHeaders);
         return ex;
-    }
-
-    private Duration parseRetryAfter(HttpHeaders headers) {
-        if (headers == null) {
-            return null;
-        }
-        String retryAfter = headers.getFirst(HttpHeaders.RETRY_AFTER);
-        if (retryAfter != null) {
-            Duration fromSeconds = parseRetryAfterSeconds(retryAfter);
-            if (fromSeconds != null) {
-                return fromSeconds;
-            }
-            Duration fromDate = parseRetryAfterHttpDate(retryAfter);
-            if (fromDate != null) {
-                return fromDate;
-            }
-        }
-        return parseEpochSecondsHeader(headers.getFirst("X-RateLimit-Reset"));
-    }
-
-    private Duration parseRetryAfterSeconds(String value) {
-        try {
-            return Duration.ofSeconds(Long.parseLong(value.trim()));
-        } catch (NumberFormatException nfe) {
-            return null;
-        }
-    }
-
-    private Duration parseRetryAfterHttpDate(String value) {
-        try {
-            ZonedDateTime resetAt = ZonedDateTime.parse(value, DateTimeFormatter.RFC_1123_DATE_TIME);
-            Duration duration = Duration.between(ZonedDateTime.now(resetAt.getZone()), resetAt);
-            return duration.isNegative() ? Duration.ZERO : duration;
-        } catch (DateTimeParseException dtpe) {
-            return null;
-        }
-    }
-
-    private Duration parseEpochSecondsHeader(String value) {
-        if (value == null) {
-            return null;
-        }
-        try {
-            long epochSeconds = Long.parseLong(value.trim());
-            Duration duration = Duration.between(Instant.now(), Instant.ofEpochSecond(epochSeconds));
-            return duration.isNegative() ? Duration.ZERO : duration;
-        } catch (NumberFormatException nfe) {
-            return null;
-        }
-    }
-
-    private Map<String, String> captureRateLimitHeaders(HttpHeaders headers) {
-        if (headers == null) {
-            return Map.of();
-        }
-        Map<String, String> captured = new HashMap<>();
-        headers.forEach((name, values) -> {
-            if (!values.isEmpty()
-                    && (name.equalsIgnoreCase("RateLimit")
-                    || name.regionMatches(true, 0, "X-RateLimit", 0, "X-RateLimit".length())
-                    || name.equalsIgnoreCase(HttpHeaders.RETRY_AFTER))) {
-                captured.put(name, values.get(0));
-            }
-        });
-        return captured;
     }
 
     private JsonNode parseResponse(String responseBody) throws JsonProcessingException {
