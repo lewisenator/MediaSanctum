@@ -28,7 +28,7 @@
     "use-debounce": "^10.1.1"
   },
   "overrides": {
-    "@xmldom/xmldom": "^0.8.13"
+    "@xmldom/xmldom": "^0.8.15"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
@@ -47,7 +47,7 @@
     "jsdom": "^29.1.1",
     "typescript": "^7.0.2",
     "vite": "^8.3.0",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.11"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
