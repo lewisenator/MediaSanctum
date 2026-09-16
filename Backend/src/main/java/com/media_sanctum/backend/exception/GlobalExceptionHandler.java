@@ -1,5 +1,7 @@
 package com.media_sanctum.backend.exception;
 
+import com.media_sanctum.backend.client.hardcover.exception.HardcoverException;
+import com.media_sanctum.backend.client.hardcover.exception.HardcoverRateLimitException;
 import com.media_sanctum.backend.config.MediaSanctumConfig;
 import com.media_sanctum.backend.resource.DataResponse;
 import com.media_sanctum.backend.resource.ErrorResponse;
@@ -24,6 +26,40 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AsyncRequestNotUsableException.class)
     public void handleClientDisconnect(AsyncRequestNotUsableException e) {
         log.debug("Client disconnected during streaming: {}", e.getMessage());
+    }
+
+    // Hardcover's hardcover-ratelimit retry exhausted (real 429s or a persistently-tripped
+    // local rate limiter). Distinct from the general-transient path below so callers can tell
+    // "Hardcover is throttling us" apart from "Hardcover is down/erroring".
+    @ExceptionHandler(HardcoverRateLimitException.class)
+    public ResponseEntity<DataResponse<?>> handleHardcoverRateLimitException(HardcoverRateLimitException e) {
+        logHardcoverExhaustion(e);
+        return hardcoverUnavailableResponse("HARDCOVER_RATE_LIMITED", e.getMessage());
+    }
+
+    // Hardcover's hardcover-general retry exhausted (network errors, 5xx). HardcoverClientException
+    // (403/other 4xx client bugs) is intentionally not handled here - it's never retried, so it
+    // falls through to the generic handler below rather than being reported as "unavailable".
+    @ExceptionHandler(HardcoverException.class)
+    public ResponseEntity<DataResponse<?>> handleHardcoverException(HardcoverException e) {
+        logHardcoverExhaustion(e);
+        return hardcoverUnavailableResponse("HARDCOVER_UNAVAILABLE", e.getMessage());
+    }
+
+    private void logHardcoverExhaustion(HardcoverException e) {
+        log.warn(
+                "Hardcover call exhausted retries: endpoint={} query={} attempts={} elapsed={} "
+                        + "rateLimitHeaders={}",
+                e.getEndpoint(), e.getQuery(), e.getAttempts(), e.getElapsed(), e.getRateLimitHeaders(), e);
+    }
+
+    private ResponseEntity<DataResponse<?>> hardcoverUnavailableResponse(String errorCode, String message) {
+        var error = ErrorResponse.builder()
+                .message(message)
+                .error(errorCode)
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(DataResponse.error(error));
     }
 
     @ExceptionHandler(Exception.class)

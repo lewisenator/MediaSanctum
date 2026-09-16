@@ -40,17 +40,37 @@ media-sanctum:
     api-key: ${HARDCOVER_API_KEY}
     endpoint: https://api.hardcover.app/v1/graphql
 
+# Hardcover client resilience. Two independent retry paths (see HardcoverClient):
+#   hardcover-ratelimit: reacts to HardcoverRateLimitException (HTTP 429). Honors the
+#     Retry-After/X-RateLimit-Reset hint when present (see HardcoverResilienceConfig); the
+#     wait-duration/multiplier below are only the fallback used when Hardcover sends no hint.
+#     Prod is tuned lean/fast so a live user request doesn't block long — fail over to a 503
+#     quickly rather than exhausting a long backoff schedule inline with the request.
+#   hardcover-general: reacts to transient failures (network errors, 5xx). Unchanged from the
+#     previous single shared config. Explicitly ignores HardcoverRateLimitException (handled by
+#     the instance above) and HardcoverClientException (403/4xx client bugs - fail fast, no retry).
 resilience4j:
   ratelimiter:
     instances:
-      hardcover:
-        limit-for-period: 1
-        limit-refresh-period: 1s
-        timeout-duration: 1s
+      hardcover-ratelimit:
+        # Hardcover's real burst bucket: ~10 requests, refilling over 60s.
+        limit-for-period: 10
+        limit-refresh-period: 60s
+        timeout-duration: 250ms
   retry:
     instances:
-      hardcover:
+      hardcover-ratelimit:
+        max-attempts: 2
+        wait-duration: 500ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - com.media_sanctum.backend.client.hardcover.exception.HardcoverRateLimitException
+      hardcover-general:
         max-attempts: 3
         wait-duration: 1s
         enable-exponential-backoff: true
         exponential-backoff-multiplier: 2
+        ignore-exceptions:
+          - com.media_sanctum.backend.client.hardcover.exception.HardcoverRateLimitException
+          - com.media_sanctum.backend.client.hardcover.exception.HardcoverClientException
