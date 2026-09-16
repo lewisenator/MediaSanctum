@@ -80,3 +80,31 @@ Working task list for maintenance and feature-oriented work on this repo.
   — Dependabot auto-closed both itself after the rebase request: "no longer
   updatable" (peer-dependency constraint elsewhere in the tree). No action taken;
   this is Dependabot's own decision, not a CI failure.
+
+## Java 27 upgrade — BLOCKED (investigated 2026-09-16)
+
+JDK 27 released 2026-09-15. Investigated bumping the backend; **not viable yet**.
+Current pins: Java 25 toolchain (`Backend/build.gradle.kts` line 33,
+`.github/workflows/ci.yml` java-version), Spring Boot 4.1.1, Gradle wrapper 9.4.1,
+Lombok 1.18.46 (BOM-pinned via Boot), Hibernate ORM 7.4.5.Final, JUnit Jupiter 6.0.3.
+No Dockerfile in repo (nothing to bump there).
+
+Blockers, in dependency order (each gates the next):
+
+1. **Gradle** — even latest *stable* Gradle (9.7.1) can't run on JDK 27; the compatibility
+   matrix caps supported JVMs at 26. JDK 27 support only exists in `9.8.0-RC1`
+   (pre-release, ~2026-09-08), not GA. Need a stable Gradle 9.8.x+ before the wrapper
+   can be bumped. https://docs.gradle.org/current/userguide/compatibility.html
+2. **Spring Boot** — 4.1.1's official system requirements certify up to Java 26 only,
+   not 27. Need a Boot 4.1.x/4.2.x release that extends the baseline.
+   https://docs.spring.io/spring-boot/system-requirements.html
+3. **Lombok** — BOM-pinned 1.18.46 only added JDK26 support; JDK27 support landed in
+   1.18.48 (2026-09-01). Easy fix (explicit version override) once #1/#2 clear —
+   not itself blocking, just needs to move in lockstep.
+
+Hibernate ORM 7.4.5.Final and JUnit Jupiter 6.0.3 showed no known Java 27 incompatibility
+in research, but also no explicit certification — lower risk, unconfirmed.
+
+Revisit once Gradle ships a stable 9.8.x+ GA and Spring Boot certifies Java 27
+(historically Boot follows shortly after Gradle stabilizes support for a new JDK).
+No PR opened — repo is correctly still on Java 25.
