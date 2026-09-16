@@ -12,7 +12,7 @@ group = "com.media-sanctum"
 version = "0.0.1-SNAPSHOT"
 
 // Override versions of Spring Boot BOM-managed dependencies
-extra["tomcat.version"] = "11.0.22"
+extra["tomcat.version"] = "11.0.25"
 extra["jackson-2-bom.version"] = "2.21.5"
 extra["jackson-bom.version"] = "3.1.5"
 
