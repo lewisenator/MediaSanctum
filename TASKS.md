@@ -108,3 +108,50 @@ in research, but also no explicit certification — lower risk, unconfirmed.
 Revisit once Gradle ships a stable 9.8.x+ GA and Spring Boot certifies Java 27
 (historically Boot follows shortly after Gradle stabilizes support for a new JDK).
 No PR opened — repo is correctly still on Java 25.
+
+## Security alert triage — 2026-09-16 (round 2, post dependency-merge batch)
+
+Re-pulled current state (the original 36-alert flag was stale/pre-merge): **24 open
+Dependabot alerts** at start (3 critical, 14 high, 7 moderate), 0 open code-scanning
+(CodeQL) alerts. No Dependabot-authored fix PRs existed for any of these 24 — all were
+on transitive/build-tool dependencies Dependabot couldn't auto-resolve.
+
+**Resolved 15 of 24** via 2 manually-authored PRs, both merged with fully green CI
+(Backend/Frontend/CodeQL, no Hardcover-flake retrigger needed):
+- [x] PR #48 — bumped `extra["tomcat.version"]` override in `Backend/build.gradle.kts`
+  11.0.22→11.0.25. Closed 3 **critical** alerts on `org.apache.tomcat.embed:tomcat-embed-core`
+  (#84 GHSA-gcx9-497g-6cp6, #85 GHSA-9xv2-5v5q-p794, #86 GHSA-h3x4-894j-xpx5).
+- [x] PR #49 — widened `Frontend/package.json` overrides (`@xmldom/xmldom` ^0.8.13→^0.8.15,
+  `vitest` ^4.1.8→^4.1.11) and regenerated `package-lock.json`. Closed 12 alerts: 10x
+  `@xmldom/xmldom` (transitive via `react-reader`→`epub.js`) + vitest/`@vitest/mocker`
+  GHSA-82fw-gwwq-j7x9. Note: local `npm install`/`audit fix`/`update` hit a real npm 10.9.8
+  arborist bug (`Cannot read properties of null (reading 'edgesOut')`) resolving vitest
+  4.1.11's new optional peer dep — worked around with `npm install --legacy-peer-deps` to
+  regenerate the lockfile, then confirmed `npm ci` (what CI actually runs) installs clean
+  from the result. Doesn't affect CI.
+
+**9 alerts remain open** (verified live 2026-09-16) — all Java build-tool-only transitive
+deps, not shipped in the runtime app, deliberately NOT auto-fixed (risk of breaking the
+build tool or unclear upstream compatibility):
+
+- [ ] `com.fasterxml.jackson.core:jackson-core`/`jackson-databind` (#3, #66, #33, #36, #39, #43
+  — 4 high, 2 moderate) — old copy (2.14.2) pulled by `com.github.node-gradle:gradle-node-plugin:7.1.0`
+  (the Frontend's Gradle→npm bridge plugin). The app's own Jackson is already well above the
+  fixed threshold via `jackson-2-bom.version=2.21.5` — this is an isolated copy in the
+  gradle-node-plugin's own classpath. Fix requires bumping that plugin; compatibility with the
+  bumped version not evaluated.
+- [ ] `org.codehaus.plexus:plexus-utils` (#7, high) and `commons-beanutils:commons-beanutils`
+  (#2, high) — old copies (3.3.0 / 1.10.1) pulled via Checkstyle's (`com.puppycrawl.tools:checkstyle:10.21.4`)
+  own tool classpath, separate from the app's runtime/test classpath where these are already
+  correctly forced via `resolutionStrategy.eachDependency` in `Backend/build.gradle.kts`. The
+  existing force doesn't reach Checkstyle's isolated tool configuration.
+- [ ] `org.apache.commons:commons-lang3` (#4, moderate) — old copy (3.16.0) pulled transitively
+  by the Spring Boot Gradle plugin itself (`spring-boot-buildpack-platform`/`spring-boot-loader-tools`/
+  `spring-boot-gradle-plugin`, pinned at 4.1.1, via `commons-compress:1.27.1`). App's own
+  direct `commons-lang3:3.20.0` already satisfies the fix; not controllable from this repo
+  without an upstream Spring Boot Gradle plugin bump.
+
+Common thread on all 9: fixing cleanly means either bumping `gradle-node-plugin` or
+Checkstyle (risk: could trip `maxWarnings = 0` on newly-introduced lint rules) or waiting on
+an upstream Spring Boot Gradle plugin release. None are runtime-exposed. Revisit if/when
+those upstream projects ship compatible releases, or if risk tolerance changes.
