@@ -21,11 +21,6 @@ public class HardcoverException extends RuntimeException {
         super(message, cause);
     }
 
-    /**
-     * Attaches retry-exhaustion diagnostics to this exception in place, so the same instance
-     * (preserving its original type, message, cause, and stack trace) can be rethrown for a
-     * handler to log without needing visibility into the retry machinery that produced it.
-     */
     public HardcoverException withDiagnostics(
             String endpoint, String query, int attempts, Duration elapsed, Map<String, String> rateLimitHeaders
     ) {

@@ -9,12 +9,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-/**
- * Parses Hardcover's rate-limit response headers ({@code Retry-After}, {@code X-RateLimit-Reset},
- * and the other {@code RateLimit}/{@code X-RateLimit-*} headers) so {@link HardcoverClient} can
- * honor a server-provided wait hint instead of blindly retrying on its own backoff schedule.
- */
 final class HardcoverRateLimitHeaders {
 
     private HardcoverRateLimitHeaders() {
@@ -24,18 +20,11 @@ final class HardcoverRateLimitHeaders {
         if (headers == null) {
             return null;
         }
-        String retryAfter = headers.getFirst(HttpHeaders.RETRY_AFTER);
-        if (retryAfter != null) {
-            Duration fromSeconds = parseRetryAfterSeconds(retryAfter);
-            if (fromSeconds != null) {
-                return fromSeconds;
-            }
-            Duration fromDate = parseRetryAfterHttpDate(retryAfter);
-            if (fromDate != null) {
-                return fromDate;
-            }
-        }
-        return parseEpochSecondsHeader(headers.getFirst("X-RateLimit-Reset"));
+        Optional<String> retryAfter = Optional.ofNullable(headers.getFirst(HttpHeaders.RETRY_AFTER));
+        return retryAfter.flatMap(HardcoverRateLimitHeaders::parseRetryAfterSeconds)
+                .or(() -> retryAfter.flatMap(HardcoverRateLimitHeaders::parseRetryAfterHttpDate))
+                .or(() -> parseEpochSecondsHeader(headers.getFirst("X-RateLimit-Reset")))
+                .orElse(null);
     }
 
     static Map<String, String> capture(HttpHeaders headers) {
@@ -54,34 +43,36 @@ final class HardcoverRateLimitHeaders {
         return captured;
     }
 
-    private static Duration parseRetryAfterSeconds(String value) {
+    private static Optional<Duration> parseRetryAfterSeconds(String value) {
         try {
-            return Duration.ofSeconds(Long.parseLong(value.trim()));
+            return Optional.of(Duration.ofSeconds(Long.parseLong(value.trim())));
         } catch (NumberFormatException nfe) {
-            return null;
+            return Optional.empty();
         }
     }
 
-    private static Duration parseRetryAfterHttpDate(String value) {
+    private static Optional<Duration> parseRetryAfterHttpDate(String value) {
         try {
             ZonedDateTime resetAt = ZonedDateTime.parse(value, DateTimeFormatter.RFC_1123_DATE_TIME);
-            Duration duration = Duration.between(ZonedDateTime.now(resetAt.getZone()), resetAt);
-            return duration.isNegative() ? Duration.ZERO : duration;
+            return Optional.of(nonNegative(Duration.between(ZonedDateTime.now(resetAt.getZone()), resetAt)));
         } catch (DateTimeParseException dtpe) {
-            return null;
+            return Optional.empty();
         }
     }
 
-    private static Duration parseEpochSecondsHeader(String value) {
+    private static Optional<Duration> parseEpochSecondsHeader(String value) {
         if (value == null) {
-            return null;
+            return Optional.empty();
         }
         try {
             long epochSeconds = Long.parseLong(value.trim());
-            Duration duration = Duration.between(Instant.now(), Instant.ofEpochSecond(epochSeconds));
-            return duration.isNegative() ? Duration.ZERO : duration;
+            return Optional.of(nonNegative(Duration.between(Instant.now(), Instant.ofEpochSecond(epochSeconds))));
         } catch (NumberFormatException nfe) {
-            return null;
+            return Optional.empty();
         }
+    }
+
+    private static Duration nonNegative(Duration duration) {
+        return duration.isNegative() ? Duration.ZERO : duration;
     }
 }

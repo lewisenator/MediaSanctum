@@ -28,18 +28,12 @@ public class GlobalExceptionHandler {
         log.debug("Client disconnected during streaming: {}", e.getMessage());
     }
 
-    // Hardcover's hardcover-ratelimit retry exhausted (real 429s or a persistently-tripped
-    // local rate limiter). Distinct from the general-transient path below so callers can tell
-    // "Hardcover is throttling us" apart from "Hardcover is down/erroring".
     @ExceptionHandler(HardcoverRateLimitException.class)
     public ResponseEntity<DataResponse<?>> handleHardcoverRateLimitException(HardcoverRateLimitException e) {
         logHardcoverExhaustion(e);
         return hardcoverUnavailableResponse("HARDCOVER_RATE_LIMITED", e.getMessage());
     }
 
-    // Hardcover's hardcover-general retry exhausted (network errors, 5xx). HardcoverClientException
-    // (403/other 4xx client bugs) is intentionally not handled here - it's never retried, so it
-    // falls through to the generic handler below rather than being reported as "unavailable".
     @ExceptionHandler(HardcoverException.class)
     public ResponseEntity<DataResponse<?>> handleHardcoverException(HardcoverException e) {
         logHardcoverExhaustion(e);

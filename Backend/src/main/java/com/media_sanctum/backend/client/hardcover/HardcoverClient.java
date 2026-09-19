@@ -94,12 +94,6 @@ public class HardcoverClient {
         return s == null ? "" : s;
     }
 
-    /**
-     * Wraps a single query execution with the local proactive rate limiter and the two reactive
-     * retry instances, then enriches whichever exception survives exhaustion with diagnostics
-     * (endpoint, query, attempt count, elapsed time, captured rate-limit headers) so
-     * {@code GlobalExceptionHandler} can log them without needing to know about resilience4j.
-     */
     private JsonNode executeWithResilience(String query, Map<String, Object> variables) {
         Instant start = Instant.now();
         AtomicInteger attempts = new AtomicInteger(0);
@@ -125,19 +119,12 @@ public class HardcoverClient {
         } catch (HardcoverClientException e) {
             throw e;
         } catch (HardcoverException e) {
-            // withDiagnostics mutates e in place and returns `this`; the void call keeps PMD's
-            // PreserveStackTrace check from mistaking the return value for a newly built exception.
-            // Covers HardcoverRateLimitException too - getRateLimitHeaders() is empty by default
-            // on the base type, so no rate-limit-specific branch is needed here.
             e.withDiagnostics(
                     endpoint, query, attempts.get(), Duration.between(start, Instant.now()), e.getRateLimitHeaders());
             throw e;
         }
     }
 
-    // Each catch branch maps one distinct Hardcover failure mode (429, 403 batch-limit, other
-    // 4xx, transient 5xx/network, already-typed) to the exception type the two retry tracks key
-    // on - splitting it up would just move the branching into more methods, not remove it.
     @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.CyclomaticComplexity"})
     private JsonNode executeQuery(String query, Map<String, Object> variables) {
         var safeVars = variables != null ? variables : Map.<String, Object>of();
