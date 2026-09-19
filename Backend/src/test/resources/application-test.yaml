@@ -1,3 +1,17 @@
 media-sanctum:
   log:
     path: "./logs"
+
+# CI shares one Hardcover API key across parallel test runs (see HardcoverClientTest /
+# SearchControllerTest), so 429s here are expected under load, not exceptional. CI has no
+# latency SLA, so trade speed for eventual success: many more attempts with a longer fallback
+# backoff than prod, long enough to span Hardcover's 60s burst-bucket refresh window at least
+# once (2s, 4s, 8s, 16s, 32s ~= 62s worst case) before giving up.
+resilience4j:
+  retry:
+    instances:
+      hardcover-ratelimit:
+        max-attempts: 6
+        wait-duration: 2s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2

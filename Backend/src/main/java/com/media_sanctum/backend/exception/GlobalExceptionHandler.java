@@ -1,5 +1,7 @@
 package com.media_sanctum.backend.exception;
 
+import com.media_sanctum.backend.client.hardcover.exception.HardcoverException;
+import com.media_sanctum.backend.client.hardcover.exception.HardcoverRateLimitException;
 import com.media_sanctum.backend.config.MediaSanctumConfig;
 import com.media_sanctum.backend.resource.DataResponse;
 import com.media_sanctum.backend.resource.ErrorResponse;
@@ -24,6 +26,34 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AsyncRequestNotUsableException.class)
     public void handleClientDisconnect(AsyncRequestNotUsableException e) {
         log.debug("Client disconnected during streaming: {}", e.getMessage());
+    }
+
+    @ExceptionHandler(HardcoverRateLimitException.class)
+    public ResponseEntity<DataResponse<?>> handleHardcoverRateLimitException(HardcoverRateLimitException e) {
+        logHardcoverExhaustion(e);
+        return hardcoverUnavailableResponse("HARDCOVER_RATE_LIMITED", e.getMessage());
+    }
+
+    @ExceptionHandler(HardcoverException.class)
+    public ResponseEntity<DataResponse<?>> handleHardcoverException(HardcoverException e) {
+        logHardcoverExhaustion(e);
+        return hardcoverUnavailableResponse("HARDCOVER_UNAVAILABLE", e.getMessage());
+    }
+
+    private void logHardcoverExhaustion(HardcoverException e) {
+        log.warn(
+                "Hardcover call exhausted retries: endpoint={} query={} attempts={} elapsed={} "
+                        + "rateLimitHeaders={}",
+                e.getEndpoint(), e.getQuery(), e.getAttempts(), e.getElapsed(), e.getRateLimitHeaders(), e);
+    }
+
+    private ResponseEntity<DataResponse<?>> hardcoverUnavailableResponse(String errorCode, String message) {
+        var error = ErrorResponse.builder()
+                .message(message)
+                .error(errorCode)
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(DataResponse.error(error));
     }
 
     @ExceptionHandler(Exception.class)
