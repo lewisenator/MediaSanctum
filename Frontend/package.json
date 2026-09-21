@@ -18,7 +18,7 @@
     "@tanstack/router-plugin": "^1.168.23",
     "axios": "^1.20.0",
     "date-fns": "^4.4.0",
-    "lucide-react": "^1.28.0",
+    "lucide-react": "^1.47.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.8",
     "react-dropzone": "^20.1.1",
