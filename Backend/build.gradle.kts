@@ -47,7 +47,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.xerial:sqlite-jdbc:3.53.4.0")
     implementation("org.hibernate.orm:hibernate-community-dialects")
-    implementation("com.nimbusds:nimbus-jose-jwt:10.9.1")
+    implementation("com.nimbusds:nimbus-jose-jwt:10.10")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.apache.commons:commons-lang3:3.20.0")
     implementation("io.github.resilience4j:resilience4j-spring-boot4:2.4.0")
