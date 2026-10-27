@@ -34,6 +34,38 @@ Working task list for maintenance and feature-oriented work on this repo.
   fallout from CI-retriggering. (Switched to `@dependabot rebase` comments for all
   subsequent PRs to avoid repeating this.)
 
+## Next work (gap research 2026-10-27)
+
+Gaps found by comparing TASKS.md, the code and `docs/images` (SCREENS.md and `docs/design/reference` do not exist in
+this repo; the screenshots in `docs/images` are the only design reference). Hydra was unreachable (`fetch failed`) when
+this was written, so these are recorded here to be created as Hydra tasks. Each has a "done" check.
+
+- [ ] **Series page (implement).** `Frontend/src/routes/(authenticated)/_sidebar/series/index.tsx` is a placeholder
+  (`Hello "/series/"!`) though the README lists series browsing and the backend stores series (`Book`, `HardcoverSeries`).
+  Add `GET /api/series` (grouped books, ordered) with a `SeriesControllerTest`, a `seriesClient.ts`, and a page listing
+  series with their books. Done: `./gradlew :Backend:test` and `npm test` pass, including a new series page test.
+- [ ] **Status page (implement).** `status/index.tsx` only prints the raw health string. Show backend health, version and
+  Hardcover reachability/rate-limit state as labelled rows with error and loading states. Done: new vitest covering ok
+  and failing health responses.
+- [ ] **Author detail and author search pages (implement).** `authors/$authorId.tsx` and `authors/search.tsx` are
+  14-line stubs; `GET /api/authors/{id}` and `POST /api/search/authors` exist. Build both pages (bio, image, books by the
+  author; search results with add action, mirroring `books/search.tsx`). Done: vitest for each route.
+- [ ] **Frontend test coverage (implement).** Only 3 test files exist (login, LeftHandMenu, Logo). Add tests for
+  `AuthContext`, `books/index`, `books/search`, the reader and listener progress save, and `ThemeContext`. Done:
+  `npm test` passes and `vitest --coverage` reports at least 60% lines on `src/context` and `src/routes`.
+- [ ] **Backend gaps (implement).** Controllers have no update or delete for books/authors and no user-management
+  endpoints beyond `GET /api/users`; `UpdateUserModel` and `CreateUserModel` are unused by routes. Specify and add
+  `DELETE /api/books/{id}`, `DELETE /api/authors/{id}` and admin `POST/PUT /api/users`, each with controller tests.
+  Done: `./gradlew :Backend:test` passes with the new tests.
+- [ ] **Design reference (design).** Add `SCREENS.md` listing every route and state (empty, loading, error, mobile and
+  desktop) with the matching `docs/images` file, and missing screens (series, status, author detail, user admin,
+  empty library). Done: SCREENS.md exists and every route in `routeTree.gen.ts` appears in it (script-checkable).
+- [ ] **Hardcover mocking follow-up (fix).** Backlog item 1 above is partly done by PR #50 (retry/resilience). Verify
+  whether `SearchControllerTest` still hits the live API; if so, mock it. Done: the test runs with no
+  `HARDCOVER_API_KEY` set.
+- [ ] **Build-tool security alerts (fix).** Revisit the 9 open Dependabot alerts above once `gradle-node-plugin` or
+  Checkstyle upgrades are compatible. Done: `gh api repos/{owner}/{repo}/dependabot/alerts` shows none of them open.
+
 ## Done
 
 - [x] PR #42 (Spring Boot 4.1.0→4.1.1 backend bump) — merged 2026-09-16.
