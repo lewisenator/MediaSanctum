@@ -155,3 +155,16 @@ Common thread on all 9: fixing cleanly means either bumping `gradle-node-plugin`
 Checkstyle (risk: could trip `maxWarnings = 0` on newly-introduced lint rules) or waiting on
 an upstream Spring Boot Gradle plugin release. None are runtime-exposed. Revisit if/when
 those upstream projects ship compatible releases, or if risk tolerance changes.
+
+### Update 2026-10-28 (build-tool alerts)
+
+- [x] Checkstyle bumped 10.21.4 -> 14.3.0 in `Backend/build.gradle.kts`; `checkstyleMain` passes with
+  `maxWarnings = 0`. Its classpath still resolves `plexus-utils` and `commons-beanutils` through the existing
+  force (3.6.1 / 1.11.0), which covers #7 and #2 (Dependabot should close them on its next graph scan).
+- [ ] `jackson-core`/`jackson-databind` (#3, #66, #33, #36, #39, #43): the old copy comes from
+  `gradle-node-plugin` in `Frontend/build.gradle.kts`. Left open here because the Frontend is out of scope
+  for this Backend-only change; bump the plugin there.
+- [ ] `commons-lang3` (#4): comes from `commons-compress:1.27.1` inside the Spring Boot Gradle plugin's own
+  buildscript classpath, which `resolutionStrategy` in the project body cannot reach. Left open until a
+  Spring Boot plugin release updates `commons-compress`.
+
