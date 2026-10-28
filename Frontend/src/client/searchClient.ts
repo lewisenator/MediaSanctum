@@ -28,3 +28,25 @@ export const searchBooks = async (query: string): Promise<SearchResults<BookResu
     throw handleError(err, 'Search failed');
   }
 }
+
+export type AuthorResult = {
+  hardcoverId: string;
+  books: string[];
+  booksCount: number;
+  imageUrl: string;
+  name: string;
+  namePersonal: string;
+  seriesNames: string[];
+  slug: string;
+};
+
+export const searchAuthors = async (query: string): Promise<SearchResults<AuthorResult>> => {
+  try {
+    const res: AxiosResponse<DataResponse<SearchResults<AuthorResult>>> = await api.post('/search/authors', null, {
+      params: { q: query }
+    });
+    return res.data.data!;
+  } catch (err: any) {
+    throw handleError(err, 'Search failed');
+  }
+}
