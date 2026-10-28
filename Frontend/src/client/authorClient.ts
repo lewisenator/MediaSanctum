@@ -24,11 +24,12 @@ export type Author = {
   image?: Image;
 };
 
-export const addAuthor = async (hardcoverId: string): Promise<void> => {
+export const addAuthor = async (hardcoverId: string): Promise<Author> => {
   try {
-    await api.post('/authors', {
+    const res: AxiosResponse<DataResponse<Author>> = await api.post('/authors', {
       hardcoverId
     });
+    return res.data.data!;
   } catch (err: any) {
     throw handleError(err, 'Failed to add author');
   }
