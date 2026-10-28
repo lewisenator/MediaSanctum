@@ -27,12 +27,13 @@ public class SeriesService {
                 .filter(Objects::nonNull)
                 .map(featured -> featured.getSeries())
                 .filter(series -> series != null && series.getId() != null)
-                .forEach(series -> grouped.merge(series.getId(), toResponse(series), (existing, _) -> {
+                .forEach(series -> grouped.merge(series.getId(), toResponse(series), (existing, duplicate) -> {
                     existing.setLibraryBooksCount(existing.getLibraryBooksCount() + 1);
                     return existing;
                 }));
         return grouped.values().stream()
-                .sorted(Comparator.comparing(SeriesResponse::getName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
+                .sorted(Comparator.comparing(SeriesResponse::getName,
+                        Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
                 .toList();
     }
 
