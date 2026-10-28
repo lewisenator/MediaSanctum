@@ -10,6 +10,7 @@ import com.media_sanctum.backend.resource.LinkResponse;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,9 +19,28 @@ import java.util.Optional;
 public class AuthorService {
 
     private final AuthorRepository authorRepository;
+    private final BookService bookService;
 
-    public AuthorService(AuthorRepository authorRepository) {
+    public AuthorService(AuthorRepository authorRepository, BookService bookService) {
         this.authorRepository = authorRepository;
+        this.bookService = bookService;
+    }
+
+    /**
+     * Deletes an author and all of that author's books.
+     *
+     * @return false when no author has this id
+     */
+    @Transactional
+    public boolean deleteAuthor(String id) {
+        var author = authorRepository.findById(id).orElse(null);
+        if (author == null) {
+            return false;
+        }
+        bookService.deleteBooksByAuthorId(id);
+        authorRepository.delete(author);
+        authorRepository.flush();
+        return true;
     }
 
     public List<AuthorResponse> getAuthorsResponse() {

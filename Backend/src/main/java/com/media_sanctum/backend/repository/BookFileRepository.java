@@ -9,4 +9,6 @@ import java.util.List;
 public interface BookFileRepository extends JpaRepository<BookFile, String> {
 
     List<BookFile> findAllByBook(String bookId);
+
+    List<BookFile> findAllByBookId(String bookId);
 }

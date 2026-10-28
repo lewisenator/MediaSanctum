@@ -9,11 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -54,6 +56,20 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now().toString())
                 .build();
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(DataResponse.error(error));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<DataResponse<?>> handleValidationException(MethodArgumentNotValidException e) {
+        var message = e.getBindingResult().getFieldErrors().stream()
+                .map(fieldError -> "%s %s".formatted(fieldError.getField(), fieldError.getDefaultMessage()))
+                .sorted()
+                .collect(Collectors.joining("; "));
+        var error = ErrorResponse.builder()
+                .message(message)
+                .error("VALIDATION_ERROR")
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(DataResponse.error(error));
     }
 
     @ExceptionHandler(Exception.class)

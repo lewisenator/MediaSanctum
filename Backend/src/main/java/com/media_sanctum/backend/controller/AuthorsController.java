@@ -9,6 +9,7 @@ import com.media_sanctum.backend.service.AuthorService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,5 +60,21 @@ public class AuthorsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dataResponse);
         }
         return ResponseEntity.ok(DataResponse.data(author));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<DataResponse<String>> deleteAuthor(
+            @PathVariable String id
+    ) {
+        if (!authorService.deleteAuthor(id)) {
+            var error = ErrorResponse.builder()
+                    .error("AUTHOR_NOT_FOUND")
+                    .message("Author with id %s not found".formatted(id))
+                    .timestamp(LocalDateTime.now().toString())
+                    .build();
+            DataResponse<String> dataResponse = DataResponse.error(error);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dataResponse);
+        }
+        return ResponseEntity.ok(DataResponse.data("Author %s deleted".formatted(id)));
     }
 }
