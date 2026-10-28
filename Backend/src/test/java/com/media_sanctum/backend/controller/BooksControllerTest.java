@@ -3,6 +3,11 @@ package com.media_sanctum.backend.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.media_sanctum.backend.BaseControllerTest;
+import com.media_sanctum.backend.entity.Book;
+import com.media_sanctum.backend.entity.BookFile;
+import com.media_sanctum.backend.entity.EditionType;
+import com.media_sanctum.backend.repository.BookFileRepository;
+import com.media_sanctum.backend.repository.BookRepository;
 import com.media_sanctum.backend.resource.AddBookRequest;
 import com.media_sanctum.backend.resource.BookResponse;
 import com.media_sanctum.backend.resource.DataResponse;
@@ -285,5 +290,46 @@ public class BooksControllerTest extends BaseControllerTest {
 
         JsonAssertionBuilder.assertThatJson(response.getBody())
                 .matchesContract(contract);
+    }
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private BookFileRepository bookFileRepository;
+
+    @Test
+    public void deleteBook_ok_removesFiles() {
+        var book = bookRepository.save(Book.builder().title("Delete Me").build());
+        var file = bookFileRepository.save(BookFile.builder()
+                .size(1L).hash("h").url("u").directory("d").filename("f.epub")
+                .contentType("application/epub+zip").extension("epub")
+                .editionType(EditionType.EBOOK).book(book).build());
+        book.setEbookFile(file);
+        bookRepository.save(book);
+
+        var response = restClient.delete()
+                .uri("/api/books/" + book.getId())
+                .header("Authorization", "Bearer " + getAccessToken())
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
+                .toEntity(String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(bookRepository.existsById(book.getId())).isFalse();
+        assertThat(bookFileRepository.existsById(file.getId())).isFalse();
+    }
+
+    @Test
+    public void deleteBook_notFound() {
+        var response = restClient.delete()
+                .uri("/api/books/%s".formatted(UUID.randomUUID()))
+                .header("Authorization", "Bearer " + getAccessToken())
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
+                .toEntity(String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).contains("BOOK_NOT_FOUND");
     }
 }
