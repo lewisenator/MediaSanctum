@@ -148,7 +148,7 @@ tasks.check {
 // =============================================================================
 
 checkstyle {
-    toolVersion = "10.21.4"
+    toolVersion = "14.3.0"
     configFile = file("${projectDir}/config/checkstyle/checkstyle.xml")
     isIgnoreFailures = false
     maxWarnings = 0
