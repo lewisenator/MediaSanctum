@@ -49,7 +49,7 @@ dependencies {
     implementation("org.hibernate.orm:hibernate-community-dialects")
     implementation("com.nimbusds:nimbus-jose-jwt:10.10")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    implementation("org.apache.commons:commons-lang3:3.20.0")
+    implementation("org.apache.commons:commons-lang3:3.21.0")
     implementation("io.github.resilience4j:resilience4j-spring-boot4:2.4.0")
     implementation("commons-codec:commons-codec:1.23.0")
 
