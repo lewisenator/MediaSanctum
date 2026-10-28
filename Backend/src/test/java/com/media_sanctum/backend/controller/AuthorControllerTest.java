@@ -1,5 +1,9 @@
 package com.media_sanctum.backend.controller;
 
+import com.media_sanctum.backend.repository.BookRepository;
+import com.media_sanctum.backend.repository.AuthorRepository;
+import com.media_sanctum.backend.entity.Book;
+import com.media_sanctum.backend.entity.Author;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.media_sanctum.backend.BaseControllerTest;
@@ -153,5 +157,41 @@ public class AuthorControllerTest extends BaseControllerTest {
 
         JsonAssertionBuilder.assertThatJson(response.getBody())
                 .matchesContract(contract);
+    }
+
+    @Autowired
+    private AuthorRepository authorRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Test
+    public void deleteAuthor_ok_removesBooks() {
+        var author = authorRepository.save(Author.builder().name("Delete Me").build());
+        var book = bookRepository.save(Book.builder().title("Their Book").author(author).build());
+
+        var response = restClient.delete()
+                .uri("/api/authors/" + author.getId())
+                .header("Authorization", "Bearer " + getAccessToken())
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
+                .toEntity(String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(authorRepository.existsById(author.getId())).isFalse();
+        assertThat(bookRepository.existsById(book.getId())).isFalse();
+    }
+
+    @Test
+    public void deleteAuthor_notFound() {
+        var response = restClient.delete()
+                .uri("/api/authors/%s".formatted(UUID.randomUUID()))
+                .header("Authorization", "Bearer " + getAccessToken())
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, doNothingErrorHandler)
+                .toEntity(String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).contains("AUTHOR_NOT_FOUND");
     }
 }

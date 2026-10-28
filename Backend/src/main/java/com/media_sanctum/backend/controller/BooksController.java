@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -69,6 +70,22 @@ public class BooksController {
             return bookNotFoundError(id);
         }
         return ResponseEntity.ok(DataResponse.data(book));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<DataResponse<String>> deleteBook(
+            @PathVariable String id
+    ) {
+        if (!bookService.deleteBook(id)) {
+            var error = ErrorResponse.builder()
+                    .error("BOOK_NOT_FOUND")
+                    .message("Book with id %s not found".formatted(id))
+                    .timestamp(LocalDateTime.now().toString())
+                    .build();
+            DataResponse<String> dataResponse = DataResponse.error(error);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dataResponse);
+        }
+        return ResponseEntity.ok(DataResponse.data("Book %s deleted".formatted(id)));
     }
 
     @PostMapping(
